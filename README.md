@@ -59,6 +59,29 @@ npm run dev:api
 
 The backend runs on `http://localhost:5000` by default.
 
+The Phase 2 backend foundation includes:
+
+- validated environment loading from `apps/api/.env`
+- MongoDB connection through Mongoose
+- security and request middleware
+- shared success/error response helpers
+- global 404 and error handling middleware
+- request validation middleware placeholder for future Zod schemas
+- route aggregation under `/api`
+- health check endpoint
+
+Before running the backend, make sure MongoDB is running and copy the backend env file:
+
+```bash
+copy apps\api\.env.example apps\api\.env
+```
+
+Health check:
+
+```bash
+GET http://localhost:5000/api/health
+```
+
 ## Run Frontend
 
 ```bash
