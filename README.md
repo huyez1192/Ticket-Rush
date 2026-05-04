@@ -110,3 +110,28 @@ Backend variables are documented in `apps/api/.env.example`.
 Frontend variables are documented in `apps/web/.env.example`.
 
 MongoDB is the target database. The file `docs/database/migrations.sql` is only a schema and business-constraint reference for designing MongoDB/Mongoose schemas. Do not run it as a SQL migration and do not add a SQL database layer.
+
+## Model Layer
+
+The Phase 3 model layer converts `docs/database/migrations.sql` into Mongoose schemas. The SQL file remains documentation only; there is no SQL migration runner and no SQL database layer.
+
+MongoDB collections represented by Mongoose models:
+
+- `users`
+- `roles`
+- `events`
+- `event_images`
+- `seat_sections`
+- `seats`
+- `seat_locks`
+- `orders`
+- `order_items`
+- `tickets`
+- `waiting_queue`
+- `audit_logs`
+
+The SQL `user_roles` join table is represented by a `roles` ObjectId array on `users`, with role documents kept in the `roles` collection because Swagger exposes role IDs and role assignment. Payment models are not present because the migration defines mock checkout through orders and tickets, not a payments table.
+
+The detailed SQL-to-MongoDB model mapping is documented in `docs/model-mapping.md`.
+
+Business APIs for auth, events, bookings, tickets, payments, analytics, and admin workflows are not implemented yet.
