@@ -1,0 +1,15 @@
+{
+  "name": "@ticket-rush/shared",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./roles": "./src/roles.js",
+    "./statuses": "./src/statuses.js",
+    "./constants": "./src/constants.js"
+  },
+  "scripts": {
+    "lint": "node -e \"console.log('No shared lint configured yet.')\"",
+    "test": "node -e \"console.log('No shared tests configured yet.')\""
+  }
+}

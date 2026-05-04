@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Admin Portal - Events | TicketRush</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "outline": "#727785",
+                        "primary-fixed-dim": "#adc6ff",
+                        "on-background": "#141b2b",
+                        "secondary-fixed-dim": "#4edea3",
+                        "on-secondary-fixed": "#002113",
+                        "on-primary-fixed": "#001a42",
+                        "surface-container": "#e9edff",
+                        "on-error": "#ffffff",
+                        "primary-fixed": "#d8e2ff",
+                        "surface-container-highest": "#dce2f7",
+                        "outline-variant": "#c2c6d6",
+                        "inverse-on-surface": "#edf0ff",
+                        "surface-container-low": "#f1f3ff",
+                        "on-error-container": "#93000a",
+                        "secondary-fixed": "#6ffbbe",
+                        "on-surface": "#141b2b",
+                        "tertiary-fixed-dim": "#ffb95f",
+                        "surface-container-high": "#e1e8fd",
+                        "on-secondary-fixed-variant": "#005236",
+                        "inverse-primary": "#adc6ff",
+                        "on-tertiary": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "tertiary-container": "#a36700",
+                        "surface-tint": "#005ac2",
+                        "surface-variant": "#dce2f7",
+                        "on-surface-variant": "#424754",
+                        "on-secondary": "#ffffff",
+                        "tertiary-fixed": "#ffddb8",
+                        "surface-dim": "#d3daef",
+                        "primary-container": "#2170e4",
+                        "on-primary": "#ffffff",
+                        "on-primary-fixed-variant": "#004395",
+                        "error": "#ba1a1a",
+                        "primary": "#0058be",
+                        "on-secondary-container": "#00714d",
+                        "surface": "#f9f9ff",
+                        "background": "#f9f9ff",
+                        "on-primary-container": "#fefcff",
+                        "on-tertiary-fixed": "#2a1700",
+                        "on-tertiary-container": "#fffbff",
+                        "secondary-container": "#6cf8bb",
+                        "secondary": "#006c49",
+                        "tertiary": "#825100",
+                        "on-tertiary-fixed-variant": "#653e00",
+                        "surface-bright": "#f9f9ff",
+                        "inverse-surface": "#293040",
+                        "surface-container-lowest": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "unit": "8px",
+                        "margin": "32px",
+                        "section-padding": "64px",
+                        "gutter": "24px",
+                        "container-max": "1280px"
+                    },
+                    "fontFamily": {
+                        "h2": ["Outfit"],
+                        "h1": ["Outfit"],
+                        "label-bold": ["Outfit"],
+                        "h3": ["Outfit"],
+                        "body-md": ["Outfit"],
+                        "body-lg": ["Outfit"]
+                    },
+                    "fontSize": {
+                        "h2": ["36px", { "lineHeight": "1.2", "letterSpacing": "-0.03em", "fontWeight": "800" }],
+                        "h1": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.04em", "fontWeight": "800" }],
+                        "label-bold": ["14px", { "lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "700" }],
+                        "h3": ["24px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { background-color: theme('colors.background'); color: theme('colors.on-background'); }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .icon-fill { font-variation-settings: 'FILL' 1; }
+    </style>
+</head>
+<body class="antialiased overflow-hidden flex h-screen w-full">
+<!-- Background Decoration -->
+<div class="fixed inset-0 pointer-events-none z-[-1] overflow-hidden">
+<div class="absolute top-[-20%] left-[-10%] w-[800px] h-[800px] rounded-full bg-primary opacity-5 mix-blend-multiply"></div>
+<div class="absolute bottom-[-20%] right-[-10%] w-[600px] h-[600px] rounded-full bg-tertiary opacity-5 mix-blend-multiply"></div>
+</div>
+<!-- SideNavBar (Shared Component) -->
+<nav class="bg-gray-100 dark:bg-gray-900 font-['Outfit'] uppercase tracking-wider text-sm h-screen w-64 border-r-2 border-gray-900 dark:border-gray-700 divide-y-2 divide-gray-900 dark:divide-gray-700 fixed left-0 top-0 flex flex-col z-40 hidden md:flex">
+<!-- Header -->
+<div class="p-6 flex flex-col gap-4 items-start border-b-2 border-gray-900 dark:border-gray-700">
+<div class="w-12 h-12 bg-white border-2 border-gray-900 dark:border-gray-700 overflow-hidden flex items-center justify-center">
+<img alt="Admin Organization Logo" class="w-full h-full object-cover grayscale" data-alt="A stark, high-contrast black and white corporate logo featuring an abstract geometric lettermark. The image is rendered with harsh lighting and deep shadows, emphasizing the sharp angles of the shape. The aesthetic is extremely minimalist and brutalist, fitting a robust admin dashboard interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAFHx2kGW2tePChMIt4qkCyNGy3UanNomQ0TAjkcpXpTKW1zvWKM-ghPl5HxLWX6EkPIWIDree87XljEmcnAYEVmgXpMi3stzz0BTPH9kUtSGVjZ4ZepdSbhWdajGZVvp_AZWKKj1TipU7q1LMKVqVAzx05tE3RfaZqFixAUer_gFqfBFW0Q4jeGfDAJ1Di0HYoxdaniVb3X8kxg-wKZtKwFhu4XRlNxpHEXbNLThpsXYTgPFswFFz34R0pCDzr2zLfVPhqAxAkvdNf"/>
+</div>
+<div>
+<h1 class="font-black text-gray-900 dark:text-white text-xl leading-tight">Admin Portal</h1>
+<p class="text-gray-600 dark:text-gray-400 text-xs mt-1">Management Mode</p>
+</div>
+<button class="mt-2 w-full bg-primary text-white border-2 border-gray-900 dark:border-white font-label-bold py-3 px-4 flex items-center justify-center gap-2 hover:translate-x-1 transition-transform duration-200 active:scale-95">
+<span class="material-symbols-outlined">add</span>
+                New Event
+            </button>
+</div>
+<!-- Main Navigation -->
+<div class="flex-1 overflow-y-auto py-4">
+<a class="text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-800 m-2 p-3 flex items-center gap-3 border-2 border-transparent transition-colors" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+                Overview
+            </a>
+<!-- Active Tab -->
+<a class="bg-blue-600 text-white border-2 border-gray-900 dark:border-white m-2 p-3 flex items-center gap-3" href="#">
+<span class="material-symbols-outlined icon-fill">confirmation_number</span>
+                Events
+            </a>
+<a class="text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-800 m-2 p-3 flex items-center gap-3 border-2 border-transparent transition-colors" href="#">
+<span class="material-symbols-outlined">grid_on</span>
+                Seat Maps
+            </a>
+<a class="text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-800 m-2 p-3 flex items-center gap-3 border-2 border-transparent transition-colors" href="#">
+<span class="material-symbols-outlined">receipt_long</span>
+                Orders
+            </a>
+<a class="text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-800 m-2 p-3 flex items-center gap-3 border-2 border-transparent transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+                Settings
+            </a>
+</div>
+<!-- Footer Navigation -->
+<div class="p-4 border-t-2 border-gray-900 dark:border-gray-700">
+<a class="text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-800 m-2 p-3 flex items-center gap-3 border-2 border-transparent transition-colors" href="#">
+<span class="material-symbols-outlined">help</span>
+                Support
+            </a>
+<a class="text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-800 m-2 p-3 flex items-center gap-3 border-2 border-transparent transition-colors text-error" href="#">
+<span class="material-symbols-outlined">logout</span>
+                Log Out
+            </a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 ml-0 md:ml-64 h-full overflow-y-auto bg-background">
+<div class="max-w-[1280px] mx-auto p-section-padding space-y-margin">
+<!-- Page Header -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b-4 border-on-surface pb-6">
+<div>
+<h2 class="font-h1 text-h1 text-on-surface">Events</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant mt-2">Manage all active and upcoming ticketed experiences.</p>
+</div>
+<button class="bg-primary text-on-primary border-4 border-on-surface font-label-bold text-label-bold py-4 px-8 uppercase hover:scale-105 hover:bg-primary-container transition-all duration-200 flex items-center gap-2">
+<span class="material-symbols-outlined icon-fill">add_circle</span>
+                    New Event
+                </button>
+</div>
+<!-- Toolbar: Search & Filters -->
+<div class="flex flex-col lg:flex-row gap-gutter justify-between items-center bg-surface-container-low p-6 border-2 border-on-surface">
+<!-- Search -->
+<div class="relative w-full lg:w-96">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full bg-surface-container-lowest border-2 border-on-surface py-3 pl-12 pr-4 font-body-md text-body-md text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:border-4 focus:border-primary transition-all rounded-none" placeholder="Search events by name or venue..." type="text"/>
+</div>
+<!-- Filters -->
+<div class="flex flex-wrap gap-2 w-full lg:w-auto">
+<button class="bg-primary text-on-primary border-2 border-on-surface font-label-bold text-label-bold py-2 px-4 uppercase hover:scale-105 transition-transform">All</button>
+<button class="bg-surface-container-lowest text-on-surface border-2 border-on-surface font-label-bold text-label-bold py-2 px-4 uppercase hover:bg-surface-dim transition-colors">Draft</button>
+<button class="bg-surface-container-lowest text-on-surface border-2 border-on-surface font-label-bold text-label-bold py-2 px-4 uppercase hover:bg-surface-dim transition-colors">Published</button>
+<button class="bg-surface-container-lowest text-on-surface border-2 border-on-surface font-label-bold text-label-bold py-2 px-4 uppercase hover:bg-surface-dim transition-colors">Selling</button>
+<button class="bg-surface-container-lowest text-on-surface border-2 border-on-surface font-label-bold text-label-bold py-2 px-4 uppercase hover:bg-surface-dim transition-colors">Closed</button>
+</div>
+</div>
+<!-- Event List (Table-like structural layout) -->
+<div class="bg-surface-container-lowest border-2 border-on-surface flex flex-col">
+<!-- Table Header -->
+<div class="bg-surface-variant border-b-2 border-on-surface hidden md:grid grid-cols-12 gap-4 p-4 font-label-bold text-label-bold text-on-surface uppercase tracking-widest">
+<div class="col-span-5">Event Details</div>
+<div class="col-span-3">Venue / Date</div>
+<div class="col-span-2">Status</div>
+<div class="col-span-2 text-center">Actions</div>
+</div>
+<!-- List Items -->
+<div class="divide-y-2 divide-on-surface">
+<!-- Item 1 -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-4 p-4 hover:bg-surface-container-low transition-colors items-center group">
+<div class="col-span-1 md:col-span-5 flex items-center gap-4">
+<div class="w-16 h-16 border-2 border-on-surface bg-surface-dim shrink-0 flex items-center justify-center overflow-hidden">
+<img alt="Event Thumbnail" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all" data-alt="A high-contrast black and white photograph of a concert stage with intense spotlights piercing through dark smoke. The aesthetic is gritty, raw, and energetic, fitting a heavy print-inspired digital design system." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCY2Luh2VUi--88Uxcd9YQWQpFWgRU1kEiC2VINwbf_Ehp8MGTrjpsnjiQFKZh3C07txm6V7J5pmQCzqz1_B_hM4GTcrAR8PlpiQrVsv-gxNM1ujwxVOJz3k6S4_cIIoDgdkrPBjl8Li-pNLlOF5IZ0gHar6vNielg-Pm70W-VzPo8DUqMvnQJZSlS0Qvc4bItGqnPiDCzjNuvdiQNHxLBQ5s2OJGyB4qAHR08Sd9jZ1vJaUkpmATz_604F4yRv57kxCTrx0dugN2aK"/>
+</div>
+<div>
+<h3 class="font-h3 text-h3 text-on-surface line-clamp-1">Neon Nights Festival</h3>
+<p class="font-body-md text-body-md text-on-surface-variant truncate">ID: TR-8849-N</p>
+</div>
+</div>
+<div class="col-span-1 md:col-span-3">
+<p class="font-label-bold text-label-bold text-on-surface uppercase">The Grand Arena</p>
+<p class="font-body-md text-body-md text-on-surface-variant">Oct 24, 2024 \ 8:00 PM</p>
+</div>
+<div class="col-span-1 md:col-span-2">
+<span class="inline-block bg-secondary-container text-on-secondary-container border-2 border-on-surface font-label-bold text-label-bold py-1 px-3 rounded-full uppercase">Selling</span>
+</div>
+<div class="col-span-1 md:col-span-2 flex items-center justify-start md:justify-center gap-2">
+<button aria-label="Edit" class="p-2 border-2 border-transparent hover:border-on-surface hover:bg-surface-variant transition-all text-on-surface">
+<span class="material-symbols-outlined">edit</span>
+</button>
+<button aria-label="Delete" class="p-2 border-2 border-transparent hover:border-error hover:bg-error-container transition-all text-error">
+<span class="material-symbols-outlined">delete</span>
+</button>
+</div>
+</div>
+<!-- Item 2 -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-4 p-4 hover:bg-surface-container-low transition-colors items-center group">
+<div class="col-span-1 md:col-span-5 flex items-center gap-4">
+<div class="w-16 h-16 border-2 border-on-surface bg-surface-dim shrink-0 flex items-center justify-center overflow-hidden">
+<img alt="Event Thumbnail" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all" data-alt="A stark black and white overhead shot of a large conference hall setup, with geometric rows of seating and harsh overhead lighting. The composition is highly structured and minimal, reflecting an organized, high-velocity corporate aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD7H3ZmDjUdB5TsQ5I5sxJ4xOYXDXGGDHTK2krIkJ0r43qmAtRRnEJ6_jA6wG7p8_Rrz_QooMFznFnbuo_kzRLnK9NMNVTy4wo2nW3R7Nm6vOJ155IcqbGqxuxb-8Q3qyvC-XFTxCZC2eYbwOfTVeQCsjI631lHeqNxfBzhjnwEr4tkkfetK3eAbU-PqXhE26XijAozN-WCpmk8F5CiPkE_3tmxFY9ToDKgybOiHWkWjzZCD34DXKbarsneRvyeILMxLNZ6Ef4ix4uv"/>
+</div>
+<div>
+<h3 class="font-h3 text-h3 text-on-surface line-clamp-1">Tech Summit 2024</h3>
+<p class="font-body-md text-body-md text-on-surface-variant truncate">ID: TR-9921-T</p>
+</div>
+</div>
+<div class="col-span-1 md:col-span-3">
+<p class="font-label-bold text-label-bold text-on-surface uppercase">Convention Center</p>
+<p class="font-body-md text-body-md text-on-surface-variant">Nov 12, 2024 \ 9:00 AM</p>
+</div>
+<div class="col-span-1 md:col-span-2">
+<span class="inline-block bg-surface-variant text-on-surface border-2 border-on-surface font-label-bold text-label-bold py-1 px-3 rounded-full uppercase">Draft</span>
+</div>
+<div class="col-span-1 md:col-span-2 flex items-center justify-start md:justify-center gap-2">
+<button aria-label="Edit" class="p-2 border-2 border-transparent hover:border-on-surface hover:bg-surface-variant transition-all text-on-surface">
+<span class="material-symbols-outlined">edit</span>
+</button>
+<button aria-label="Delete" class="p-2 border-2 border-transparent hover:border-error hover:bg-error-container transition-all text-error">
+<span class="material-symbols-outlined">delete</span>
+</button>
+</div>
+</div>
+<!-- Item 3 -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-4 p-4 hover:bg-surface-container-low transition-colors items-center group bg-surface-container-low/50">
+<div class="col-span-1 md:col-span-5 flex items-center gap-4">
+<div class="w-16 h-16 border-2 border-on-surface bg-surface-dim shrink-0 flex items-center justify-center overflow-hidden relative">
+<div class="absolute inset-0 bg-on-surface/80 flex items-center justify-center z-10">
+<span class="material-symbols-outlined text-surface-container-lowest">lock</span>
+</div>
+<img alt="Event Thumbnail" class="w-full h-full object-cover grayscale" data-alt="A moody, high-contrast monochrome image of an empty theater stage. Deep shadows obscure the edges, while a single sharp spotlight hits the center floor. The look is dramatic, closed off, and highly graphic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoRh3lrKH_2xiSgf4RFk_Mt9clsxXHE0wFDRFKHZe9-59ePiwuZrdJzFtK0HKtzTE9R61FUPAB5uSNuPZRamPVlvuh_xm0kJForCtcZw2XgwfYanKBfjEIDVLyfDH1ID0Jp5NsooM_hqLWWqNE5ZXbTgya6NYeLafak8pwKO3W-fH0MPndbHTh2fP98LiMMMpucaUv7Z0J0Io-FJ6wSghPAqB63cFG3lFGRV-9c1Q9rK35w9Klvr2JCVxOL1fOdi400-T_4F59PAHy"/>
+</div>
+<div>
+<h3 class="font-h3 text-h3 text-on-surface line-clamp-1 opacity-70">Symphony Gala</h3>
+<p class="font-body-md text-body-md text-on-surface-variant truncate">ID: TR-4432-S</p>
+</div>
+</div>
+<div class="col-span-1 md:col-span-3 opacity-70">
+<p class="font-label-bold text-label-bold text-on-surface uppercase">City Music Hall</p>
+<p class="font-body-md text-body-md text-on-surface-variant">Sep 01, 2024 \ 7:30 PM</p>
+</div>
+<div class="col-span-1 md:col-span-2">
+<span class="inline-block bg-error-container text-on-error-container border-2 border-on-surface font-label-bold text-label-bold py-1 px-3 rounded-full uppercase">Closed</span>
+</div>
+<div class="col-span-1 md:col-span-2 flex items-center justify-start md:justify-center gap-2">
+<button aria-label="Edit" class="p-2 border-2 border-transparent hover:border-on-surface hover:bg-surface-variant transition-all text-on-surface">
+<span class="material-symbols-outlined">edit</span>
+</button>
+<button aria-label="Delete" class="p-2 border-2 border-transparent hover:border-error hover:bg-error-container transition-all text-error">
+<span class="material-symbols-outlined">delete</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Pagination (Minimal Print Style) -->
+<div class="flex justify-between items-center pt-8 border-t-2 border-on-surface mt-margin">
+<button class="flex items-center gap-2 text-on-surface font-label-bold text-label-bold uppercase hover:bg-surface-variant py-2 px-4 border-2 border-transparent hover:border-on-surface transition-all">
+<span class="material-symbols-outlined">arrow_back</span>
+                    Prev
+                </button>
+<div class="font-body-md text-body-md text-on-surface-variant">
+                    Page <span class="font-bold text-on-surface">1</span> of 12
+                </div>
+<button class="flex items-center gap-2 text-on-surface font-label-bold text-label-bold uppercase hover:bg-surface-variant py-2 px-4 border-2 border-transparent hover:border-on-surface transition-all">
+                    Next
+                    <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+</div>
+</main>
+</body></html>

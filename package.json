@@ -1,0 +1,25 @@
+{
+  "name": "ticket-rush",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Ticket Rush monorepo for the React, Express, and MongoDB ticket booking system.",
+  "type": "module",
+  "workspaces": [
+    "apps/api",
+    "apps/web",
+    "packages/shared"
+  ],
+  "scripts": {
+    "dev": "node scripts/dev.js",
+    "dev:api": "npm run dev --workspace @ticket-rush/api",
+    "dev:web": "npm run dev --workspace @ticket-rush/web",
+    "install:all": "npm install",
+    "build": "npm run build:web",
+    "build:web": "npm run build --workspace @ticket-rush/web",
+    "lint": "npm run lint --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

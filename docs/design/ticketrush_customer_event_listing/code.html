@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TicketRush - Discover Events</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+                  "on-tertiary-fixed": "#2a1700",
+                  "on-secondary-container": "#00714d",
+                  "on-secondary-fixed": "#002113",
+                  "secondary-fixed": "#6ffbbe",
+                  "surface-bright": "#f9f9ff",
+                  "tertiary-fixed-dim": "#ffb95f",
+                  "on-background": "#141b2b",
+                  "surface-container-highest": "#dce2f7",
+                  "surface-container-high": "#e1e8fd",
+                  "surface-variant": "#dce2f7",
+                  "on-error-container": "#93000a",
+                  "surface-dim": "#d3daef",
+                  "tertiary": "#825100",
+                  "outline-variant": "#c2c6d6",
+                  "error-container": "#ffdad6",
+                  "tertiary-fixed": "#ffddb8",
+                  "surface-container": "#e9edff",
+                  "background": "#f9f9ff",
+                  "primary-container": "#2170e4",
+                  "on-tertiary": "#ffffff",
+                  "error": "#ba1a1a",
+                  "on-surface-variant": "#424754",
+                  "secondary": "#006c49",
+                  "surface": "#f9f9ff",
+                  "secondary-container": "#6cf8bb",
+                  "on-primary": "#ffffff",
+                  "inverse-surface": "#293040",
+                  "on-error": "#ffffff",
+                  "surface-tint": "#005ac2",
+                  "primary-fixed": "#d8e2ff",
+                  "primary": "#0058be",
+                  "on-primary-fixed": "#001a42",
+                  "on-primary-fixed-variant": "#004395",
+                  "on-secondary": "#ffffff",
+                  "primary-fixed-dim": "#adc6ff",
+                  "secondary-fixed-dim": "#4edea3",
+                  "surface-container-lowest": "#ffffff",
+                  "inverse-on-surface": "#edf0ff",
+                  "surface-container-low": "#f1f3ff",
+                  "tertiary-container": "#a36700",
+                  "on-tertiary-fixed-variant": "#653e00",
+                  "on-tertiary-container": "#fffbff",
+                  "inverse-primary": "#adc6ff",
+                  "on-primary-container": "#fefcff",
+                  "outline": "#727785",
+                  "on-secondary-fixed-variant": "#005236",
+                  "on-surface": "#141b2b"
+          },
+          "borderRadius": {
+                  "DEFAULT": "0.125rem",
+                  "lg": "0.25rem",
+                  "xl": "0.5rem",
+                  "full": "0.75rem"
+          },
+          "spacing": {
+                  "container-max": "1280px",
+                  "margin": "32px",
+                  "unit": "8px",
+                  "gutter": "24px",
+                  "section-padding": "64px"
+          },
+          "fontFamily": {
+                  "h1": [
+                          "Outfit"
+                  ],
+                  "body-lg": [
+                          "Outfit"
+                  ],
+                  "label-bold": [
+                          "Outfit"
+                  ],
+                  "h2": [
+                          "Outfit"
+                  ],
+                  "h3": [
+                          "Outfit"
+                  ],
+                  "body-md": [
+                          "Outfit"
+                  ]
+          },
+          "fontSize": {
+                  "h1": [
+                          "48px",
+                          {
+                                  "lineHeight": "1.1",
+                                  "letterSpacing": "-0.04em",
+                                  "fontWeight": "800"
+                          }
+                  ],
+                  "body-lg": [
+                          "18px",
+                          {
+                                  "lineHeight": "1.6",
+                                  "letterSpacing": "0",
+                                  "fontWeight": "400"
+                          }
+                  ],
+                  "label-bold": [
+                          "14px",
+                          {
+                                  "lineHeight": "1",
+                                  "letterSpacing": "0.05em",
+                                  "fontWeight": "700"
+                          }
+                  ],
+                  "h2": [
+                          "36px",
+                          {
+                                  "lineHeight": "1.2",
+                                  "letterSpacing": "-0.03em",
+                                  "fontWeight": "800"
+                          }
+                  ],
+                  "h3": [
+                          "24px",
+                          {
+                                  "lineHeight": "1.2",
+                                  "letterSpacing": "-0.02em",
+                                  "fontWeight": "700"
+                          }
+                  ],
+                  "body-md": [
+                          "16px",
+                          {
+                                  "lineHeight": "1.5",
+                                  "letterSpacing": "0",
+                                  "fontWeight": "400"
+                          }
+                  ]
+          }
+  },
+      },
+    }
+  </script>
+<style>
+    body {
+      font-family: 'Outfit', sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex flex-col">
+<!-- TopNavBar -->
+<header class="bg-white dark:bg-gray-950 font-['Outfit'] font-bold tracking-tight docked full-width top-0 border-b-2 border-gray-900 dark:border-gray-700">
+<div class="flex justify-between items-center w-full px-8 h-20 max-w-[1280px] mx-auto">
+<!-- Brand -->
+<a class="text-2xl font-black italic tracking-tighter text-gray-900 dark:text-white" href="#">TicketRush</a>
+<!-- Search (Desktop) -->
+<!-- Navigation Links -->
+<nav class="hidden md:flex items-center gap-6">
+<a class="text-blue-600 dark:text-blue-400 border-b-4 border-blue-600 dark:border-blue-400 pb-1 hover:scale-105 hover:bg-gray-50 dark:hover:bg-gray-900 transition-all duration-200" href="#">Discover</a>
+<a class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:scale-105 hover:bg-gray-50 dark:hover:bg-gray-900 transition-all duration-200" href="#">My Tickets</a>
+<a class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:scale-105 hover:bg-gray-50 dark:hover:bg-gray-900 transition-all duration-200" href="#">Dashboard</a>
+</nav>
+<!-- Trailing Actions -->
+<div class="flex items-center gap-4">
+<button class="text-gray-600 hover:text-gray-900 transition-colors p-2 hover:bg-gray-50 rounded-DEFAULT"><span class="material-symbols-outlined" data-icon="notifications">notifications</span></button>
+<button class="text-gray-600 hover:text-gray-900 transition-colors p-2 hover:bg-gray-50 rounded-DEFAULT"><span class="material-symbols-outlined" data-icon="admin_panel_settings">admin_panel_settings</span></button>
+<img alt="User profile" class="w-10 h-10 border-2 border-gray-900 object-cover" data-alt="A brightly lit, closely cropped portrait photo of a smiling person. They are facing the camera directly against a clean, plain white background. The image has a crisp, professional, high-contrast flat-design aesthetic, characteristic of a modern digital user interface avatar." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDUY7Q4YDZnn12VGyx_kC9b72hSPZ7stQIlVTJ-JL0_ekO4zfV5fRdKmLBLV6pYpt5H0PwXdyazv6nQvQy2kyHq0Kt_xH6s5HBkt72ecHAZzu9H6Pe2U9TEsIZG8A3Yg4cffUNF1RhksKXdIuzGCuDNfx5JxN-byGTnUBVpU7npwtXyES0VVt4PZESmzUvSIdZt5PhCWJ0S6ZhBMBIuMSS5uQsqPAlArctC-8ef8sAud3c4vGwECJ3xh65Jf3yBlsSof7xjboAP8kwF"/>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="flex-grow">
+<!-- Hero Section -->
+<section class="relative bg-primary overflow-hidden border-b-2 border-gray-900">
+<!-- Decorative Geometry -->
+<div class="absolute -top-24 -right-24 w-96 h-96 bg-white opacity-10 rounded-full"></div>
+<div class="absolute -bottom-32 -left-32 w-80 h-80 bg-white opacity-10 rounded-full"></div>
+<div class="absolute top-1/2 left-1/4 w-48 h-48 bg-white opacity-10 rounded-full -translate-y-1/2"></div>
+<div class="max-w-[1280px] mx-auto px-8 py-24 relative z-10 flex flex-col items-center text-center"><h1 class="font-h1 text-h1 text-on-primary mb-6 max-w-3xl">Find Your Next Experience</h1><p class="font-body-lg text-body-lg text-on-primary mb-10 max-w-2xl opacity-90">Browse thousands of events across concerts, sports, theater, and more. Instant digital delivery guaranteed.</p><div class="w-full max-w-3xl relative mb-4"><span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline" data-icon="search">search</span><input class="w-full pl-12 pr-4 py-6 bg-white border-4 border-gray-900 focus:outline-none focus:border-tertiary-fixed-dim transition-all font-h3 text-h3 text-on-surface placeholder-outline shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]" placeholder="Search events, artists, venues..." type="text"/></div><div class="flex flex-wrap justify-center gap-4 mt-8"><button class="bg-white text-on-surface font-label-bold px-6 py-2 border-2 border-gray-900 hover:bg-surface-variant transition-colors">Trending Now</button><button class="bg-white text-on-surface font-label-bold px-6 py-2 border-2 border-gray-900 hover:bg-surface-variant transition-colors">This Weekend</button><button class="bg-white text-on-surface font-label-bold px-6 py-2 border-2 border-gray-900 hover:bg-surface-variant transition-colors">Near Me</button></div></div>
+</section>
+<!-- Categories Section -->
+<section class="bg-surface py-16 border-b-2 border-gray-900">
+<div class="max-w-[1280px] mx-auto px-8">
+<h2 class="font-h2 text-h2 text-on-surface mb-10">Categories</h2>
+<div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
+<!-- Category Item -->
+<a class="group flex flex-col items-center gap-4 hover:scale-105 transition-transform duration-200" href="#">
+<div class="w-24 h-24 bg-primary-container border-2 border-gray-900 flex items-center justify-center group-hover:bg-primary transition-colors">
+<span class="material-symbols-outlined text-4xl text-on-primary-container group-hover:text-on-primary" data-icon="music_note">music_note</span>
+</div>
+<span class="font-label-bold text-label-bold text-on-surface uppercase tracking-wider">Concerts</span>
+</a>
+<!-- Category Item -->
+<a class="group flex flex-col items-center gap-4 hover:scale-105 transition-transform duration-200" href="#">
+<div class="w-24 h-24 bg-secondary-container border-2 border-gray-900 flex items-center justify-center group-hover:bg-secondary transition-colors">
+<span class="material-symbols-outlined text-4xl text-on-secondary-container group-hover:text-on-secondary" data-icon="sports_basketball">sports_basketball</span>
+</div>
+<span class="font-label-bold text-label-bold text-on-surface uppercase tracking-wider">Sports</span>
+</a>
+<!-- Category Item -->
+<a class="group flex flex-col items-center gap-4 hover:scale-105 transition-transform duration-200" href="#">
+<div class="w-24 h-24 bg-tertiary-fixed-dim border-2 border-gray-900 flex items-center justify-center group-hover:bg-tertiary transition-colors">
+<span class="material-symbols-outlined text-4xl text-on-tertiary-fixed group-hover:text-on-tertiary" data-icon="theater_comedy">theater_comedy</span>
+</div>
+<span class="font-label-bold text-label-bold text-on-surface uppercase tracking-wider">Arts &amp; Theater</span>
+</a>
+<!-- Category Item -->
+<a class="group flex flex-col items-center gap-4 hover:scale-105 transition-transform duration-200" href="#">
+<div class="w-24 h-24 bg-error-container border-2 border-gray-900 flex items-center justify-center group-hover:bg-error transition-colors">
+<span class="material-symbols-outlined text-4xl text-on-error-container group-hover:text-on-error" data-icon="festival">festival</span>
+</div>
+<span class="font-label-bold text-label-bold text-on-surface uppercase tracking-wider">Festivals</span>
+</a>
+<!-- Category Item -->
+<a class="group flex flex-col items-center gap-4 hover:scale-105 transition-transform duration-200" href="#">
+<div class="w-24 h-24 bg-surface-variant border-2 border-gray-900 flex items-center justify-center group-hover:bg-outline transition-colors">
+<span class="material-symbols-outlined text-4xl text-on-surface-variant group-hover:text-white" data-icon="family_restroom">family_restroom</span>
+</div>
+<span class="font-label-bold text-label-bold text-on-surface uppercase tracking-wider">Family</span>
+</a>
+<!-- Category Item -->
+<a class="group flex flex-col items-center gap-4 hover:scale-105 transition-transform duration-200" href="#">
+<div class="w-24 h-24 bg-inverse-surface border-2 border-gray-900 flex items-center justify-center group-hover:bg-on-surface transition-colors">
+<span class="material-symbols-outlined text-4xl text-inverse-on-surface" data-icon="more_horiz">more_horiz</span>
+</div>
+<span class="font-label-bold text-label-bold text-on-surface uppercase tracking-wider">More</span>
+</a>
+</div>
+</div>
+</section>
+<!-- Featured Events Section -->
+<section class="bg-surface-bright py-20 border-b-2 border-gray-900">
+<div class="max-w-[1280px] mx-auto px-8">
+<div class="flex justify-between items-end mb-10 border-b-4 border-gray-900 pb-4"><div class="flex flex-col md:flex-row md:items-center justify-between w-full gap-6"><h2 class="font-h2 text-h2 text-on-surface">All Events</h2><div class="flex items-center gap-4"><div class="flex items-center gap-2 font-label-bold text-on-surface-variant uppercase"><span class="material-symbols-outlined">filter_list</span> Filter By:</div><select class="bg-white border-2 border-gray-900 font-label-bold px-4 py-2 focus:ring-0 focus:border-primary"><option>Relevance</option><option>Date: Soonest</option><option>Price: Low to High</option><option>Popularity</option></select></div></div></div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+<!-- Event Card 1 -->
+<article class="bg-white border-2 border-gray-900 hover:scale-[1.02] transition-transform duration-200 group flex flex-col">
+<!-- Image Area -->
+<div class="h-48 border-b-2 border-gray-900 relative bg-surface-container overflow-hidden">
+<img alt="Concert crowd" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A wide, high-contrast shot of a massive concert crowd illuminated by bright, primary blue stage lights. The scene is energetic and high-velocity, capturing silhouettes of cheering fans with their hands raised. The aesthetic is modern, bold, and strictly flat-design styled with intense color blocking and no subtle gradients." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCwt9go48sHIv-IMkVaGqz_8cZ1bvf0B-s4VXuPlnyQhZxMg8x17kUYRW22YUfNu9EfinpkSnbgoNH3M5ehgWUF2jX3qLTW9W6F_S2zFDIyEydMVgjoNxxlFofy1sRGgG04Eoh1q5RiCHOUjAZfsEuDHhQCw3OiEQGZPDBlV7lMUNoqNLKQIe3ZfSgeBaNv2cOekgOA6R5pUL52Ta_WWXQiJqUwcQIFKQ6rFIRZc16iDlhTKDR7CMWdvLbvKBB0HQinq8hICabGoVtL"/>
+<div class="absolute top-4 left-4 bg-tertiary-fixed-dim text-on-tertiary-fixed border-2 border-gray-900 px-3 py-1 font-label-bold text-label-bold uppercase">Trending</div>
+</div>
+<!-- Content Area -->
+<div class="p-6 flex-grow flex flex-col">
+<div class="bg-surface-variant text-on-surface-variant font-label-bold text-label-bold uppercase px-2 py-1 inline-block border-2 border-gray-900 self-start mb-4">Aug 15</div>
+<h3 class="font-h3 text-h3 text-on-surface mb-2 line-clamp-2">Neon Nights Electronic Festival 2024</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-lg" data-icon="location_on">location_on</span> Metro Stadium, NY
+                        </p>
+<div class="mt-auto flex justify-between items-center pt-6 border-t-2 border-gray-900">
+<span class="font-h3 text-h3 text-primary">From $85</span>
+<button class="bg-white text-on-surface border-2 border-gray-900 font-label-bold text-label-bold px-4 py-2 hover:bg-primary hover:text-on-primary hover:border-primary transition-colors">Get Tickets</button>
+</div>
+</div>
+</article>
+<!-- Event Card 2 -->
+<article class="bg-white border-2 border-gray-900 hover:scale-[1.02] transition-transform duration-200 group flex flex-col">
+<!-- Image Area -->
+<div class="h-48 border-b-2 border-gray-900 relative bg-surface-container overflow-hidden">
+<img alt="Stadium sports" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A vibrant, high-contrast photograph of an empty, brightly lit modern sports stadium from a wide angle. The green of the field is intensely saturated, contrasting sharply with solid blocks of white seating. The lighting is flat and uniform, emphasizing strong geometric lines and avoiding deep shadows or cinematic depth, fitting a bold digital aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCB8YOHHeCNIgIjv0XBFDV26Mq07f3dWpQcwo2vxWdd9kj6k7t5G7KsgMoh38lHuDWWSYXLDrMh12IXG89j5jnKbD-YiJyGGFLUMG-8J5T1hgUT1j5IxGyxQtuMNvqRl28dX4jvKE3Btt0Satf-dTeNYoQ5iszmS42k-TsY9H1cMbb_tGHwD2SWrpFZrnurlcQC_YR_vpFHCKZUeJMnQx4giCQmQJnGmFrYxmZucZYkOc-hiYEOFMdm1NDwn66-npDqSLfkTkWP996-"/>
+<div class="absolute top-4 left-4 bg-secondary-container text-on-secondary-container border-2 border-gray-900 px-3 py-1 font-label-bold text-label-bold uppercase">Selling Fast</div>
+</div>
+<!-- Content Area -->
+<div class="p-6 flex-grow flex flex-col">
+<div class="bg-surface-variant text-on-surface-variant font-label-bold text-label-bold uppercase px-2 py-1 inline-block border-2 border-gray-900 self-start mb-4">Sep 02</div>
+<h3 class="font-h3 text-h3 text-on-surface mb-2 line-clamp-2">Championship Finals: East vs West</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-lg" data-icon="location_on">location_on</span> Grand Arena, CA
+                        </p>
+<div class="mt-auto flex justify-between items-center pt-6 border-t-2 border-gray-900">
+<span class="font-h3 text-h3 text-primary">From $120</span>
+<button class="bg-white text-on-surface border-2 border-gray-900 font-label-bold text-label-bold px-4 py-2 hover:bg-primary hover:text-on-primary hover:border-primary transition-colors">Get Tickets</button>
+</div>
+</div>
+</article>
+<!-- Event Card 3 -->
+<article class="bg-white border-2 border-gray-900 hover:scale-[1.02] transition-transform duration-200 group flex flex-col">
+<!-- Image Area -->
+<div class="h-48 border-b-2 border-gray-900 relative bg-surface-container overflow-hidden">
+<img alt="Theater stage" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A striking, symmetrical shot of a classic theater stage with solid, vibrant red curtains drawn back to reveal a stark, brilliantly lit white stage floor. The image relies on high-contrast color blocking, removing subtle gradients in favor of sharp geometry and bold, flat colors to create a modern, energetic theatrical scene." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAgFrA8fFy2Ox8QvWgyMpSF8OxCZ_UBWCtb2yYXKTxP_ew1NsKOcNxEYu9hGS7-F1052Pm2WM6ahKJvSXZP0xGHDrAxh0YSPBVX9LSh1TdUEHKkFxOZ7_pMrMOg6vu-WVm06yYMOBqJJQVs5qjdckix4cXJlHEKvmZNl2Wt2FZxY6q9FzgI-d7dlMnyU8eXRMrlZwZwRW1Cw-TJV3JO-PMr9CSZMnkjqYdPa_248yba3c8T5Mur6_Lf4po6cWCIDxH9AHAGUSSU728G"/>
+<div class="absolute top-4 left-4 bg-error-container text-on-error-container border-2 border-gray-900 px-3 py-1 font-label-bold text-label-bold uppercase">Last Chance</div>
+</div>
+<!-- Content Area -->
+<div class="p-6 flex-grow flex flex-col">
+<div class="bg-surface-variant text-on-surface-variant font-label-bold text-label-bold uppercase px-2 py-1 inline-block border-2 border-gray-900 self-start mb-4">Aug 20</div>
+<h3 class="font-h3 text-h3 text-on-surface mb-2 line-clamp-2">The Phantom's Return - Opening Night</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-lg" data-icon="location_on">location_on</span> Royal Theater, IL
+                        </p>
+<div class="mt-auto flex justify-between items-center pt-6 border-t-2 border-gray-900">
+<span class="font-h3 text-h3 text-primary">From $65</span>
+<button class="bg-white text-on-surface border-2 border-gray-900 font-label-bold text-label-bold px-4 py-2 hover:bg-primary hover:text-on-primary hover:border-primary transition-colors">Get Tickets</button>
+</div>
+</div>
+</article>
+<article class="bg-white border-2 border-gray-900 hover:scale-[1.02] transition-transform duration-200 group flex flex-col"><div class="h-48 border-b-2 border-gray-900 relative bg-surface-container overflow-hidden"><img alt="Comedy club" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBUx1lKHhKQjhcTPEAwJ8OSPzPqpTz3fj2uztEfUzLfoX3yzFMmXPGGr-jkpRQ-ZgIy9l7kmAiz3dl-rWc_fJcmXyoXVaiOmDFYsNoe3skgjLWMANB64HkQqDRl9m89WP463VB_qQ6LP-_2U8fXKi-Qbg3FB7DjJGCdo2_9Q7EgLOTuFrsLwLT86HFEHG-NSsgvEi2mhqUMyEnPWnVNYozg90PT9_qv5-lki-jPIOCcPKCJJk9AkS9bWZmsBTeUkuk-qbi1qT1xVIgd"/><div class="absolute top-4 left-4 bg-tertiary-fixed-dim text-on-tertiary-fixed border-2 border-gray-900 px-3 py-1 font-label-bold text-label-bold uppercase">New</div></div><div class="p-6 flex-grow flex flex-col"><div class="bg-surface-variant text-on-surface-variant font-label-bold text-label-bold uppercase px-2 py-1 inline-block border-2 border-gray-900 self-start mb-4">Sep 12</div><h3 class="font-h3 text-h3 text-on-surface mb-2 line-clamp-2">Late Night Laughs: All-Star Standup</h3><p class="font-body-md text-body-md text-on-surface-variant mb-6 flex items-center gap-2"><span class="material-symbols-outlined text-lg" data-icon="location_on">location_on</span> Comedy Cellar, NY</p><div class="mt-auto flex justify-between items-center pt-6 border-t-2 border-gray-900"><span class="font-h3 text-h3 text-primary">From $45</span><button class="bg-white text-on-surface border-2 border-gray-900 font-label-bold text-label-bold px-4 py-2 hover:bg-primary hover:text-on-primary hover:border-primary transition-colors">Get Tickets</button></div></div></article><article class="bg-white border-2 border-gray-900 hover:scale-[1.02] transition-transform duration-200 group flex flex-col"><div class="h-48 border-b-2 border-gray-900 relative bg-surface-container overflow-hidden"><img alt="Basketball game" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCVzEAXXS2bu1WfOeJyXsReJk1vsZQk3W27gFeCdFr0AKCWC4gD2Iacse9IM0VpY6r8WgI2xacACYKMA4KMNdfkYjxo-w44bU62B4_UCmZMwTu9XAArravTMmS2QVMe4gbpjPr_fW7KnimMjUfojgqFw1AdQp7Fruid4qwPYv-SGsFG-Y_sNEVLv4YAAg37HaC8_Sy_FK4MUoxtRhxksx-jlfG5CViFvOosaHLRq7r-5BiegZxatoRSotneX3nAmVjtKPRaZAOzIeMn"/><div class="absolute top-4 left-4 bg-secondary-container text-on-secondary-container border-2 border-gray-900 px-3 py-1 font-label-bold text-label-bold uppercase">Limited</div></div><div class="p-6 flex-grow flex flex-col"><div class="bg-surface-variant text-on-surface-variant font-label-bold text-label-bold uppercase px-2 py-1 inline-block border-2 border-gray-900 self-start mb-4">Oct 05</div><h3 class="font-h3 text-h3 text-on-surface mb-2 line-clamp-2">City Rivalry: Courtside Experience</h3><p class="font-body-md text-body-md text-on-surface-variant mb-6 flex items-center gap-2"><span class="material-symbols-outlined text-lg" data-icon="location_on">location_on</span> Madison Square Garden, NY</p><div class="mt-auto flex justify-between items-center pt-6 border-t-2 border-gray-900"><span class="font-h3 text-h3 text-primary">From $150</span><button class="bg-white text-on-surface border-2 border-gray-900 font-label-bold text-label-bold px-4 py-2 hover:bg-primary hover:text-on-primary hover:border-primary transition-colors">Get Tickets</button></div></div></article><article class="bg-white border-2 border-gray-900 hover:scale-[1.02] transition-transform duration-200 group flex flex-col"><div class="h-48 border-b-2 border-gray-900 relative bg-surface-container overflow-hidden"><img alt="Art gallery" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB6bFmm91FeiJLim8Caz12tksdjJUH_DHbUl4cNv36fTJfREcMc8NsvrFf3XxKB4AljSfb4V11F9X5FUt0FPKvPTA8ayTLeIDXo9FhV-FDAQa3RN_rZdwy7F1EJLhdjPruRnImExgboOnW2mtotCIdfktuIbeGyt3L_V-QtXRwSCT8DdSvPu2q9swrknKOWP1FQS_T0flq4BZzooHGE13eRGSTi5K1CwEh6QOndUTgxI-2ku2_8nusUl24_hh2JIpTW2StiLg42Orwp"/><div class="absolute top-4 left-4 bg-primary-container text-on-primary-container border-2 border-gray-900 px-3 py-1 font-label-bold text-label-bold uppercase">Featured</div></div><div class="p-6 flex-grow flex flex-col"><div class="bg-surface-variant text-on-surface-variant font-label-bold text-label-bold uppercase px-2 py-1 inline-block border-2 border-gray-900 self-start mb-4">Ongoing</div><h3 class="font-h3 text-h3 text-on-surface mb-2 line-clamp-2">Modern Masters: Interactive Exhibit</h3><p class="font-body-md text-body-md text-on-surface-variant mb-6 flex items-center gap-2"><span class="material-symbols-outlined text-lg" data-icon="location_on">location_on</span> Museum of Art, IL</p><div class="mt-auto flex justify-between items-center pt-6 border-t-2 border-gray-900"><span class="font-h3 text-h3 text-primary">Free</span><button class="bg-white text-on-surface border-2 border-gray-900 font-label-bold text-label-bold px-4 py-2 hover:bg-primary hover:text-on-primary hover:border-primary transition-colors">Reserve</button></div></div></article></div><div class="mt-16 flex justify-center"><button class="bg-white text-on-surface font-h3 text-h3 px-12 py-4 border-4 border-gray-900 hover:bg-gray-100 transition-colors shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] flex items-center gap-2">Load More Events <span class="material-symbols-outlined">expand_more</span></button></div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-gray-900 dark:bg-black font-['Outfit'] text-xs font-medium uppercase w-full border-t-4 border-blue-600 border-t border-gray-800">
+<div class="w-full py-12 px-8 flex flex-col md:flex-row justify-between items-center gap-6 max-w-[1280px] mx-auto">
+<div class="text-xl font-black text-white">TicketRush</div>
+<nav class="flex flex-wrap justify-center gap-6">
+<a class="text-gray-400 hover:text-white hover:text-blue-400 transition-colors scale-102" href="#">About</a>
+<a class="text-gray-400 hover:text-white hover:text-blue-400 transition-colors scale-102" href="#">Terms of Service</a>
+<a class="text-gray-400 hover:text-white hover:text-blue-400 transition-colors scale-102" href="#">Privacy Policy</a>
+<a class="text-gray-400 hover:text-white hover:text-blue-400 transition-colors scale-102" href="#">Contact Support</a>
+</nav>
+<div class="text-gray-400 text-center md:text-right">
+            © 2024 TicketRush. Digital-Print Velocity.
+        </div>
+</div>
+</footer>
+</body></html>

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+
+<html lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                "on-error-container": "#93000a",
+                "secondary-fixed": "#6ffbbe",
+                "on-surface": "#141b2b",
+                "surface-container-low": "#f1f3ff",
+                "surface-container-highest": "#dce2f7",
+                "outline-variant": "#c2c6d6",
+                "inverse-on-surface": "#edf0ff",
+                "error-container": "#ffdad6",
+                "on-tertiary": "#ffffff",
+                "tertiary-fixed-dim": "#ffb95f",
+                "surface-container-high": "#e1e8fd",
+                "on-secondary-fixed-variant": "#005236",
+                "inverse-primary": "#adc6ff",
+                "on-background": "#141b2b",
+                "primary-fixed-dim": "#adc6ff",
+                "outline": "#727785",
+                "primary-fixed": "#d8e2ff",
+                "surface-container": "#e9edff",
+                "on-error": "#ffffff",
+                "on-primary-fixed": "#001a42",
+                "secondary-fixed-dim": "#4edea3",
+                "on-secondary-fixed": "#002113",
+                "secondary-container": "#6cf8bb",
+                "secondary": "#006c49",
+                "on-tertiary-fixed": "#2a1700",
+                "on-tertiary-container": "#fffbff",
+                "on-primary-container": "#fefcff",
+                "surface-container-lowest": "#ffffff",
+                "inverse-surface": "#293040",
+                "tertiary": "#825100",
+                "on-tertiary-fixed-variant": "#653e00",
+                "surface-bright": "#f9f9ff",
+                "tertiary-fixed": "#ffddb8",
+                "surface-dim": "#d3daef",
+                "on-surface-variant": "#424754",
+                "on-secondary": "#ffffff",
+                "tertiary-container": "#a36700",
+                "surface-tint": "#005ac2",
+                "surface-variant": "#dce2f7",
+                "surface": "#f9f9ff",
+                "background": "#f9f9ff",
+                "primary": "#0058be",
+                "on-secondary-container": "#00714d",
+                "on-primary-fixed-variant": "#004395",
+                "error": "#ba1a1a",
+                "primary-container": "#2170e4",
+                "on-primary": "#ffffff"
+            },
+            "borderRadius": {
+                "DEFAULT": "0.125rem",
+                "lg": "0.25rem",
+                "xl": "0.5rem",
+                "full": "0.75rem"
+            },
+            "spacing": {
+                "section-padding": "64px",
+                "margin": "32px",
+                "unit": "8px",
+                "gutter": "24px",
+                "container-max": "1280px"
+            },
+            "fontFamily": {
+                "body-lg": ["Outfit"],
+                "h3": ["Outfit"],
+                "body-md": ["Outfit"],
+                "label-bold": ["Outfit"],
+                "h1": ["Outfit"],
+                "h2": ["Outfit"]
+            },
+            "fontSize": {
+                "body-lg": ["18px", {"lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400"}],
+                "h3": ["24px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                "body-md": ["16px", {"lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400"}],
+                "label-bold": ["14px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                "h1": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.04em", "fontWeight": "800"}],
+                "h2": ["36px", {"lineHeight": "1.2", "letterSpacing": "-0.03em", "fontWeight": "800"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        body {
+            font-family: 'Outfit', sans-serif;
+            overflow-x: hidden;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4 relative">
+<!-- Bold Editorial Background: Color Blocking -->
+<div class="fixed inset-0 -z-10 bg-white overflow-hidden">
+<div class="absolute top-0 left-0 w-[45vw] h-full bg-blue-50"></div>
+<div class="absolute -top-32 -right-32 w-[600px] h-[600px] rounded-full bg-amber-50"></div>
+<div class="absolute bottom-[-10%] right-[10%] w-[400px] h-[400px] rounded-full bg-blue-50 opacity-70"></div>
+</div>
+<!-- Registration Container -->
+<main class="w-full max-w-[500px] z-10 my-12">
+<!-- Logo Section -->
+<div class="text-center mb-10">
+<h1 class="text-h1 font-h1 text-on-background tracking-tighter italic font-black">
+                TicketRush
+            </h1>
+<p class="font-label-bold text-label-bold text-outline uppercase tracking-widest mt-2">Digital-Print Velocity</p>
+</div>
+<!-- Form Card -->
+<div class="bg-white p-12">
+<header class="mb-10">
+<h2 class="text-4xl md:text-5xl font-black tracking-tighter text-on-surface">Đăng ký tài khoản</h2>
+<p class="text-body-md font-body-md text-on-surface-variant mt-2">Yêu cầu hệ thống: CUS-01</p>
+</header>
+<form action="#" class="space-y-8">
+<!-- Full Name -->
+<div class="space-y-3">
+<label class="font-label-bold text-label-bold text-on-surface uppercase" for="full-name">Họ và tên</label>
+<div class="relative">
+<input class="w-full h-14 px-4 bg-gray-100 border-none outline-none focus:ring-2 focus:ring-blue-600 font-body-md transition-shadow" id="full-name" placeholder="Nguyễn Văn A" required="" type="text"/>
+</div>
+</div>
+<!-- Email -->
+<div class="space-y-3">
+<label class="font-label-bold text-label-bold text-on-surface uppercase" for="email">Email</label>
+<div class="relative">
+<input class="w-full h-14 px-4 bg-gray-100 border-none outline-none focus:ring-2 focus:ring-blue-600 font-body-md transition-shadow" id="email" placeholder="example@ticketrush.vn" required="" type="email"/>
+</div>
+</div>
+<!-- Password -->
+<div class="space-y-3">
+<label class="font-label-bold text-label-bold text-on-surface uppercase" for="password">Mật khẩu</label>
+<div class="relative">
+<input class="w-full h-14 px-4 bg-gray-100 border-none outline-none focus:ring-2 focus:ring-blue-600 font-body-md transition-shadow" id="password" placeholder="••••••••" required="" type="password"/>
+</div>
+</div>
+<!-- Birth Date -->
+<div class="space-y-3">
+<label class="font-label-bold text-label-bold text-on-surface uppercase" for="dob">Ngày sinh</label>
+<div class="relative">
+<input class="w-full h-14 px-4 bg-gray-100 border-none outline-none focus:ring-2 focus:ring-blue-600 font-body-md appearance-none transition-shadow" id="dob" required="" type="date"/>
+<span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant" data-icon="calendar_today">calendar_today</span>
+</div>
+</div>
+<!-- Gender -->
+<div class="space-y-3">
+<span class="font-label-bold text-label-bold text-on-surface uppercase block mb-2">Giới tính</span>
+<div class="flex gap-4">
+<label class="flex-1 cursor-pointer group">
+<input checked="" class="hidden peer" name="gender" type="radio" value="male"/>
+<div class="flex items-center justify-center h-14 border-2 border-gray-300 peer-checked:border-on-surface peer-checked:bg-on-surface peer-checked:text-white font-bold transition-all uppercase text-sm tracking-wider">
+                                Nam
+                            </div>
+</label>
+<label class="flex-1 cursor-pointer group">
+<input class="hidden peer" name="gender" type="radio" value="female"/>
+<div class="flex items-center justify-center h-14 border-2 border-gray-300 peer-checked:border-on-surface peer-checked:bg-on-surface peer-checked:text-white font-bold transition-all uppercase text-sm tracking-wider">
+                                Nữ
+                            </div>
+</label>
+<label class="flex-1 cursor-pointer group">
+<input class="hidden peer" name="gender" type="radio" value="other"/>
+<div class="flex items-center justify-center h-14 border-2 border-gray-300 peer-checked:border-on-surface peer-checked:bg-on-surface peer-checked:text-white font-bold transition-all uppercase text-sm tracking-wider">
+                                Khác
+                            </div>
+</label>
+</div>
+</div>
+<!-- Register Button -->
+<button class="w-full bg-blue-600 text-white h-16 font-h3 text-h3 uppercase tracking-tight hover:bg-blue-700 active:scale-[0.98] transition-all mt-6" type="submit">
+                    Đăng ký ngay
+                </button>
+</form>
+<!-- Footer Link -->
+<footer class="mt-10 text-center">
+<p class="text-body-md font-body-md text-on-surface-variant">
+                    Đã có tài khoản? 
+                    <a class="text-blue-600 font-label-bold uppercase hover:text-blue-800 transition-colors ml-1" href="#">Quay lại Đăng nhập</a>
+</p>
+</footer>
+</div>
+<!-- Compliance Branding -->
+<div class="mt-8 flex justify-between items-center opacity-60">
+<span class="text-xs font-label-bold uppercase">CUS-01 COMPLIANT</span>
+<div class="flex gap-4">
+<span class="material-symbols-outlined text-sm" data-icon="security">security</span>
+<span class="material-symbols-outlined text-sm" data-icon="verified_user">verified_user</span>
+</div>
+</div>
+</main>
+<!-- Footer Component -->
+<footer class="fixed bottom-0 w-full py-6 px-8 flex justify-center bg-transparent hidden md:flex pointer-events-none">
+<p class="font-['Outfit'] text-xs font-bold uppercase tracking-widest text-gray-900 opacity-50">© 2024 TicketRush. Digital-Print Velocity.</p>
+</footer>
+</body></html>

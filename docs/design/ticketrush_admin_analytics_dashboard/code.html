@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TicketRush Admin Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;700;800;900&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+                "surface-container-highest": "#dce2f7",
+                "on-tertiary-container": "#fffbff",
+                "on-surface-variant": "#424754",
+                "on-tertiary-fixed": "#2a1700",
+                "tertiary-fixed": "#ffddb8",
+                "primary": "#0058be",
+                "tertiary": "#825100",
+                "on-secondary-fixed-variant": "#005236",
+                "on-tertiary": "#ffffff",
+                "inverse-on-surface": "#edf0ff",
+                "primary-container": "#2170e4",
+                "on-surface": "#141b2b",
+                "inverse-primary": "#adc6ff",
+                "surface-dim": "#d3daef",
+                "on-primary-fixed-variant": "#004395",
+                "on-primary-fixed": "#001a42",
+                "secondary-fixed": "#6ffbbe",
+                "surface-bright": "#f9f9ff",
+                "on-error": "#ffffff",
+                "secondary": "#006c49",
+                "outline": "#727785",
+                "surface-container-low": "#f1f3ff",
+                "surface-container-high": "#e1e8fd",
+                "surface-container": "#e9edff",
+                "on-error-container": "#93000a",
+                "secondary-fixed-dim": "#4edea3",
+                "on-secondary-container": "#00714d",
+                "surface-variant": "#dce2f7",
+                "error": "#ba1a1a",
+                "secondary-container": "#6cf8bb",
+                "surface-container-lowest": "#ffffff",
+                "on-secondary-fixed": "#002113",
+                "on-background": "#141b2b",
+                "on-tertiary-fixed-variant": "#653e00",
+                "error-container": "#ffdad6",
+                "primary-fixed-dim": "#adc6ff",
+                "on-secondary": "#ffffff",
+                "surface-tint": "#005ac2",
+                "background": "#f9f9ff",
+                "tertiary-container": "#a36700",
+                "on-primary": "#ffffff",
+                "outline-variant": "#c2c6d6",
+                "primary-fixed": "#d8e2ff",
+                "tertiary-fixed-dim": "#ffb95f",
+                "surface": "#f9f9ff",
+                "inverse-surface": "#293040",
+                "on-primary-container": "#fefcff"
+        },
+        "borderRadius": {
+                "DEFAULT": "0.125rem",
+                "lg": "0.25rem",
+                "xl": "0.5rem",
+                "full": "0.75rem"
+        },
+        "spacing": {
+                "gutter": "24px",
+                "container-max": "1280px",
+                "section-padding": "64px",
+                "margin": "32px",
+                "unit": "8px"
+        },
+        "fontFamily": {
+                "body-lg": [
+                        "Outfit"
+                ],
+                "label-bold": [
+                        "Outfit"
+                ],
+                "h3": [
+                        "Outfit"
+                ],
+                "h2": [
+                        "Outfit"
+                ],
+                "h1": [
+                        "Outfit"
+                ],
+                "body-md": [
+                        "Outfit"
+                ]
+        },
+        "fontSize": {
+                "body-lg": [
+                        "18px",
+                        {
+                                "lineHeight": "1.6",
+                                "letterSpacing": "0",
+                                "fontWeight": "400"
+                        }
+                ],
+                "label-bold": [
+                        "14px",
+                        {
+                                "lineHeight": "1",
+                                "letterSpacing": "0.05em",
+                                "fontWeight": "700"
+                        }
+                ],
+                "h3": [
+                        "24px",
+                        {
+                                "lineHeight": "1.2",
+                                "letterSpacing": "-0.02em",
+                                "fontWeight": "700"
+                        }
+                ],
+                "h2": [
+                        "36px",
+                        {
+                                "lineHeight": "1.2",
+                                "letterSpacing": "-0.03em",
+                                "fontWeight": "800"
+                        }
+                ],
+                "h1": [
+                        "48px",
+                        {
+                                "lineHeight": "1.1",
+                                "letterSpacing": "-0.04em",
+                                "fontWeight": "800"
+                        }
+                ],
+                "body-md": [
+                        "16px",
+                        {
+                                "lineHeight": "1.5",
+                                "letterSpacing": "0",
+                                "fontWeight": "400"
+                        }
+                ]
+        }
+},
+    },
+  }
+</script>
+<style>
+  body {
+    background-color: #f9f9ff;
+    color: #141b2b;
+  }
+  .bg-pattern-circles {
+    background-image: radial-gradient(circle at 100% 0%, rgba(0, 88, 190, 0.05) 0%, rgba(0, 88, 190, 0.05) 20%, transparent 20%),
+                      radial-gradient(circle at 0% 100%, rgba(163, 103, 0, 0.05) 0%, rgba(163, 103, 0, 0.05) 30%, transparent 30%);
+  }
+</style>
+</head>
+<body class="bg-background text-on-background font-body-md bg-pattern-circles overflow-x-hidden min-h-screen flex">
+<!-- SideNavBar -->
+<aside class="bg-gray-100 dark:bg-gray-900 h-screen w-64 border-r-2 border-gray-900 dark:border-gray-700 fixed left-0 top-0 h-full flex flex-col z-40 divide-y-2 divide-gray-900 dark:divide-gray-700">
+<!-- Header -->
+<div class="p-6 flex flex-col items-center">
+<img alt="Admin Organization Logo" class="w-16 h-16 rounded-full border-2 border-gray-900 mb-4 object-cover" data-alt="A clean, minimalist abstract geometric logo consisting of interlocking bold blue and black shapes on a stark white background. The design is modern, sharp, and highly graphic, reflecting a digital-print aesthetic suitable for a high-tech ticketing platform. Bright studio lighting evenly illuminates the smooth vector-like forms." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDos_2WeBwlE490K8z-fmEKnzLdrxVwHoESRCbiUgvXKrpqjANOfhuL-XOlmT34csB3Wi8bquj49hrvvkf0BhV5rmgm9uDV9uLmklpsQDa7ySwDYP2-0UScA52Sa40Vlh3nABnpCUIsAYH8LKKbFrR_lpDMXrTACMlEwE_O1k5hQe3Fb6qWGgZC9Es1KtRaEYE8j1iTdvGXCY5RefH86UesncL13lKs9djZttf3FxDJR_WmKxWlJaAZIQr1QdCrSBSt385wDo8kkXMD"/>
+<h2 class="font-black text-gray-900 dark:text-white font-h3 text-h3 text-center">Admin Portal</h2>
+<p class="font-['Outfit'] uppercase tracking-wider text-sm text-gray-600 mt-1">Management Mode</p>
+</div>
+<!-- Main Nav -->
+<nav class="flex-1 py-4 overflow-y-auto">
+<ul class="space-y-2">
+<li>
+<a class="bg-blue-600 text-white border-2 border-gray-900 dark:border-white m-2 flex items-center px-4 py-3 font-label-bold text-label-bold active:scale-95 hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="dashboard">dashboard</span>
+            Overview
+          </a>
+</li>
+<li>
+<a class="text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-800 m-2 flex items-center px-4 py-3 font-label-bold text-label-bold active:scale-95 hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="confirmation_number">confirmation_number</span>
+            Events
+          </a>
+</li>
+<li>
+<a class="text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-800 m-2 flex items-center px-4 py-3 font-label-bold text-label-bold active:scale-95 hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="grid_on">grid_on</span>
+            Seat Maps
+          </a>
+</li>
+<li>
+<a class="text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-800 m-2 flex items-center px-4 py-3 font-label-bold text-label-bold active:scale-95 hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="receipt_long">receipt_long</span>
+            Orders
+          </a>
+</li>
+<li>
+<a class="text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-800 m-2 flex items-center px-4 py-3 font-label-bold text-label-bold active:scale-95 hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="settings">settings</span>
+            Settings
+          </a>
+</li>
+</ul>
+</nav>
+<!-- CTA -->
+<div class="p-4">
+<button class="w-full bg-primary text-on-primary border-2 border-gray-900 py-3 font-label-bold text-label-bold hover:bg-surface-tint hover:scale-105 active:scale-95 transition-all duration-200 uppercase tracking-wider flex justify-center items-center">
+<span class="material-symbols-outlined mr-2 text-lg">add</span>
+        New Event
+      </button>
+</div>
+<!-- Footer Nav -->
+<div class="p-4">
+<ul class="space-y-2">
+<li>
+<a class="text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-800 m-2 flex items-center px-4 py-2 font-label-bold text-label-bold active:scale-95 hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined mr-3 text-lg" data-icon="help">help</span>
+            Support
+          </a>
+</li>
+<li>
+<a class="text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-800 m-2 flex items-center px-4 py-2 font-label-bold text-label-bold active:scale-95 hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined mr-3 text-lg" data-icon="logout">logout</span>
+            Log Out
+          </a>
+</li>
+</ul>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-64 flex-1 flex flex-col min-h-screen">
+<!-- Top Header -->
+<header class="bg-surface-bright border-b-2 border-gray-900 h-20 flex items-center px-8 justify-between sticky top-0 z-30">
+<h1 class="font-h2 text-h2 text-on-background m-0 p-0 leading-none">Dashboard Overview</h1>
+<div class="flex items-center gap-6">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline-variant">search</span>
+<input class="pl-10 pr-4 py-2 border-2 border-gray-900 bg-white focus:border-4 focus:border-primary focus:outline-none font-body-md text-body-md text-on-background placeholder-on-background/50 transition-all w-64" placeholder="Search events, orders..." type="text"/>
+</div>
+<button class="bg-white border-2 border-gray-900 p-2 hover:bg-gray-100 hover:scale-105 active:scale-95 transition-all">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+</div>
+</header>
+<!-- Dashboard Canvas -->
+<div class="p-8 max-w-container-max mx-auto w-full flex-1 flex flex-col gap-8">
+<!-- Top Stats Row -->
+<section class="grid grid-cols-1 md:grid-cols-4 gap-6">
+<!-- Stat: Revenue -->
+<div class="bg-primary border-4 border-gray-900 p-6 flex flex-col justify-between h-48 hover:-translate-y-1 transition-transform duration-200">
+<div class="flex justify-between items-start">
+<h3 class="font-label-bold text-label-bold text-white uppercase tracking-wider">Total Revenue</h3>
+<span class="material-symbols-outlined text-white text-3xl opacity-80" data-icon="payments">payments</span>
+</div>
+<div class="mt-4">
+<p class="font-h1 text-h1 text-white leading-none">$142,590</p>
+<p class="font-body-md text-body-md text-white/80 mt-2 font-medium">+12.5% from last month</p>
+</div>
+</div>
+<!-- Stat: Tickets -->
+<div class="bg-secondary border-4 border-gray-900 p-6 flex flex-col justify-between h-48 hover:-translate-y-1 transition-transform duration-200">
+<div class="flex justify-between items-start">
+<h3 class="font-label-bold text-label-bold text-white uppercase tracking-wider">Total Tickets Sold</h3>
+<span class="material-symbols-outlined text-white text-3xl opacity-80" data-icon="confirmation_number">confirmation_number</span>
+</div>
+<div class="mt-4">
+<p class="font-h1 text-h1 text-white leading-none">8,402</p>
+<p class="font-body-md text-body-md text-white/80 mt-2 font-medium">+8.2% from last month</p>
+</div>
+</div>
+<!-- Stat: Live Users -->
+<div class="bg-tertiary border-4 border-gray-900 p-6 flex flex-col justify-between h-48 hover:-translate-y-1 transition-transform duration-200">
+<div class="flex justify-between items-start">
+<h3 class="font-label-bold text-label-bold text-white uppercase tracking-wider">Live Users</h3>
+<span class="material-symbols-outlined text-white text-3xl opacity-80" data-icon="group">group</span>
+</div>
+<div class="mt-4">
+<div class="flex items-baseline gap-3">
+<p class="font-h1 text-h1 text-white leading-none">1,245</p>
+<span class="inline-block w-3 h-3 bg-secondary-fixed rounded-full animate-pulse"></span>
+</div>
+<p class="font-body-md text-body-md text-white/80 mt-2 font-medium">Currently browsing site</p>
+</div>
+</div>
+<!-- Stat: Virtual Queue -->
+<div class="bg-gray-100 border-4 border-gray-900 p-6 flex flex-col justify-between h-48 hover:-translate-y-1 transition-transform duration-200 relative">
+<div class="absolute -right-2 -bottom-2 w-full h-full bg-gray-900 -z-10"></div>
+<div class="flex justify-between items-start">
+<h3 class="font-label-bold text-label-bold text-gray-900 uppercase tracking-wider">Virtual Queue</h3>
+<span class="material-symbols-outlined text-gray-900 text-3xl opacity-80" data-icon="queue">queue</span>
+</div>
+<div class="mt-4">
+<p class="font-h1 text-h1 text-gray-900 leading-none">3,850</p>
+<p class="font-body-md text-body-md text-error mt-2 font-medium flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">warning</span>
+    High Volume
+  </p>
+</div>
+</div>
+</section>
+<!-- Middle Row: Charts & Demos -->
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1">
+<!-- Sales Trend (Line Chart representation) -->
+<div class="bg-white border-2 border-gray-900 flex flex-col relative lg:col-span-8 h-full">
+<div class="absolute -right-2 -bottom-2 w-full h-full bg-gray-100 border-2 border-gray-900 -z-10"></div>
+<div class="bg-gray-100 border-b-2 border-gray-900 px-6 py-4 flex justify-between items-center">
+<h2 class="font-h3 text-h3 text-on-background">Sales Volume Over Time</h2>
+<select class="border-2 border-gray-900 bg-white px-3 py-1 font-label-bold text-label-bold focus:outline-none focus:border-primary">
+<option>Last 7 Days</option>
+<option>Last 30 Days</option>
+<option>This Year</option>
+</select>
+</div>
+<div class="p-6 flex-1 flex flex-col items-center justify-center">
+<div class="w-full h-[400px] border-l-2 border-b-2 border-gray-900 relative">
+<!-- SVG Line Chart Mockup for Flat Style -->
+<svg class="absolute bottom-0 left-0" height="100%" preserveaspectratio="none" viewbox="0 0 100 100" width="100%">
+<polyline fill="none" points="0,90 10,85 20,60 30,70 40,30 50,45 60,20 70,35 80,10 90,25 100,5" stroke="#0058be" stroke-linejoin="miter" stroke-width="3"></polyline>
+<polygon fill="#0058be" fill-opacity="0.1" points="0,100 0,90 10,85 20,60 30,70 40,30 50,45 60,20 70,35 80,10 90,25 100,5 100,100"></polygon>
+<!-- Data Points -->
+<circle cx="20" cy="60" fill="#141b2b" r="1.5"></circle>
+<circle cx="40" cy="30" fill="#141b2b" r="1.5"></circle>
+<circle cx="60" cy="20" fill="#141b2b" r="1.5"></circle>
+<circle cx="80" cy="10" fill="#141b2b" r="1.5"></circle>
+<circle cx="100" cy="5" fill="#141b2b" r="1.5"></circle>
+</svg>
+<!-- Y-axis labels -->
+<div class="absolute -left-10 bottom-0 font-label-bold text-xs">0</div>
+<div class="absolute -left-12 top-1/2 -translate-y-1/2 font-label-bold text-xs">5k</div>
+<div class="absolute -left-14 top-0 font-label-bold text-xs">10k</div>
+<!-- X-axis labels -->
+<div class="absolute left-0 -bottom-6 font-label-bold text-xs">Mon</div>
+<div class="absolute left-1/4 -translate-x-1/2 -bottom-6 font-label-bold text-xs">Wed</div>
+<div class="absolute left-1/2 -translate-x-1/2 -bottom-6 font-label-bold text-xs">Fri</div>
+<div class="absolute left-3/4 -translate-x-1/2 -bottom-6 font-label-bold text-xs">Sun</div>
+</div>
+</div>
+</div>
+<!-- Demographics (Age & Gender) -->
+<div class="bg-white border-2 border-gray-900 flex flex-col relative lg:col-span-4 h-full">
+<div class="absolute -right-2 -bottom-2 w-full h-full bg-gray-100 border-2 border-gray-900 -z-10"></div>
+<div class="bg-gray-100 border-b-2 border-gray-900 px-6 py-4">
+<h2 class="font-h3 text-h3 text-on-background">Demographics</h2>
+</div>
+<div class="p-6 flex-1 flex flex-col justify-center gap-10">
+<!-- Age Breakdown -->
+<div>
+<h4 class="font-label-bold text-label-bold uppercase text-outline-variant mb-4">Age</h4>
+<div class="space-y-4">
+<div class="flex items-center justify-between">
+<span class="font-body-md text-body-md w-12">18-24</span>
+<div class="flex-1 mx-4 h-5 bg-gray-200 border-2 border-gray-900 relative">
+<div class="absolute top-0 left-0 h-full bg-primary" style="width: 45%;"></div>
+</div>
+<span class="font-label-bold text-label-bold w-10 text-right">45%</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="font-body-md text-body-md w-12">25-34</span>
+<div class="flex-1 mx-4 h-5 bg-gray-200 border-2 border-gray-900 relative">
+<div class="absolute top-0 left-0 h-full bg-tertiary" style="width: 30%;"></div>
+</div>
+<span class="font-label-bold text-label-bold w-10 text-right">30%</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="font-body-md text-body-md w-12">35+</span>
+<div class="flex-1 mx-4 h-5 bg-gray-200 border-2 border-gray-900 relative">
+<div class="absolute top-0 left-0 h-full bg-secondary" style="width: 25%;"></div>
+</div>
+<span class="font-label-bold text-label-bold w-10 text-right">25%</span>
+</div>
+</div>
+</div>
+<!-- Gender Breakdown (Stacked Bar) -->
+<div>
+<h4 class="font-label-bold text-label-bold uppercase text-outline-variant mb-4">Gender</h4>
+<div class="w-full h-10 flex border-2 border-gray-900">
+<div class="bg-primary h-full flex items-center justify-center font-label-bold text-white text-xs" style="width: 55%;">55% M</div>
+<div class="bg-secondary h-full border-l-2 border-gray-900 flex items-center justify-center font-label-bold text-white text-xs" style="width: 40%;">40% F</div>
+<div class="bg-tertiary-fixed h-full border-l-2 border-gray-900 flex items-center justify-center font-label-bold text-gray-900 text-xs" style="width: 5%;">5% NB</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</div>
+</main>
+</body></html>

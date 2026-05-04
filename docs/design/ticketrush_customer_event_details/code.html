@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TicketRush - Cyberpunk Symphony</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-container-lowest": "#ffffff",
+                      "tertiary-fixed": "#ffddb8",
+                      "tertiary-fixed-dim": "#ffb95f",
+                      "inverse-primary": "#adc6ff",
+                      "inverse-on-surface": "#edf0ff",
+                      "on-background": "#141b2b",
+                      "tertiary": "#825100",
+                      "surface-container-high": "#e1e8fd",
+                      "on-error": "#ffffff",
+                      "secondary": "#006c49",
+                      "primary-fixed": "#d8e2ff",
+                      "surface-tint": "#005ac2",
+                      "primary-container": "#2170e4",
+                      "on-primary-fixed": "#001a42",
+                      "primary-fixed-dim": "#adc6ff",
+                      "tertiary-container": "#a36700",
+                      "background": "#f9f9ff",
+                      "surface-bright": "#f9f9ff",
+                      "inverse-surface": "#293040",
+                      "on-tertiary-fixed": "#2a1700",
+                      "secondary-fixed": "#6ffbbe",
+                      "on-tertiary": "#ffffff",
+                      "on-secondary-fixed-variant": "#005236",
+                      "on-primary-fixed-variant": "#004395",
+                      "outline": "#727785",
+                      "secondary-container": "#6cf8bb",
+                      "on-tertiary-container": "#fffbff",
+                      "on-surface-variant": "#424754",
+                      "error": "#ba1a1a",
+                      "surface": "#f9f9ff",
+                      "error-container": "#ffdad6",
+                      "surface-container-highest": "#dce2f7",
+                      "primary": "#0058be",
+                      "on-error-container": "#93000a",
+                      "surface-variant": "#dce2f7",
+                      "surface-container": "#e9edff",
+                      "outline-variant": "#c2c6d6",
+                      "surface-container-low": "#f1f3ff",
+                      "on-primary-container": "#fefcff",
+                      "on-surface": "#141b2b",
+                      "on-tertiary-fixed-variant": "#653e00",
+                      "on-primary": "#ffffff",
+                      "on-secondary": "#ffffff",
+                      "surface-dim": "#d3daef",
+                      "on-secondary-fixed": "#002113",
+                      "secondary-fixed-dim": "#4edea3",
+                      "on-secondary-container": "#00714d"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "unit": "8px",
+                      "container-max": "1280px",
+                      "gutter": "24px",
+                      "margin": "32px",
+                      "section-padding": "64px"
+              },
+              "fontFamily": {
+                      "body-md": [
+                              "Outfit"
+                      ],
+                      "h1": [
+                              "Outfit"
+                      ],
+                      "label-bold": [
+                              "Outfit"
+                      ],
+                      "body-lg": [
+                              "Outfit"
+                      ],
+                      "h3": [
+                              "Outfit"
+                      ],
+                      "h2": [
+                              "Outfit"
+                      ]
+              },
+              "fontSize": {
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "1.5",
+                                      "letterSpacing": "0",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "h1": [
+                              "48px",
+                              {
+                                      "lineHeight": "1.1",
+                                      "letterSpacing": "-0.04em",
+                                      "fontWeight": "800"
+                              }
+                      ],
+                      "label-bold": [
+                              "14px",
+                              {
+                                      "lineHeight": "1",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "1.6",
+                                      "letterSpacing": "0",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "h3": [
+                              "24px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "h2": [
+                              "36px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "letterSpacing": "-0.03em",
+                                      "fontWeight": "800"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+    </script>
+<style>
+        body { font-family: 'Outfit', sans-serif; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface min-h-screen flex flex-col relative overflow-x-hidden font-body-md text-body-md">
+<!-- Decorative Background Shapes -->
+<div class="fixed inset-0 pointer-events-none z-[-1] overflow-hidden">
+<div class="absolute top-[-10%] right-[-5%] w-[600px] h-[600px] rounded-full bg-primary/5"></div>
+<div class="absolute bottom-[20%] left-[-10%] w-[400px] h-[400px] rounded-full bg-secondary/5"></div>
+<div class="absolute top-[40%] right-[10%] w-[300px] h-[300px] bg-tertiary/5 rotate-45"></div>
+</div>
+<!-- TopNavBar -->
+<nav class="bg-surface-container-lowest text-primary flex justify-between items-center w-full px-8 h-20 max-w-[1280px] mx-auto docked full-width top-0 border-b-2 border-on-surface z-50">
+<div class="text-2xl font-black italic tracking-tighter text-on-surface">TicketRush</div>
+<div class="hidden md:flex gap-8 h-full items-center">
+<a class="text-on-surface border-b-4 border-primary pb-1 font-label-bold text-label-bold h-full flex items-center pt-1 uppercase" href="#">Discover</a>
+<a class="text-on-surface-variant hover:text-on-surface font-label-bold text-label-bold h-full flex items-center uppercase" href="#">My Tickets</a>
+<a class="text-on-surface-variant hover:text-on-surface font-label-bold text-label-bold h-full flex items-center uppercase" href="#">Dashboard</a>
+</div>
+<div class="flex items-center gap-4">
+<button class="hover:scale-105 transition-transform duration-200 p-2">
+<span class="material-symbols-outlined text-on-surface" data-icon="notifications">notifications</span>
+</button>
+<button class="hover:scale-105 transition-transform duration-200 p-2">
+<span class="material-symbols-outlined text-on-surface" data-icon="admin_panel_settings">admin_panel_settings</span>
+</button>
+<div class="w-10 h-10 border-2 border-on-surface rounded-full overflow-hidden bg-surface-variant ml-2">
+<img alt="User profile" data-alt="A brightly lit, high-contrast headshot of a young professional in a modern light-mode setting. The background is a stark, clean white with subtle blue accents. The lighting is flat and uniform, emphasizing clarity and raw utility typical of a digital-print aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBsqA1TwdJZVyhb3Lwa_DEQo0OxjAMLUxIX1G3b5d6cidUZfw017ZvT6xnvMZtN11-GmlEVk-tNEpH_eirDdDGypF1L8JC-QYDy5OX0eqoUvSIK9j-UcxNMx6SY4dwN25WVfuNlJ6rQkai88-wulcycW674ef1bP43Y_VIuSR9bPzfDtYiOeDwQagCRvFimskj09CvBpjoB1twxgcWd5tMlx0N6iqS8RgDAEGt5v8YAYlhvZvnp81ocX1ULMldFdmkXMkjlyHieP4U1"/>
+</div>
+</div>
+</nav>
+<!-- Main Content -->
+<main class="flex-grow w-full max-w-[1280px] mx-auto px-8 py-12 flex flex-col gap-16">
+<!-- Hero Section -->
+<section class="w-full relative bg-primary text-on-primary border-4 border-on-surface p-12 overflow-hidden flex flex-col md:flex-row items-end min-h-[500px]">
+<!-- Hero Image Overlay -->
+<div class="absolute inset-0 z-0">
+<img alt="Event Hero Image" class="w-full h-full object-cover opacity-30 mix-blend-multiply" data-alt="A sweeping, high-contrast wide shot of a massive symphony orchestra performing on a neon-lit stage. The scene is saturated with vibrant blues and electric emerald greens, starkly contrasted against deep, flat blacks. The lighting is intense and directional, creating a hyper-functional, high-velocity cyberpunk atmosphere." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBNuCslGy3aofvOYKIWAH3sBZzKtZTqQOUqXE6VF1IReamGHkwR24OlLrLtnDkga-PqRYawe-CE8V5mMgkinAmT8maKxxiFnAB6VtEfuKfgYSVhq9AiU3k-dcvV6WrreWVBByVI26BBufaEVZuP3l3IGZtBYt3EebJy6ZaKmwzL2ayKhXVaW5nUk1lkMYuD_HBmwxbRo03kQZFfTEbfq76F-njfS7akGSoR-W08P-ZeZEh3MwZAGllrsmk1MypPmeKcgKO_MUe0P2f_"/>
+</div>
+<div class="relative z-10 flex-grow">
+<h1 class="font-h1 text-h1 uppercase mb-6 text-on-primary max-w-4xl mix-blend-exclusion">Cyberpunk Symphony</h1>
+<div class="flex flex-wrap gap-4 font-label-bold text-label-bold uppercase">
+<div class="bg-on-surface text-surface-container-lowest px-4 py-2 border-2 border-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined" data-icon="calendar_month">calendar_month</span>
+                        October 24, 2024
+                    </div>
+<div class="bg-on-surface text-surface-container-lowest px-4 py-2 border-2 border-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined" data-icon="schedule">schedule</span>
+                        8:00 PM EST
+                    </div>
+<div class="bg-surface-container-lowest text-on-surface px-4 py-2 border-2 border-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined" data-icon="location_on">location_on</span>
+                        Neon Arena, Neo-Tokyo
+                    </div>
+</div>
+</div>
+</section>
+<!-- Bento Grid Layout for Details & Pricing -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+<!-- Left Column: Event Info & Map -->
+<div class="lg:col-span-7 flex flex-col gap-8">
+<!-- Event Description Card -->
+<article class="bg-surface-container-lowest border-2 border-on-surface relative">
+<!-- Layering effect -->
+<div class="absolute inset-0 bg-surface-variant transform translate-x-2 translate-y-2 z-[-1] border-2 border-on-surface"></div>
+<div class="bg-surface-container-low px-8 py-4 border-b-2 border-on-surface font-h3 text-h3 uppercase text-on-surface">
+                        Transmission Details
+                    </div>
+<div class="p-8 font-body-lg text-body-lg text-on-surface-variant flex flex-col gap-4">
+<p>Experience the visceral fusion of classical orchestration and high-voltage electronic synthesis. The Cyberpunk Symphony redefines the acoustic landscape, delivering a raw, unadulterated auditory assault.</p>
+<p>Stripped of all pretension, this performance focuses purely on the digital-print velocity of sound—sharp, fast, and immaculately precise. Prepare for a stark, high-contrast audiovisual environment.</p>
+</div>
+</article>
+<!-- Location / Map Placeholder -->
+<div class="bg-surface-container-lowest border-2 border-on-surface flex flex-col h-[300px]">
+<div class="bg-surface-container-low px-6 py-3 border-b-2 border-on-surface font-label-bold text-label-bold uppercase text-on-surface flex justify-between items-center">
+<span>Sector Location</span>
+<span class="material-symbols-outlined" data-icon="map">map</span>
+</div>
+<div class="flex-grow bg-surface-variant relative overflow-hidden flex items-center justify-center border-2 border-on-surface m-4">
+<!-- Abstract Geometric Map Representation -->
+<div class="absolute inset-0 opacity-20" style="background-image: radial-gradient(circle at 2px 2px, #141b2b 1px, transparent 0); background-size: 20px 20px;"></div>
+<div class="w-16 h-16 bg-primary border-4 border-on-surface rounded-full z-10 flex items-center justify-center animate-pulse">
+<span class="material-symbols-outlined text-on-primary" data-icon="my_location">my_location</span>
+</div>
+<div class="absolute w-64 h-64 border-2 border-primary rounded-full z-0 opacity-50"></div>
+<div class="absolute w-96 h-96 border-2 border-primary rounded-full z-0 opacity-20"></div>
+</div>
+</div>
+</div>
+<!-- Right Column: Pricing & Action -->
+<div class="lg:col-span-5 flex flex-col gap-8">
+<!-- Pricing Container -->
+<div class="bg-surface-container-lowest border-4 border-on-surface p-8 flex flex-col gap-6">
+<div class="flex flex-col gap-2 border-b-4 border-on-surface pb-6">
+<span class="font-label-bold text-label-bold uppercase text-on-surface-variant tracking-wider">Access Levels</span>
+<div class="font-h2 text-h2 text-on-surface">Starting at $85.00</div>
+</div>
+<!-- Ticket Tiers -->
+<div class="flex flex-col gap-4">
+<!-- VIP Tier -->
+<div class="border-2 border-on-surface p-4 flex justify-between items-center hover:bg-surface-container-low transition-colors group cursor-pointer">
+<div class="flex flex-col">
+<span class="font-h3 text-h3 uppercase text-secondary">VIP Protocol</span>
+<span class="font-body-md text-body-md text-on-surface-variant">Front row, exclusive lounge access</span>
+</div>
+<span class="font-h3 text-h3 text-on-surface group-hover:scale-105 transition-transform">$250</span>
+</div>
+<!-- Standard Tier -->
+<div class="border-2 border-on-surface p-4 flex justify-between items-center hover:bg-surface-container-low transition-colors group cursor-pointer bg-primary/5">
+<div class="flex flex-col">
+<span class="font-h3 text-h3 uppercase text-primary">Standard Array</span>
+<span class="font-body-md text-body-md text-on-surface-variant">Main floor, optimal acoustics</span>
+</div>
+<span class="font-h3 text-h3 text-on-surface group-hover:scale-105 transition-transform">$125</span>
+</div>
+<!-- Economy Tier -->
+<div class="border-2 border-on-surface p-4 flex justify-between items-center hover:bg-surface-container-low transition-colors group cursor-pointer">
+<div class="flex flex-col">
+<span class="font-h3 text-h3 uppercase text-on-surface">Economy Sector</span>
+<span class="font-body-md text-body-md text-on-surface-variant">Upper balcony seating</span>
+</div>
+<span class="font-h3 text-h3 text-on-surface group-hover:scale-105 transition-transform">$85</span>
+</div>
+</div>
+<!-- Main CTA -->
+<button class="w-full bg-secondary text-on-secondary font-h3 text-h3 uppercase py-6 border-4 border-on-surface hover:bg-on-secondary-fixed-variant hover:scale-105 active:scale-95 transition-all duration-200 mt-4 flex justify-center items-center gap-4">
+                        SELECT YOUR SEATS
+                        <span class="material-symbols-outlined" data-icon="arrow_forward" style="font-variation-settings: 'wght' 700;">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-on-surface text-secondary w-full py-12 px-8 flex flex-col md:flex-row justify-between items-center gap-6 border-t-4 border-primary mt-auto">
+<div class="text-xl font-black text-surface-container-lowest italic tracking-tighter">TicketRush</div>
+<div class="flex gap-6 font-['Outfit'] text-xs font-medium uppercase">
+<a class="text-surface-variant hover:text-surface-container-lowest hover:text-secondary transition-colors" href="#">About</a>
+<a class="text-surface-variant hover:text-surface-container-lowest hover:text-secondary transition-colors" href="#">Terms of Service</a>
+<a class="text-surface-variant hover:text-surface-container-lowest hover:text-secondary transition-colors" href="#">Privacy Policy</a>
+<a class="text-surface-variant hover:text-surface-container-lowest hover:text-secondary transition-colors" href="#">Contact Support</a>
+</div>
+<div class="text-surface-variant text-xs font-medium uppercase">
+            © 2024 TicketRush. Digital-Print Velocity.
+        </div>
+</footer>
+</body></html>

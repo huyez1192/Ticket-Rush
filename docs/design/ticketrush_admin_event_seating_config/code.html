@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TicketRush Admin - Event &amp; Seat Map Configuration</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-fixed": "#2a1700",
+                        "on-secondary-container": "#00714d",
+                        "on-secondary-fixed": "#002113",
+                        "secondary-fixed": "#6ffbbe",
+                        "surface-bright": "#f9f9ff",
+                        "tertiary-fixed-dim": "#ffb95f",
+                        "on-background": "#141b2b",
+                        "surface-container-highest": "#dce2f7",
+                        "surface-container-high": "#e1e8fd",
+                        "surface-variant": "#dce2f7",
+                        "on-error-container": "#93000a",
+                        "surface-dim": "#d3daef",
+                        "tertiary": "#825100",
+                        "outline-variant": "#c2c6d6",
+                        "error-container": "#ffdad6",
+                        "tertiary-fixed": "#ffddb8",
+                        "surface-container": "#e9edff",
+                        "background": "#f9f9ff",
+                        "primary-container": "#2170e4",
+                        "on-tertiary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "on-surface-variant": "#424754",
+                        "secondary": "#006c49",
+                        "surface": "#f9f9ff",
+                        "secondary-container": "#6cf8bb",
+                        "on-primary": "#ffffff",
+                        "inverse-surface": "#293040",
+                        "on-error": "#ffffff",
+                        "surface-tint": "#005ac2",
+                        "primary-fixed": "#d8e2ff",
+                        "primary": "#0058be",
+                        "on-primary-fixed": "#001a42",
+                        "on-primary-fixed-variant": "#004395",
+                        "on-secondary": "#ffffff",
+                        "primary-fixed-dim": "#adc6ff",
+                        "secondary-fixed-dim": "#4edea3",
+                        "surface-container-lowest": "#ffffff",
+                        "inverse-on-surface": "#edf0ff",
+                        "surface-container-low": "#f1f3ff",
+                        "tertiary-container": "#a36700",
+                        "on-tertiary-fixed-variant": "#653e00",
+                        "on-tertiary-container": "#fffbff",
+                        "inverse-primary": "#adc6ff",
+                        "on-primary-container": "#fefcff",
+                        "outline": "#727785",
+                        "on-secondary-fixed-variant": "#005236",
+                        "on-surface": "#141b2b"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "container-max": "1280px",
+                        "margin": "32px",
+                        "unit": "8px",
+                        "gutter": "24px",
+                        "section-padding": "64px"
+                    },
+                    "fontFamily": {
+                        "h1": ["Outfit"],
+                        "body-lg": ["Outfit"],
+                        "label-bold": ["Outfit"],
+                        "h2": ["Outfit"],
+                        "h3": ["Outfit"],
+                        "body-md": ["Outfit"]
+                    },
+                    "fontSize": {
+                        "h1": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.04em", "fontWeight": "800" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400" }],
+                        "label-bold": ["14px", { "lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "700" }],
+                        "h2": ["36px", { "lineHeight": "1.2", "letterSpacing": "-0.03em", "fontWeight": "800" }],
+                        "h3": ["24px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.filled {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body-md min-h-screen flex selection:bg-primary selection:text-on-primary">
+<!-- SideNavBar Component from JSON -->
+<nav class="fixed left-0 top-0 h-full flex flex-col z-40 w-64 bg-surface-container-low border-r border-outline-variant">
+<!-- Header -->
+<div class="p-6">
+<div class="flex items-center gap-3 mb-6">
+<div class="w-10 h-10 bg-primary-container text-on-primary-container rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined">domain</span>
+</div>
+<div>
+<h2 class="font-h3 text-lg font-bold text-on-surface truncate">Admin Portal</h2>
+<p class="font-label-bold text-xs text-on-surface-variant mt-1">Management Mode</p>
+</div>
+</div>
+<button class="w-full bg-primary text-on-primary rounded-full py-3 px-4 font-label-bold hover:bg-primary/90 transition-all duration-200 flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">add</span>
+                New Event
+            </button>
+</div>
+<!-- Main Navigation -->
+<div class="flex-1 overflow-y-auto py-4 px-3">
+<ul class="space-y-2">
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg font-label-bold text-on-surface-variant hover:bg-surface-container-high transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+                        Overview
+                    </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg font-label-bold transition-colors duration-200 bg-[#3B82F6] text-white" href="#">
+<span class="material-symbols-outlined filled">confirmation_number</span>
+                        Events
+                    </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg font-label-bold text-on-surface-variant hover:bg-surface-container-high transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">grid_on</span>
+                        Seat Maps
+                    </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg font-label-bold text-on-surface-variant hover:bg-surface-container-high transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">receipt_long</span>
+                        Orders
+                    </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg font-label-bold text-on-surface-variant hover:bg-surface-container-high transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">settings</span>
+                        Settings
+                    </a>
+</li>
+</ul>
+</div>
+<!-- Footer Navigation -->
+<div class="p-4 px-3 border-t border-outline-variant">
+<ul class="space-y-2">
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg font-label-bold text-on-surface-variant hover:bg-surface-container-high transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">help</span>
+                        Support
+                    </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg font-label-bold text-on-surface-variant hover:bg-surface-container-high transition-colors duration-200 bg-[#3B82F6] text-white" href="#">
+<span class="material-symbols-outlined">logout</span>
+                        Log Out
+                    </a>
+</li>
+</ul>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-1 ml-64 min-h-screen z-10 relative">
+<!-- Header Section -->
+<header class="w-full bg-surface border-b border-outline-variant sticky top-0 z-30 flex justify-between items-center px-8 h-20">
+<div>
+<h1 class="font-h2 text-h2 text-on-surface tracking-tight">Event Configuration</h1>
+</div>
+<div class="flex items-center gap-4">
+<button class="bg-surface-container text-on-surface border border-outline px-6 py-2 rounded-full font-label-bold hover:bg-surface-container-high transition-all duration-200">
+                    Save Draft
+                </button>
+<button class="bg-primary text-on-primary px-6 py-2 rounded-full font-label-bold hover:bg-primary/90 transition-all duration-200 flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">publish</span>
+                    Save &amp; Publish
+                </button>
+</div>
+</header>
+<div class="max-w-[1280px] mx-auto p-8 space-y-8 pb-32">
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+<!-- Left Column: Event Details -->
+<div class="lg:col-span-4 space-y-6">
+<section class="bg-primary-fixed rounded-2xl overflow-hidden shadow-sm">
+<div class="bg-primary-fixed-dim/20 border-b border-primary-fixed-dim/30 p-5">
+<h2 class="font-h3 text-xl text-on-primary-fixed flex items-center gap-2">
+<span class="material-symbols-outlined">info</span>
+                                Event Details
+                            </h2>
+</div>
+<div class="p-6 space-y-5">
+<div>
+<label class="block font-label-bold text-on-primary-fixed mb-2">Event Title</label>
+<input class="w-full bg-surface/80 border border-outline-variant rounded-lg p-3 font-body-md text-on-surface focus:border-primary focus:ring-1 focus:ring-primary transition-all outline-none" type="text" value="Neon Nights Music Festival"/>
+</div>
+<div>
+<label class="block font-label-bold text-on-primary-fixed mb-2">Venue</label>
+<div class="relative">
+<input class="w-full bg-surface/80 border border-outline-variant rounded-lg p-3 pl-10 font-body-md text-on-surface focus:border-primary focus:ring-1 focus:ring-primary transition-all outline-none" type="text" value="Grand Arena Main Hall"/>
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">location_on</span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div>
+<label class="block font-label-bold text-on-primary-fixed mb-2">Date</label>
+<input class="w-full bg-surface/80 border border-outline-variant rounded-lg p-3 font-body-md text-on-surface focus:border-primary focus:ring-1 focus:ring-primary transition-all outline-none" type="date" value="2024-11-15"/>
+</div>
+<div>
+<label class="block font-label-bold text-on-primary-fixed mb-2">Time</label>
+<input class="w-full bg-surface/80 border border-outline-variant rounded-lg p-3 font-body-md text-on-surface focus:border-primary focus:ring-1 focus:ring-primary transition-all outline-none" type="time" value="20:00"/>
+</div>
+</div>
+</div>
+</section>
+<!-- Seat Matrix Setup -->
+<section class="bg-secondary-fixed rounded-2xl overflow-hidden shadow-sm">
+<div class="bg-secondary-fixed-dim/20 border-b border-secondary-fixed-dim/30 p-5">
+<h2 class="font-h3 text-xl text-on-secondary-fixed flex items-center gap-2">
+<span class="material-symbols-outlined">grid_4x4</span>
+                                Seat Matrix Setup
+                            </h2>
+</div>
+<div class="p-6 space-y-5">
+<div class="grid grid-cols-2 gap-4">
+<div>
+<label class="block font-label-bold text-on-secondary-fixed mb-2">Rows</label>
+<input class="w-full bg-surface/80 border border-outline-variant rounded-lg p-3 font-body-md text-on-surface focus:border-secondary focus:ring-1 focus:ring-secondary transition-all outline-none" type="number" value="10"/>
+</div>
+<div>
+<label class="block font-label-bold text-on-secondary-fixed mb-2">Seats per Row</label>
+<input class="w-full bg-surface/80 border border-outline-variant rounded-lg p-3 font-body-md text-on-surface focus:border-secondary focus:ring-1 focus:ring-secondary transition-all outline-none" type="number" value="12"/>
+</div>
+</div>
+<button class="w-full bg-secondary text-on-secondary rounded-lg py-3 px-4 font-label-bold hover:bg-secondary/90 transition-all duration-200 flex items-center justify-center gap-2 mt-2">
+<span class="material-symbols-outlined">autorenew</span>
+                                Generate Grid
+                            </button>
+</div>
+</section>
+<!-- Virtual Queue Configuration -->
+<section class="bg-tertiary-fixed rounded-2xl overflow-hidden shadow-sm">
+<div class="bg-tertiary-fixed-dim/20 border-b border-tertiary-fixed-dim/30 p-5">
+<h2 class="font-h3 text-xl text-on-tertiary-fixed flex items-center gap-2">
+<span class="material-symbols-outlined">queue</span>
+                                Virtual Queue Configuration
+                            </h2>
+</div>
+<div class="p-6 space-y-4">
+<div>
+<label class="block font-label-bold text-on-tertiary-fixed mb-2">Access Rate</label>
+<div class="flex items-center gap-4">
+<input class="w-full bg-surface/80 border border-outline-variant rounded-lg p-3 font-body-md text-on-surface focus:border-tertiary focus:ring-1 focus:ring-tertiary transition-all outline-none" type="number" value="50"/>
+<span class="font-body-md text-on-tertiary-fixed whitespace-nowrap">users per turn</span>
+</div>
+<p class="font-body-md text-sm text-on-tertiary-fixed-variant mt-2 opacity-80">Controls how many users are admitted from the waiting room to the ticketing page simultaneously.</p>
+</div>
+</div>
+</section>
+</div>
+<!-- Right Column: Interactive Preview & Zone Management -->
+<div class="lg:col-span-8 space-y-6">
+<!-- Zone Management -->
+<section class="bg-surface-container rounded-2xl overflow-hidden shadow-sm">
+<div class="bg-surface-container-high border-b border-outline-variant p-5 flex justify-between items-center">
+<h2 class="font-h3 text-xl text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined">category</span>
+                                Zone Management
+                            </h2>
+<button class="bg-primary-container text-on-primary-container px-4 py-2 rounded-full font-label-bold text-sm hover:bg-primary-fixed transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">add</span> Add Zone
+                            </button>
+</div>
+<div class="p-0">
+<!-- Zone Items -->
+<div class="flex items-center justify-between p-5 border-b border-outline-variant hover:bg-surface-container-high transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-6 h-6 rounded-md bg-tertiary"></div>
+<div>
+<h4 class="font-label-bold text-on-surface">VIP Section</h4>
+<p class="font-body-md text-sm text-on-surface-variant">Rows A-C (36 Seats)</p>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative w-32">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant font-label-bold">$</span>
+<input class="w-full bg-surface border border-outline-variant rounded-lg p-2 pl-6 font-body-md text-on-surface focus:border-primary focus:ring-1 focus:ring-primary transition-all outline-none" type="text" value="150.00"/>
+</div>
+<button class="text-on-surface-variant hover:text-primary transition-colors p-2 rounded-full hover:bg-surface">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+</button>
+</div>
+</div>
+<div class="flex items-center justify-between p-5 hover:bg-surface-container-high transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-6 h-6 rounded-md bg-primary"></div>
+<div>
+<h4 class="font-label-bold text-on-surface">Standard</h4>
+<p class="font-body-md text-sm text-on-surface-variant">Rows D-J (84 Seats)</p>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative w-32">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant font-label-bold">$</span>
+<input class="w-full bg-surface border border-outline-variant rounded-lg p-2 pl-6 font-body-md text-on-surface focus:border-primary focus:ring-1 focus:ring-primary transition-all outline-none" type="text" value="65.00"/>
+</div>
+<button class="text-on-surface-variant hover:text-primary transition-colors p-2 rounded-full hover:bg-surface">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Interactive Preview -->
+<section class="bg-surface-container rounded-2xl overflow-hidden shadow-sm flex flex-col min-h-[500px]">
+<div class="bg-surface-container-high border-b border-outline-variant p-5 flex justify-between items-center">
+<h2 class="font-h3 text-xl text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined">preview</span>
+                                Interactive Preview
+                            </h2>
+<div class="flex gap-2">
+<button class="p-2 rounded-lg border border-outline bg-surface hover:bg-surface-container-highest transition-colors" title="Zoom In">
+<span class="material-symbols-outlined text-[20px]">zoom_in</span>
+</button>
+<button class="p-2 rounded-lg border border-outline bg-surface hover:bg-surface-container-highest transition-colors" title="Zoom Out">
+<span class="material-symbols-outlined text-[20px]">zoom_out</span>
+</button>
+</div>
+</div>
+<div class="flex-1 p-8 flex flex-col items-center justify-center overflow-auto relative">
+<!-- Stage Indicator -->
+<div class="w-full max-w-md h-12 bg-inverse-surface text-inverse-on-surface flex items-center justify-center font-label-bold tracking-widest mb-16 uppercase rounded-t-[100px] shadow-sm">
+                                Stage
+                            </div>
+<!-- Seat Grid Mockup (10 rows, 12 seats) -->
+<div class="space-y-4">
+<!-- VIP Rows -->
+<div class="flex gap-3 justify-center items-center">
+<span class="w-6 font-label-bold text-xs text-on-surface-variant flex items-center justify-center mr-2">A</span>
+<div class="w-8 h-8 rounded-md bg-tertiary cursor-pointer hover:scale-110 transition-transform shadow-sm"></div>
+<div class="w-8 h-8 rounded-md bg-tertiary cursor-pointer hover:scale-110 transition-transform shadow-sm"></div>
+<div class="w-8 h-8 rounded-md bg-tertiary cursor-pointer hover:scale-110 transition-transform shadow-sm"></div>
+<div class="w-8 h-8 rounded-md bg-tertiary cursor-pointer hover:scale-110 transition-transform shadow-sm"></div>
+<div class="w-8 h-8 rounded-md bg-tertiary cursor-pointer hover:scale-110 transition-transform shadow-sm"></div>
+<div class="w-8 h-8 rounded-md bg-tertiary cursor-pointer hover:scale-110 transition-transform shadow-sm"></div>
+<div class="w-8 h-8 rounded-md bg-tertiary cursor-pointer hover:scale-110 transition-transform shadow-sm"></div>
+<div class="w-8 h-8 rounded-md bg-tertiary cursor-pointer hover:scale-110 transition-transform shadow-sm"></div>
+</div>
+<div class="flex gap-3 justify-center items-center">
+<span class="w-6 font-label-bold text-xs text-on-surface-variant flex items-center justify-center mr-2">B</span>
+<div class="w-8 h-8 rounded-md bg-tertiary cursor-pointer hover:scale-110 transition-transform shadow-sm"></div>
+<div class="w-8 h-8 rounded-md bg-tertiary cursor-pointer hover:scale-110 transition-transform shadow-sm"></div>
+<div class="w-8 h-8 rounded-md bg-tertiary cursor-pointer hover:scale-110 transition-transform shadow-sm"></div>
+<div class="w-8 h-8 rounded-md bg-tertiary cursor-pointer hover:scale-110 transition-transform shadow-sm"></div>
+<div class="w-8 h-8 rounded-md bg-tertiary cursor-pointer hover:scale-110 transition-transform shadow-sm"></div>
+<div class="w-8 h-8 rounded-md bg-tertiary cursor-pointer hover:scale-110 transition-transform shadow-sm"></div>
+<div class="w-8 h-8 rounded-md bg-tertiary cursor-pointer hover:scale-110 transition-transform shadow-sm"></div>
+<div class="w-8 h-8 rounded-md bg-tertiary cursor-pointer hover:scale-110 transition-transform shadow-sm"></div>
+</div>
+<div class="h-6"></div> <!-- Aisle -->
+<!-- Standard Rows -->
+<div class="flex gap-3 justify-center items-center">
+<span class="w-6 font-label-bold text-xs text-on-surface-variant flex items-center justify-center mr-2">C</span>
+<div class="w-8 h-8 rounded-md bg-primary cursor-pointer hover:scale-110 transition-transform shadow-sm"></div>
+<div class="w-8 h-8 rounded-md bg-primary cursor-pointer hover:scale-110 transition-transform shadow-sm"></div>
+<div class="w-8 h-8 rounded-md bg-primary cursor-pointer hover:scale-110 transition-transform shadow-sm"></div>
+<div class="w-8 h-8 rounded-md bg-primary cursor-pointer hover:scale-110 transition-transform shadow-sm"></div>
+<div class="w-8 h-8 rounded-md bg-primary cursor-pointer hover:scale-110 transition-transform shadow-sm"></div>
+<div class="w-8 h-8 rounded-md bg-primary cursor-pointer hover:scale-110 transition-transform shadow-sm"></div>
+<div class="w-8 h-8 rounded-md bg-primary cursor-pointer hover:scale-110 transition-transform shadow-sm"></div>
+<div class="w-8 h-8 rounded-md bg-primary cursor-pointer hover:scale-110 transition-transform shadow-sm"></div>
+<div class="w-8 h-8 rounded-md bg-primary cursor-pointer hover:scale-110 transition-transform shadow-sm"></div>
+<div class="w-8 h-8 rounded-md bg-primary cursor-pointer hover:scale-110 transition-transform shadow-sm"></div>
+</div>
+<div class="flex gap-3 justify-center items-center">
+<span class="w-6 font-label-bold text-xs text-on-surface-variant flex items-center justify-center mr-2">D</span>
+<div class="w-8 h-8 rounded-md bg-primary cursor-pointer hover:scale-110 transition-transform shadow-sm"></div>
+<div class="w-8 h-8 rounded-md bg-primary cursor-pointer hover:scale-110 transition-transform shadow-sm"></div>
+<div class="w-8 h-8 rounded-md bg-primary cursor-pointer hover:scale-110 transition-transform shadow-sm"></div>
+<div class="w-8 h-8 rounded-md bg-primary cursor-pointer hover:scale-110 transition-transform shadow-sm"></div>
+<div class="w-8 h-8 rounded-md bg-primary cursor-pointer hover:scale-110 transition-transform shadow-sm"></div>
+<div class="w-8 h-8 rounded-md bg-primary cursor-pointer hover:scale-110 transition-transform shadow-sm"></div>
+<div class="w-8 h-8 rounded-md bg-primary cursor-pointer hover:scale-110 transition-transform shadow-sm"></div>
+<div class="w-8 h-8 rounded-md bg-primary cursor-pointer hover:scale-110 transition-transform shadow-sm"></div>
+<div class="w-8 h-8 rounded-md bg-primary cursor-pointer hover:scale-110 transition-transform shadow-sm"></div>
+<div class="w-8 h-8 rounded-md bg-primary cursor-pointer hover:scale-110 transition-transform shadow-sm"></div>
+</div>
+<div class="flex gap-3 justify-center items-center">
+<span class="w-6 font-label-bold text-xs text-on-surface-variant flex items-center justify-center mr-2">E</span>
+<div class="w-8 h-8 rounded-md bg-primary cursor-pointer hover:scale-110 transition-transform shadow-sm"></div>
+<div class="w-8 h-8 rounded-md bg-primary cursor-pointer hover:scale-110 transition-transform shadow-sm"></div>
+<div class="w-8 h-8 rounded-md bg-primary cursor-pointer hover:scale-110 transition-transform shadow-sm"></div>
+<div class="w-8 h-8 rounded-md bg-primary cursor-pointer hover:scale-110 transition-transform shadow-sm"></div>
+<div class="w-8 h-8 rounded-md bg-primary cursor-pointer hover:scale-110 transition-transform shadow-sm"></div>
+<div class="w-8 h-8 rounded-md bg-primary cursor-pointer hover:scale-110 transition-transform shadow-sm"></div>
+<div class="w-8 h-8 rounded-md bg-primary cursor-pointer hover:scale-110 transition-transform shadow-sm"></div>
+<div class="w-8 h-8 rounded-md bg-primary cursor-pointer hover:scale-110 transition-transform shadow-sm"></div>
+<div class="w-8 h-8 rounded-md bg-primary cursor-pointer hover:scale-110 transition-transform shadow-sm"></div>
+<div class="w-8 h-8 rounded-md bg-primary cursor-pointer hover:scale-110 transition-transform shadow-sm"></div>
+</div>
+</div>
+</div>
+</section>
+</div>
+</div>
+</div>
+</main>
+</body></html>

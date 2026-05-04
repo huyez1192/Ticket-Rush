@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TicketRush - My Tickets</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-fixed": "#2a1700",
+                        "on-secondary-container": "#00714d",
+                        "on-secondary-fixed": "#002113",
+                        "secondary-fixed": "#6ffbbe",
+                        "surface-bright": "#f9f9ff",
+                        "tertiary-fixed-dim": "#ffb95f",
+                        "on-background": "#141b2b",
+                        "surface-container-highest": "#dce2f7",
+                        "surface-container-high": "#e1e8fd",
+                        "surface-variant": "#dce2f7",
+                        "on-error-container": "#93000a",
+                        "surface-dim": "#d3daef",
+                        "tertiary": "#825100",
+                        "outline-variant": "#c2c6d6",
+                        "error-container": "#ffdad6",
+                        "tertiary-fixed": "#ffddb8",
+                        "surface-container": "#e9edff",
+                        "background": "#f9f9ff",
+                        "primary-container": "#2170e4",
+                        "on-tertiary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "on-surface-variant": "#424754",
+                        "secondary": "#006c49",
+                        "surface": "#f9f9ff",
+                        "secondary-container": "#6cf8bb",
+                        "on-primary": "#ffffff",
+                        "inverse-surface": "#293040",
+                        "on-error": "#ffffff",
+                        "surface-tint": "#005ac2",
+                        "primary-fixed": "#d8e2ff",
+                        "primary": "#0058be",
+                        "on-primary-fixed": "#001a42",
+                        "on-primary-fixed-variant": "#004395",
+                        "on-secondary": "#ffffff",
+                        "primary-fixed-dim": "#adc6ff",
+                        "secondary-fixed-dim": "#4edea3",
+                        "surface-container-lowest": "#ffffff",
+                        "inverse-on-surface": "#edf0ff",
+                        "surface-container-low": "#f1f3ff",
+                        "tertiary-container": "#a36700",
+                        "on-tertiary-fixed-variant": "#653e00",
+                        "on-tertiary-container": "#fffbff",
+                        "inverse-primary": "#adc6ff",
+                        "on-primary-container": "#fefcff",
+                        "outline": "#727785",
+                        "on-secondary-fixed-variant": "#005236",
+                        "on-surface": "#141b2b"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "container-max": "1280px",
+                        "margin": "32px",
+                        "unit": "8px",
+                        "gutter": "24px",
+                        "section-padding": "64px"
+                    },
+                    "fontFamily": {
+                        "h1": ["Outfit"],
+                        "body-lg": ["Outfit"],
+                        "label-bold": ["Outfit"],
+                        "h2": ["Outfit"],
+                        "h3": ["Outfit"],
+                        "body-md": ["Outfit"]
+                    },
+                    "fontSize": {
+                        "h1": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.04em", "fontWeight": "800" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400" }],
+                        "label-bold": ["14px", { "lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "700" }],
+                        "h2": ["36px", { "lineHeight": "1.2", "letterSpacing": "-0.03em", "fontWeight": "800" }],
+                        "h3": ["24px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex flex-col font-body-md overflow-x-hidden relative">
+<!-- Decorative Geometry -->
+<div class="fixed top-[-100px] right-[-100px] w-96 h-96 bg-primary opacity-10 rounded-full z-0 pointer-events-none"></div>
+<div class="fixed bottom-[-150px] left-[-100px] w-[500px] h-[500px] bg-tertiary-fixed-dim opacity-5 rounded-full z-0 pointer-events-none"></div>
+<!-- TopNavBar -->
+<nav class="bg-white dark:bg-gray-950 font-['Outfit'] font-bold tracking-tight docked full-width top-0 border-b-2 border-gray-900 dark:border-gray-700 flat no shadows z-50 sticky">
+<div class="flex justify-between items-center w-full px-8 h-20 max-w-[1280px] mx-auto">
+<div class="flex items-center gap-12">
+<a class="text-2xl font-black italic tracking-tighter text-gray-900 dark:text-white" href="#">TicketRush</a>
+<div class="hidden md:flex gap-8 h-full items-center">
+<a class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white h-full flex items-center pt-1 font-label-bold text-label-bold" href="#">Discover</a>
+<a class="text-blue-600 dark:text-blue-400 border-b-4 border-blue-600 dark:border-blue-400 pb-1 h-full flex items-center pt-1 font-label-bold text-label-bold" href="#">My Tickets</a>
+<a class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white h-full flex items-center pt-1 font-label-bold text-label-bold" href="#">Dashboard</a>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<!-- Search Bar Placeholder -->
+<div class="flex items-center gap-4">
+<button class="text-gray-600 hover:text-gray-900 transition-colors">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">notifications</span>
+</button>
+<button class="text-gray-600 hover:text-gray-900 transition-colors">
+<span class="material-symbols-outlined">admin_panel_settings</span>
+</button>
+<img alt="User profile" class="w-10 h-10 border-2 border-gray-900 rounded-full object-cover" data-alt="A close-up portrait of a young professional in a modern, brightly lit environment. The lighting is crisp and clean, reflecting a high-end digital aesthetic with subtle cool tones. The subject has a confident, approachable expression. The image serves as an avatar in a minimalist, high-contrast UI design." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBJZ8uGDCcG2UFg1PlTK7QUy-bxlg0qCZq8ZsXB4xx4LbLbfDg6HWZK9ZAUFQE-MDQmFQhhIqD0SadsrLLHgncJdBt33aLWOUE9NRctaxI2p5GAb2mTbFsJaMctMANSPIWTAqrGHhnyxckaDtNmZVDAwmJWfrgFGiA15TfbC037YTfPzhWwL7KMrnJ2VUTtMb32R013JrnAiavEe_xn8cQn3b-i-ByUG66h8YtxJ6ci_VqReCNKyO-FtMTprhrHssL95Y4DYTfn8mjk"/>
+</div>
+</div>
+</div>
+</nav>
+<!-- Main Content -->
+<main class="flex-grow z-10 relative px-4 md:px-8 py-12 max-w-[1280px] mx-auto w-full">
+<header class="mb-12 flex justify-between items-end border-b-4 border-gray-900 pb-4">
+<div>
+<h1 class="font-h1 text-h1 text-on-background mb-2 uppercase">My Tickets</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Manage your upcoming and past event access.</p>
+</div>
+<div class="hidden sm:flex gap-2">
+<button class="border-2 border-gray-900 bg-white px-4 py-2 font-label-bold text-label-bold hover:bg-surface-container transition-colors active:scale-95">Upcoming</button>
+<button class="border-2 border-gray-900 bg-surface-container-high px-4 py-2 font-label-bold text-label-bold hover:bg-surface-variant transition-colors active:scale-95 text-on-surface-variant">Past</button>
+</div>
+</header>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<!-- Ticket List Column -->
+<div class="space-y-6 lg:col-span-3">
+<!-- Ticket Card 1 -->
+<div class="bg-white border-2 border-gray-900 flex flex-col md:flex-row group hover:scale-[1.01] transition-transform duration-200">
+<!-- Date Block -->
+<div class="bg-surface-container-high border-b-2 md:border-b-0 md:border-r-2 border-gray-900 p-6 flex flex-col justify-center items-center md:w-48 shrink-0">
+<span class="font-h3 text-h3 text-primary uppercase">Oct</span>
+<span class="font-h1 text-h1 text-on-background leading-none">24</span>
+<span class="font-label-bold text-label-bold mt-2 text-on-surface-variant">2024</span>
+</div>
+<!-- Details Block -->
+<div class="p-6 flex-grow flex flex-col justify-between">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h3 class="font-h2 text-h2 text-on-background mb-1 leading-tight">Neon Nights Music Festival</h3>
+<p class="font-body-md text-body-md text-on-surface-variant flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">location_on</span>
+                                    Downtown Arena, City Center
+                                </p>
+</div>
+<!-- Status Badge -->
+<div class="bg-secondary text-on-secondary px-3 py-1 rounded-DEFAULT border-2 border-secondary font-label-bold text-label-bold text-xs uppercase flex items-center gap-1">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                                Valid
+                            </div>
+</div>
+<div class="flex flex-wrap gap-4 mb-6">
+<div class="border-2 border-outline-variant px-3 py-1 bg-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-sm">chair</span>
+<span class="font-label-bold text-label-bold">Sec A, Row 12, Seat 15</span>
+</div>
+<div class="border-2 border-outline-variant px-3 py-1 bg-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-sm">schedule</span>
+<span class="font-label-bold text-label-bold">8:00 PM</span>
+</div>
+</div>
+<div class="flex justify-between items-center border-t-2 border-surface-container-highest pt-4 mt-auto">
+<span class="font-label-bold text-label-bold text-on-surface-variant">Order #TR-88492</span>
+<button class="bg-white text-primary border-4 border-primary px-6 py-2 font-label-bold text-label-bold hover:bg-primary hover:text-white transition-colors duration-200 uppercase flex items-center gap-2 active:scale-95">
+<span class="material-symbols-outlined">qr_code_2</span>
+                                View QR Code
+                            </button>
+</div>
+</div>
+</div>
+<!-- Ticket Card 2 -->
+<div class="bg-white border-2 border-gray-900 flex flex-col md:flex-row group hover:scale-[1.01] transition-transform duration-200">
+<!-- Date Block -->
+<div class="bg-surface-container-high border-b-2 md:border-b-0 md:border-r-2 border-gray-900 p-6 flex flex-col justify-center items-center md:w-48 shrink-0">
+<span class="font-h3 text-h3 text-primary uppercase">Nov</span>
+<span class="font-h1 text-h1 text-on-background leading-none">05</span>
+<span class="font-label-bold text-label-bold mt-2 text-on-surface-variant">2024</span>
+</div>
+<!-- Details Block -->
+<div class="p-6 flex-grow flex flex-col justify-between">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h3 class="font-h2 text-h2 text-on-background mb-1 leading-tight">Tech Innovators Summit</h3>
+<p class="font-body-md text-body-md text-on-surface-variant flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">location_on</span>
+                                    Grand Convention Center
+                                </p>
+</div>
+<div class="bg-secondary text-on-secondary px-3 py-1 rounded-DEFAULT border-2 border-secondary font-label-bold text-label-bold text-xs uppercase flex items-center gap-1">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                                Valid
+                            </div>
+</div>
+<div class="flex flex-wrap gap-4 mb-6">
+<div class="border-2 border-outline-variant px-3 py-1 bg-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-sm">badge</span>
+<span class="font-label-bold text-label-bold">VIP Pass</span>
+</div>
+<div class="border-2 border-outline-variant px-3 py-1 bg-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-sm">schedule</span>
+<span class="font-label-bold text-label-bold">9:00 AM</span>
+</div>
+</div>
+<div class="flex justify-between items-center border-t-2 border-surface-container-highest pt-4 mt-auto">
+<span class="font-label-bold text-label-bold text-on-surface-variant">Order #TR-77210</span>
+<button class="bg-primary text-white border-4 border-primary px-6 py-2 font-label-bold text-label-bold hover:bg-blue-600 transition-colors duration-200 uppercase flex items-center gap-2 active:scale-95">
+<span class="material-symbols-outlined">qr_code_2</span>
+                                View QR Code
+                            </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Focus Panel (QR Modal Simulation) -->
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-gray-900 dark:bg-black w-full border-t-4 border-blue-600 flat no shadows py-12 px-8 flex flex-col md:flex-row justify-between items-center gap-6 mt-24 relative z-10">
+<div class="text-xl font-black text-white italic">TicketRush</div>
+<div class="flex gap-6 flex-wrap justify-center">
+<a class="font-['Outfit'] text-xs font-medium uppercase text-gray-400 hover:text-white hover:text-blue-400 transition-colors scale-102" href="#">About</a>
+<a class="font-['Outfit'] text-xs font-medium uppercase text-gray-400 hover:text-white hover:text-blue-400 transition-colors scale-102" href="#">Terms of Service</a>
+<a class="font-['Outfit'] text-xs font-medium uppercase text-gray-400 hover:text-white hover:text-blue-400 transition-colors scale-102" href="#">Privacy Policy</a>
+<a class="font-['Outfit'] text-xs font-medium uppercase text-gray-400 hover:text-white hover:text-blue-400 transition-colors scale-102" href="#">Contact Support</a>
+</div>
+<div class="font-['Outfit'] text-xs font-medium uppercase text-gray-400">© 2024 TicketRush. Digital-Print Velocity.</div>
+</footer>
+</body></html>

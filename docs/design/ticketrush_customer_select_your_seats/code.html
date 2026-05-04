@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TicketRush - Event Detail &amp; Seat Selection</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-fixed": "#2a1700",
+                        "on-secondary-container": "#00714d",
+                        "on-secondary-fixed": "#002113",
+                        "secondary-fixed": "#6ffbbe",
+                        "surface-bright": "#f9f9ff",
+                        "tertiary-fixed-dim": "#ffb95f",
+                        "on-background": "#141b2b",
+                        "surface-container-highest": "#dce2f7",
+                        "surface-container-high": "#e1e8fd",
+                        "surface-variant": "#dce2f7",
+                        "on-error-container": "#93000a",
+                        "surface-dim": "#d3daef",
+                        "tertiary": "#825100",
+                        "outline-variant": "#c2c6d6",
+                        "error-container": "#ffdad6",
+                        "tertiary-fixed": "#ffddb8",
+                        "surface-container": "#e9edff",
+                        "background": "#f9f9ff",
+                        "primary-container": "#2170e4",
+                        "on-tertiary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "on-surface-variant": "#424754",
+                        "secondary": "#006c49",
+                        "surface": "#f9f9ff",
+                        "secondary-container": "#6cf8bb",
+                        "on-primary": "#ffffff",
+                        "inverse-surface": "#293040",
+                        "on-error": "#ffffff",
+                        "surface-tint": "#005ac2",
+                        "primary-fixed": "#d8e2ff",
+                        "primary": "#0058be",
+                        "on-primary-fixed": "#001a42",
+                        "on-primary-fixed-variant": "#004395",
+                        "on-secondary": "#ffffff",
+                        "primary-fixed-dim": "#adc6ff",
+                        "secondary-fixed-dim": "#4edea3",
+                        "surface-container-lowest": "#ffffff",
+                        "inverse-on-surface": "#edf0ff",
+                        "surface-container-low": "#f1f3ff",
+                        "tertiary-container": "#a36700",
+                        "on-tertiary-fixed-variant": "#653e00",
+                        "on-tertiary-container": "#fffbff",
+                        "inverse-primary": "#adc6ff",
+                        "on-primary-container": "#fefcff",
+                        "outline": "#727785",
+                        "on-secondary-fixed-variant": "#005236",
+                        "on-surface": "#141b2b"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "container-max": "1280px",
+                        "margin": "32px",
+                        "unit": "8px",
+                        "gutter": "24px",
+                        "section-padding": "64px"
+                    },
+                    "fontFamily": {
+                        "h1": ["Outfit"],
+                        "body-lg": ["Outfit"],
+                        "label-bold": ["Outfit"],
+                        "h2": ["Outfit"],
+                        "h3": ["Outfit"],
+                        "body-md": ["Outfit"]
+                    },
+                    "fontSize": {
+                        "h1": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.04em", "fontWeight": "800" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400" }],
+                        "label-bold": ["14px", { "lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "700" }],
+                        "h2": ["36px", { "lineHeight": "1.2", "letterSpacing": "-0.03em", "fontWeight": "800" }],
+                        "h3": ["24px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        /* Custom scrollbar for seat matrix if needed on smaller screens */
+        .seat-scroll::-webkit-scrollbar {
+            height: 8px;
+            width: 8px;
+        }
+        .seat-scroll::-webkit-scrollbar-track {
+            background: #f1f3ff;
+            border-top: 2px solid #141b2b;
+        }
+        .seat-scroll::-webkit-scrollbar-thumb {
+            background-color: #141b2b;
+            border: 2px solid #141b2b;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex flex-col relative overflow-x-hidden">
+<!-- Decorative Geometry Background -->
+<div class="fixed top-[-20%] left-[-10%] w-[60%] h-[60%] rounded-full bg-primary opacity-5 pointer-events-none z-[-1]"></div>
+<div class="fixed bottom-[-20%] right-[-10%] w-[50%] h-[50%] rounded-full bg-tertiary-fixed-dim opacity-5 pointer-events-none z-[-1]"></div>
+<!-- TopNavBar -->
+<nav class="bg-white dark:bg-gray-950 docked full-width top-0 border-b-2 border-gray-900 dark:border-gray-700 flat no shadows z-50">
+<div class="flex justify-between items-center w-full px-8 h-20 max-w-[1280px] mx-auto">
+<div class="flex items-center gap-12">
+<a class="text-2xl font-black italic tracking-tighter text-gray-900 dark:text-white" href="#">TicketRush</a>
+<div class="hidden md:flex gap-8">
+<a class="font-['Outfit'] font-bold tracking-tight text-blue-600 dark:text-blue-400 border-b-4 border-blue-600 dark:border-blue-400 pb-1 scale-105 active:scale-95 transition-transform" href="#">Discover</a>
+<a class="font-['Outfit'] font-bold tracking-tight text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:scale-105 hover:bg-gray-50 dark:hover:bg-gray-900 transition-all duration-200" href="#">My Tickets</a>
+<a class="font-['Outfit'] font-bold tracking-tight text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:scale-105 hover:bg-gray-50 dark:hover:bg-gray-900 transition-all duration-200" href="#">Dashboard</a>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-4">
+<button class="hover:scale-105 transition-transform"><span class="material-symbols-outlined text-gray-700">notifications</span></button>
+<button class="hover:scale-105 transition-transform"><span class="material-symbols-outlined text-gray-700">admin_panel_settings</span></button>
+<img alt="User profile" class="w-10 h-10 border-2 border-gray-900 object-cover" data-alt="A close-up studio portrait of a young person looking directly at the camera. The lighting is high-key and flat, casting minimal shadows to emphasize a clean, modern aesthetic. They are wearing a simple white shirt against a pristine white background. The image feels bright, energetic, and professional, aligning with a high-contrast digital utility design system." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA2YDyJ_TwSsc_sFvgdT0pEpVWSaqxpfktaX6nHzIVsQDREKK-qqFaI97qtqlozhLkU728YAh96pr82JYbivGgvAzvaDolhy0VdfzBgX59I8Bp5TIdOQSEozAggph7c2i3PpZy5vxs-Vp9hbFWop1XezoLffFWwPbQl3tWR4rFgjUh4YUQdW0Q-8HCIkhpTGz2ZJaQ8XAx2QGUdg3spcnhx8GxoVz9kHiMJcT3Pln2zKA4wNa4iUZeD1lxP8fTlwRQKrfTH4MUwaBil"/>
+</div>
+</div>
+</div>
+</nav>
+<!-- Main Content Container -->
+<main class="flex-grow w-full max-w-container-max mx-auto px-4 md:px-8 py-section-padding flex flex-col gap-gutter">
+<!-- Event Banner (Top Section) -->
+<header class="border-2 border-on-background bg-white relative overflow-hidden group">
+<div class="absolute inset-0 bg-surface-container-high opacity-50 -z-10 group-hover:scale-105 transition-transform duration-700"></div>
+<div class="flex flex-col md:flex-row">
+<div class="md:w-2/3 p-8 border-b-2 md:border-b-0 md:border-r-2 border-on-background bg-white relative z-10">
+<div class="flex items-center gap-4 mb-4">
+<span class="bg-tertiary-fixed-dim text-on-tertiary-fixed px-3 py-1 border-2 border-on-background font-label-bold uppercase text-xs">High Demand</span>
+<span class="flex items-center gap-1 font-label-bold text-on-surface-variant text-sm">
+<span class="material-symbols-outlined text-[16px]">calendar_month</span>
+                            OCT 24, 2024
+                        </span>
+<span class="flex items-center gap-1 font-label-bold text-on-surface-variant text-sm">
+<span class="material-symbols-outlined text-[16px]">schedule</span>
+                            8:00 PM EST
+                        </span>
+</div>
+<h1 class="font-h1 text-h1 text-on-background mb-2 uppercase">Cyberpunk Symphony</h1>
+<div class="flex items-center gap-2 font-body-lg text-body-lg text-on-surface-variant">
+<span class="material-symbols-outlined">location_on</span>
+<span>Neo-Tokyo Arena, Sector 4</span>
+</div>
+</div>
+<div class="md:w-1/3 bg-surface-container-low p-8 flex flex-col justify-center items-start border-l-2 border-transparent md:border-on-background relative z-10">
+<p class="font-label-bold text-label-bold text-on-surface-variant uppercase mb-2">Starting at</p>
+<p class="font-h2 text-h2 text-on-background">$85.00</p>
+<p class="font-body-md text-body-md text-outline mt-1">General Admission &amp; VIP Available</p>
+</div>
+</div>
+</header>
+<!-- Main Layout: Matrix & Side Panel -->
+<div class="flex flex-col lg:flex-row gap-gutter">
+<!-- Left: Seat Matrix Visualization -->
+<section class="lg:w-2/3 flex flex-col border-2 border-on-background bg-white overflow-hidden">
+<div class="bg-surface-container-highest border-b-2 border-on-background p-4 flex justify-between items-center">
+<h2 class="font-h3 text-h3 text-on-background uppercase">Seat Matrix</h2>
+<div class="flex gap-4">
+<button class="p-2 border-2 border-on-background bg-white hover:bg-surface-container transition-colors flex items-center justify-center">
+<span class="material-symbols-outlined">zoom_in</span>
+</button>
+<button class="p-2 border-2 border-on-background bg-white hover:bg-surface-container transition-colors flex items-center justify-center">
+<span class="material-symbols-outlined">zoom_out</span>
+</button>
+</div>
+</div>
+<!-- Stage Indicator -->
+<div class="w-full flex justify-center py-6 border-b-2 border-surface-variant bg-surface-bright relative">
+<div class="w-3/4 h-8 border-b-4 border-primary rounded-[100%] absolute top-4 opacity-20"></div>
+<span class="font-label-bold text-label-bold uppercase text-on-surface-variant tracking-[0.2em]">Stage</span>
+</div>
+<!-- Matrix Grid Container -->
+<div class="p-8 bg-background flex-grow flex items-center justify-center overflow-auto seat-scroll">
+<!-- Example 10x15 Grid -->
+<div class="grid gap-2 w-max grid-cols-10"><!-- Row 1 -->
+<button aria-label="Seat A1" class="w-8 h-8 border-2 border-on-background bg-secondary hover:scale-110 transition-transform"></button>
+<button aria-label="Seat A2" class="w-8 h-8 border-2 border-on-background bg-secondary hover:scale-110 transition-transform"></button>
+<button aria-label="Seat A3 Taken" class="w-8 h-8 border-2 border-on-background bg-surface-variant pointer-events-none"></button>
+<button aria-label="Seat A4 Taken" class="w-8 h-8 border-2 border-on-background bg-surface-variant pointer-events-none"></button>
+<button aria-label="Seat A5 Selected" class="w-8 h-8 border-4 border-primary bg-primary text-white hover:scale-110 transition-transform"></button>
+<button aria-label="Seat A6 Selected" class="w-8 h-8 border-4 border-primary bg-primary text-white hover:scale-110 transition-transform"></button>
+<button aria-label="Seat A7" class="w-8 h-8 border-2 border-on-background bg-secondary hover:scale-110 transition-transform"></button>
+<button aria-label="Seat A8" class="w-8 h-8 border-2 border-on-background bg-secondary hover:scale-110 transition-transform"></button>
+<button aria-label="Seat A9" class="w-8 h-8 border-2 border-on-background bg-secondary hover:scale-110 transition-transform"></button>
+<button aria-label="Seat A10" class="w-8 h-8 border-2 border-on-background bg-secondary hover:scale-110 transition-transform"></button>
+<!-- Row 2 -->
+<button aria-label="Seat B1" class="w-8 h-8 border-2 border-on-background bg-secondary hover:scale-110 transition-transform"></button>
+<button aria-label="Seat B2" class="w-8 h-8 border-2 border-on-background bg-secondary hover:scale-110 transition-transform"></button>
+<button aria-label="Seat B3" class="w-8 h-8 border-2 border-on-background bg-secondary hover:scale-110 transition-transform"></button>
+<button aria-label="Seat B4" class="w-8 h-8 border-2 border-on-background bg-secondary hover:scale-110 transition-transform"></button>
+<button aria-label="Seat B5" class="w-8 h-8 border-2 border-on-background bg-secondary hover:scale-110 transition-transform"></button>
+<button aria-label="Seat B6 Taken" class="w-8 h-8 border-2 border-on-background bg-surface-variant pointer-events-none"></button>
+<button aria-label="Seat B7 Taken" class="w-8 h-8 border-2 border-on-background bg-surface-variant pointer-events-none"></button>
+<button aria-label="Seat B8" class="w-8 h-8 border-2 border-on-background bg-secondary hover:scale-110 transition-transform"></button>
+<button aria-label="Seat B9" class="w-8 h-8 border-2 border-on-background bg-secondary hover:scale-110 transition-transform"></button>
+<button aria-label="Seat B10" class="w-8 h-8 border-2 border-on-background bg-secondary hover:scale-110 transition-transform"></button>
+<!-- Row 3 -->
+<button aria-label="Seat C1" class="w-8 h-8 border-2 border-on-background bg-secondary hover:scale-110 transition-transform"></button>
+<button aria-label="Seat C2" class="w-8 h-8 border-2 border-on-background bg-secondary hover:scale-110 transition-transform"></button>
+<button aria-label="Seat C3" class="w-8 h-8 border-2 border-on-background bg-secondary hover:scale-110 transition-transform"></button>
+<button aria-label="Seat C4" class="w-8 h-8 border-2 border-on-background bg-secondary hover:scale-110 transition-transform"></button>
+<button aria-label="Seat C5" class="w-8 h-8 border-2 border-on-background bg-secondary hover:scale-110 transition-transform"></button>
+<button aria-label="Seat C6" class="w-8 h-8 border-2 border-on-background bg-secondary hover:scale-110 transition-transform"></button>
+<button aria-label="Seat C7" class="w-8 h-8 border-2 border-on-background bg-secondary hover:scale-110 transition-transform"></button>
+<button aria-label="Seat C8" class="w-8 h-8 border-2 border-on-background bg-secondary hover:scale-110 transition-transform"></button>
+<button aria-label="Seat C9" class="w-8 h-8 border-2 border-on-background bg-secondary hover:scale-110 transition-transform"></button>
+<button aria-label="Seat C10" class="w-8 h-8 border-2 border-on-background bg-secondary hover:scale-110 transition-transform"></button>
+<!-- Row 4 -->
+<button aria-label="Seat D1" class="w-8 h-8 border-2 border-on-background bg-secondary hover:scale-110 transition-transform"></button>
+<button aria-label="Seat D2" class="w-8 h-8 border-2 border-on-background bg-secondary hover:scale-110 transition-transform"></button>
+<button aria-label="Seat D3 Taken" class="w-8 h-8 border-2 border-on-background bg-surface-variant pointer-events-none"></button>
+<button aria-label="Seat D4 Taken" class="w-8 h-8 border-2 border-on-background bg-surface-variant pointer-events-none"></button>
+<button aria-label="Seat D5 Taken" class="w-8 h-8 border-2 border-on-background bg-surface-variant pointer-events-none"></button>
+<button aria-label="Seat D6 Taken" class="w-8 h-8 border-2 border-on-background bg-surface-variant pointer-events-none"></button>
+<button aria-label="Seat D7" class="w-8 h-8 border-2 border-on-background bg-secondary hover:scale-110 transition-transform"></button>
+<button aria-label="Seat D8" class="w-8 h-8 border-2 border-on-background bg-secondary hover:scale-110 transition-transform"></button>
+<button aria-label="Seat D9" class="w-8 h-8 border-2 border-on-background bg-secondary hover:scale-110 transition-transform"></button>
+<button aria-label="Seat D10" class="w-8 h-8 border-2 border-on-background bg-secondary hover:scale-110 transition-transform"></button>
+<!-- Row 5 -->
+<button aria-label="Seat E1" class="w-8 h-8 border-2 border-on-background bg-secondary hover:scale-110 transition-transform"></button>
+<button aria-label="Seat E2" class="w-8 h-8 border-2 border-on-background bg-secondary hover:scale-110 transition-transform"></button>
+<button aria-label="Seat E3" class="w-8 h-8 border-2 border-on-background bg-secondary hover:scale-110 transition-transform"></button>
+<button aria-label="Seat E4" class="w-8 h-8 border-2 border-on-background bg-secondary hover:scale-110 transition-transform"></button>
+<button aria-label="Seat E5" class="w-8 h-8 border-2 border-on-background bg-secondary hover:scale-110 transition-transform"></button>
+<button aria-label="Seat E6" class="w-8 h-8 border-2 border-on-background bg-secondary hover:scale-110 transition-transform"></button>
+<button aria-label="Seat E7" class="w-8 h-8 border-2 border-on-background bg-secondary hover:scale-110 transition-transform"></button>
+<button aria-label="Seat E8" class="w-8 h-8 border-2 border-on-background bg-secondary hover:scale-110 transition-transform"></button>
+<button aria-label="Seat E9" class="w-8 h-8 border-2 border-on-background bg-secondary hover:scale-110 transition-transform"></button>
+<button aria-label="Seat E10" class="w-8 h-8 border-2 border-on-background bg-secondary hover:scale-110 transition-transform"></button>
+<!-- Row 6 -->
+<button aria-label="Seat F1" class="w-8 h-8 border-2 border-on-background bg-secondary hover:scale-110 transition-transform"></button>
+<button aria-label="Seat F2" class="w-8 h-8 border-2 border-on-background bg-secondary hover:scale-110 transition-transform"></button>
+<button aria-label="Seat F3" class="w-8 h-8 border-2 border-on-background bg-secondary hover:scale-110 transition-transform"></button>
+<button aria-label="Seat F4" class="w-8 h-8 border-2 border-on-background bg-secondary hover:scale-110 transition-transform"></button>
+<button aria-label="Seat F5" class="w-8 h-8 border-2 border-on-background bg-secondary hover:scale-110 transition-transform"></button>
+<button aria-label="Seat F6" class="w-8 h-8 border-2 border-on-background bg-secondary hover:scale-110 transition-transform"></button>
+<button aria-label="Seat F7 Taken" class="w-8 h-8 border-2 border-on-background bg-surface-variant pointer-events-none"></button>
+<button aria-label="Seat F8 Taken" class="w-8 h-8 border-2 border-on-background bg-surface-variant pointer-events-none"></button>
+<button aria-label="Seat F9" class="w-8 h-8 border-2 border-on-background bg-secondary hover:scale-110 transition-transform"></button>
+<button aria-label="Seat F10" class="w-8 h-8 border-2 border-on-background bg-secondary hover:scale-110 transition-transform"></button>
+<!-- Row 7 -->
+<button aria-label="Seat G1" class="w-8 h-8 border-2 border-on-background bg-secondary hover:scale-110 transition-transform"></button>
+<button aria-label="Seat G2" class="w-8 h-8 border-2 border-on-background bg-secondary hover:scale-110 transition-transform"></button>
+<button aria-label="Seat G3" class="w-8 h-8 border-2 border-on-background bg-secondary hover:scale-110 transition-transform"></button>
+<button aria-label="Seat G4" class="w-8 h-8 border-2 border-on-background bg-secondary hover:scale-110 transition-transform"></button>
+<button aria-label="Seat G5" class="w-8 h-8 border-2 border-on-background bg-secondary hover:scale-110 transition-transform"></button>
+<button aria-label="Seat G6" class="w-8 h-8 border-2 border-on-background bg-secondary hover:scale-110 transition-transform"></button>
+<button aria-label="Seat G7" class="w-8 h-8 border-2 border-on-background bg-secondary hover:scale-110 transition-transform"></button>
+<button aria-label="Seat G8" class="w-8 h-8 border-2 border-on-background bg-secondary hover:scale-110 transition-transform"></button>
+<button aria-label="Seat G9" class="w-8 h-8 border-2 border-on-background bg-secondary hover:scale-110 transition-transform"></button>
+<button aria-label="Seat G10" class="w-8 h-8 border-2 border-on-background bg-secondary hover:scale-110 transition-transform"></button>
+<!-- Row 8 -->
+<button aria-label="Seat H1" class="w-8 h-8 border-2 border-on-background bg-secondary hover:scale-110 transition-transform"></button>
+<button aria-label="Seat H2" class="w-8 h-8 border-2 border-on-background bg-secondary hover:scale-110 transition-transform"></button>
+<button aria-label="Seat H3" class="w-8 h-8 border-2 border-on-background bg-secondary hover:scale-110 transition-transform"></button>
+<button aria-label="Seat H4" class="w-8 h-8 border-2 border-on-background bg-secondary hover:scale-110 transition-transform"></button>
+<button aria-label="Seat H5" class="w-8 h-8 border-2 border-on-background bg-secondary hover:scale-110 transition-transform"></button>
+<button aria-label="Seat H6" class="w-8 h-8 border-2 border-on-background bg-secondary hover:scale-110 transition-transform"></button>
+<button aria-label="Seat H7" class="w-8 h-8 border-2 border-on-background bg-secondary hover:scale-110 transition-transform"></button>
+<button aria-label="Seat H8" class="w-8 h-8 border-2 border-on-background bg-secondary hover:scale-110 transition-transform"></button>
+<button aria-label="Seat H9" class="w-8 h-8 border-2 border-on-background bg-secondary hover:scale-110 transition-transform"></button>
+<button aria-label="Seat H10" class="w-8 h-8 border-2 border-on-background bg-secondary hover:scale-110 transition-transform"></button></div>
+</div>
+</section>
+<!-- Right: Legend, Summary & Action Panel -->
+<aside class="lg:w-1/3 flex flex-col gap-6">
+<!-- Legend Card -->
+<div class="border-2 border-on-background bg-white p-6">
+<h3 class="font-label-bold text-label-bold uppercase border-b-2 border-on-background pb-2 mb-4">Legend</h3>
+<ul class="flex flex-col gap-3">
+<li class="flex items-center gap-3">
+<div class="w-6 h-6 border-2 border-on-background bg-secondary"></div>
+<span class="font-body-md text-body-md">Available</span>
+</li>
+<li class="flex items-center gap-3">
+<div class="w-6 h-6 border-4 border-primary bg-primary"></div>
+<span class="font-body-md text-body-md">Selected</span>
+</li>
+<li class="flex items-center gap-3">
+<div class="w-6 h-6 border-2 border-on-background bg-surface-variant relative overflow-hidden">
+<div class="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(20,27,43,0.1)_25%,rgba(20,27,43,0.1)_50%,transparent_50%,transparent_75%,rgba(20,27,43,0.1)_75%,rgba(20,27,43,0.1)_100%)] bg-[length:10px_10px]"></div>
+</div>
+<span class="font-body-md text-body-md text-outline">Taken / Locked</span>
+</li>
+</ul>
+</div>
+<!-- Selection Summary Card -->
+<div class="border-2 border-on-background bg-white flex flex-col relative z-20">
+<div class="bg-primary text-on-primary p-4 border-b-2 border-on-background flex justify-between items-center">
+<h3 class="font-h3 text-h3 uppercase">Your Seats</h3>
+<div class="bg-on-background text-white px-3 py-1 font-label-bold flex items-center gap-2 border-2 border-transparent">
+<span class="material-symbols-outlined text-sm">timer</span>
+<span>09:58</span>
+</div>
+</div>
+<div class="p-0 flex flex-col divide-y-2 divide-on-background">
+<!-- Selected Seat Item 1 -->
+<div class="p-4 flex justify-between items-center hover:bg-surface-container-low transition-colors group">
+<div class="flex flex-col">
+<span class="font-label-bold text-label-bold uppercase text-on-surface-variant">Section 1</span>
+<span class="font-h3 text-h3 text-on-background">Row A, Seat 5</span>
+</div>
+<div class="flex items-center gap-4">
+<span class="font-body-lg text-body-lg font-bold">$85.00</span>
+<button class="text-error hover:scale-110 transition-transform">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+</div>
+<!-- Selected Seat Item 2 -->
+<div class="p-4 flex justify-between items-center hover:bg-surface-container-low transition-colors group">
+<div class="flex flex-col">
+<span class="font-label-bold text-label-bold uppercase text-on-surface-variant">Section 1</span>
+<span class="font-h3 text-h3 text-on-background">Row A, Seat 6</span>
+</div>
+<div class="flex items-center gap-4">
+<span class="font-body-lg text-body-lg font-bold">$85.00</span>
+<button class="text-error hover:scale-110 transition-transform">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-highest p-6 border-t-2 border-on-background mt-auto">
+<div class="flex justify-between items-end mb-6">
+<span class="font-label-bold text-label-bold uppercase text-on-surface-variant">Subtotal (2 tickets)</span>
+<span class="font-h2 text-h2 text-on-background leading-none">$170.00</span>
+</div>
+<button class="w-full bg-primary text-white font-h3 text-h3 uppercase py-4 border-2 border-on-background hover:bg-on-primary-fixed-variant hover:scale-[1.02] active:scale-95 transition-all duration-200">BOOK NOW</button>
+</div>
+</div>
+</aside>
+</div>
+</main>
+<!-- Footer -->
+<footer class="w-full py-12 px-8 flex flex-col md:flex-row justify-between items-center gap-6 bg-gray-900 dark:bg-black border-t-4 border-blue-600 border-t border-gray-800 flat no shadows mt-auto">
+<div class="text-xl font-black text-white">TicketRush</div>
+<div class="flex flex-wrap justify-center gap-6">
+<a class="font-['Outfit'] text-xs font-medium uppercase text-gray-400 hover:text-white hover:text-blue-400 transition-colors scale-102" href="#">About</a>
+<a class="font-['Outfit'] text-xs font-medium uppercase text-gray-400 hover:text-white hover:text-blue-400 transition-colors scale-102" href="#">Terms of Service</a>
+<a class="font-['Outfit'] text-xs font-medium uppercase text-gray-400 hover:text-white hover:text-blue-400 transition-colors scale-102" href="#">Privacy Policy</a>
+<a class="font-['Outfit'] text-xs font-medium uppercase text-gray-400 hover:text-white hover:text-blue-400 transition-colors scale-102" href="#">Contact Support</a>
+</div>
+<div class="text-gray-400 text-xs font-medium uppercase">
+            © 2024 TicketRush. Digital-Print Velocity.
+        </div>
+</footer>
+</body></html>

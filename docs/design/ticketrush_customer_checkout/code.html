@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+
+<html lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Checkout - TicketRush</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface": "#f9f9ff",
+                      "secondary-container": "#6cf8bb",
+                      "on-primary": "#ffffff",
+                      "inverse-surface": "#293040",
+                      "on-error": "#ffffff",
+                      "surface-tint": "#005ac2",
+                      "primary-fixed": "#d8e2ff",
+                      "primary-container": "#2170e4",
+                      "on-tertiary": "#ffffff",
+                      "secondary": "#006c49",
+                      "on-surface-variant": "#424754",
+                      "error": "#ba1a1a",
+                      "primary": "#0058be",
+                      "on-primary-fixed-variant": "#004395",
+                      "on-primary-fixed": "#001a42",
+                      "primary-fixed-dim": "#adc6ff",
+                      "on-secondary": "#ffffff",
+                      "surface-container-lowest": "#ffffff",
+                      "inverse-on-surface": "#edf0ff",
+                      "tertiary-container": "#a36700",
+                      "surface-container-low": "#f1f3ff",
+                      "on-tertiary-fixed-variant": "#653e00",
+                      "secondary-fixed-dim": "#4edea3",
+                      "outline": "#727785",
+                      "on-primary-container": "#fefcff",
+                      "inverse-primary": "#adc6ff",
+                      "on-secondary-fixed-variant": "#005236",
+                      "on-surface": "#141b2b",
+                      "on-tertiary-container": "#fffbff",
+                      "surface-bright": "#f9f9ff",
+                      "tertiary-fixed-dim": "#ffb95f",
+                      "on-tertiary-fixed": "#2a1700",
+                      "on-secondary-container": "#00714d",
+                      "on-secondary-fixed": "#002113",
+                      "secondary-fixed": "#6ffbbe",
+                      "surface-variant": "#dce2f7",
+                      "surface-container-high": "#e1e8fd",
+                      "on-error-container": "#93000a",
+                      "on-background": "#141b2b",
+                      "surface-container-highest": "#dce2f7",
+                      "surface-dim": "#d3daef",
+                      "tertiary": "#825100",
+                      "background": "#f9f9ff",
+                      "outline-variant": "#c2c6d6",
+                      "error-container": "#ffdad6",
+                      "tertiary-fixed": "#ffddb8",
+                      "surface-container": "#e9edff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "margin": "32px",
+                      "unit": "8px",
+                      "gutter": "24px",
+                      "section-padding": "64px",
+                      "container-max": "1280px"
+              },
+              "fontFamily": {
+                      "body-lg": ["Outfit"],
+                      "label-bold": ["Outfit"],
+                      "h2": ["Outfit"],
+                      "h3": ["Outfit"],
+                      "body-md": ["Outfit"],
+                      "h1": ["Outfit"]
+              },
+              "fontSize": {
+                      "body-lg": ["18px", {"lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400"}],
+                      "label-bold": ["14px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                      "h2": ["36px", {"lineHeight": "1.2", "letterSpacing": "-0.03em", "fontWeight": "800"}],
+                      "h3": ["24px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "body-md": ["16px", {"lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400"}],
+                      "h1": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.04em", "fontWeight": "800"}]
+              }
+            }
+          }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .fill-icon {
+            font-variation-settings: 'FILL' 1;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface overflow-x-hidden relative min-h-screen flex flex-col">
+<!-- Background Decorative Geometry -->
+<div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+<div class="absolute -top-[20%] -right-[10%] w-[60vw] h-[60vw] rounded-full bg-primary/5"></div>
+<div class="absolute top-[40%] -left-[20%] w-[50vw] h-[50vw] bg-tertiary/5 rotate-12"></div>
+<div class="absolute -bottom-[10%] right-[20%] w-[40vw] h-[40vw] rounded-full bg-secondary/5"></div>
+</div>
+<!-- TopNavBar -->
+<header class="bg-surface border-b-2 border-on-surface relative z-10">
+<div class="flex justify-between items-center w-full px-8 h-20 max-w-[1280px] mx-auto">
+<div class="flex items-center gap-8">
+<a class="text-2xl font-black italic tracking-tighter text-on-surface" href="#">TicketRush</a>
+<nav class="hidden md:flex gap-6">
+<a class="font-body-lg text-body-lg text-on-surface-variant hover:text-on-surface" href="#">Discover</a>
+<a class="font-body-lg text-body-lg text-on-surface-variant hover:text-on-surface" href="#">My Tickets</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="w-10 h-10 rounded-full bg-surface-variant border-2 border-on-surface flex items-center justify-center hover:bg-surface-dim transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<div class="w-10 h-10 rounded-full border-2 border-on-surface overflow-hidden bg-primary-container">
+<img alt="User profile" class="w-full h-full object-cover" data-alt="A minimalist, high-contrast portrait of a young person against a clean white background. The lighting is bright and even, casting sharp but minimal shadows, emphasizing a flat, graphic aesthetic. They wear simple, geometric clothing in bold primary colors, aligning with a modern, high-velocity digital platform style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBaAmZNzzwUMM-N_lD7EiE_MfRO8cmQhynX2-1_b2hn0AJsR0XCOqnLeyCd-zc4hE4ThtQ4x33OR9D0_sAbzos1dxa50DVxKir83VOon5KOpn9lBqyVQqZfdAx34i2p-zMZqZTBrXvRzqXVy1iGHR0v7wM4vfhkcSh_xKB0Z2tRbPnnkn2iDnjYJr9u4spy-C3AJ51n3G6CijvzpkJT7eQiwqA4XWxwWqV_UkrIwNW_cy0ImPMFa3adxocOUPNiGNCNp3bkfW0VjZ_7"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="flex-grow relative z-10 w-full max-w-[1280px] mx-auto px-8 py-section-padding">
+<!-- Header & Countdown -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-6">
+<div>
+<h1 class="font-h1 text-h1 text-on-surface mb-2">Checkout</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Please review your order details before confirming.</p>
+</div>
+<div class="bg-error-container border-2 border-error px-6 py-4 flex items-center gap-3">
+<span class="material-symbols-outlined text-error fill-icon text-2xl">timer</span>
+<div>
+<p class="font-label-bold text-label-bold text-error uppercase">YOUR SEATS ARE HELD FOR</p>
+<p class="font-h3 text-h3 text-error mt-1 tracking-widest">08:45</p>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+<!-- Left Column: Order Details & Payment -->
+<div class="lg:col-span-7 flex flex-col gap-12">
+<!-- Event Summary Card -->
+<section class="border-2 border-on-surface bg-surface-container-lowest">
+<div class="bg-surface-variant border-b-2 border-on-surface p-6">
+<h2 class="font-h3 text-h3 text-on-surface uppercase">EVENT DETAILS</h2>
+</div>
+<div class="p-6 flex flex-col sm:flex-row gap-6">
+<div class="w-full sm:w-48 h-48 border-2 border-on-surface bg-inverse-surface flex-shrink-0 relative overflow-hidden">
+<img alt="Cyberpunk Symphony" class="w-full h-full object-cover mix-blend-luminosity opacity-80" data-alt="A hyper-stylized concert poster image featuring glowing neon geometric grids and bold abstract shapes over a dark background. The scene depicts a futuristic music event with intense blue and pink laser lights slicing through darkness. The aesthetic is flat, high-contrast, and deeply saturated, matching a high-velocity digital-print design style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCNwwwPnZ1MWSbJTj2waFgy1SEUQ3j5L9UJUDpEzIGEanfhdAJx29ytJ7RuWtY_vdPWOdTQ9CObBAm7uJY2n3eGgfpe5yLayDji-Gad3xrDmgTwPeJEHlYVZKs9qi4sKK23zfR-Zwio7GdOx6-nF167C90VEz1aGiMn-WirWMhjoRiSjy_8yiJVbsShkIW_sYpnc1kfpHVO1ebQlzeESkQDXl_-Q5weu94UfjpzvrS-Zq5rF7hJvueXntJym08zcSThLhwOlpQ26ZG_"/>
+<div class="absolute inset-0 bg-primary/20 mix-blend-color"></div>
+</div>
+<div class="flex flex-col justify-between">
+<div>
+<h3 class="font-h2 text-h2 text-on-surface mb-2">Cyberpunk Symphony</h3>
+<div class="flex items-center gap-2 text-on-surface-variant font-body-lg text-body-lg mb-1">
+<span class="material-symbols-outlined text-lg">calendar_today</span>
+<span>Saturday, October 24, 2024</span>
+</div>
+<div class="flex items-center gap-2 text-on-surface-variant font-body-lg text-body-lg mb-1">
+<span class="material-symbols-outlined text-lg">schedule</span>
+<span>Saturday, October 24, 2024</span>
+</div>
+<div class="flex items-center gap-2 text-on-surface-variant font-body-lg text-body-lg">
+<span class="material-symbols-outlined text-lg">location_on</span>
+<span>Phu Tho Indoor Stadium, HCMC</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Selected Seats Card -->
+<section class="border-2 border-on-surface bg-surface-container-lowest">
+<div class="bg-surface-variant border-b-2 border-on-surface p-6">
+<h2 class="font-h3 text-h3 text-on-surface uppercase">SELECTED TICKETS</h2>
+</div>
+<div class="flex flex-col">
+<!-- Seat Item 1 -->
+<div class="flex justify-between items-center p-6 border-b-2 border-on-surface hover:bg-surface-container-low transition-colors">
+<div>
+<p class="font-h3 text-h3 text-on-surface">VIP Zone A</p>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Row A, Seat 5</p>
+</div>
+<p class="font-h3 text-h3 text-on-surface">1,500,000 đ</p>
+</div>
+<!-- Seat Item 2 -->
+<div class="flex justify-between items-center p-6 hover:bg-surface-container-low transition-colors">
+<div>
+<p class="font-h3 text-h3 text-on-surface">VIP Zone A</p>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Row A, Seat 6</p>
+</div>
+<p class="font-h3 text-h3 text-on-surface">1,500,000 đ</p>
+</div>
+</div>
+</section>
+<!-- Payment Method -->
+<section class="border-2 border-on-surface bg-surface-container-lowest">
+<div class="bg-surface-variant border-b-2 border-on-surface p-6">
+<h2 class="font-h3 text-h3 text-on-surface uppercase">PAYMENT METHOD</h2>
+</div>
+<div class="p-6 flex flex-col gap-4">
+<label class="flex items-center gap-4 p-4 border-2 border-primary bg-primary-fixed/20 cursor-pointer hover:bg-primary-fixed/30 transition-colors">
+<input checked="" class="w-6 h-6 text-primary border-2 border-on-surface focus:ring-primary focus:ring-2" name="payment" type="radio"/>
+<span class="material-symbols-outlined text-3xl text-primary">credit_card</span>
+<span class="font-body-lg text-body-lg font-bold text-on-surface flex-grow">Thẻ Tín Dụng / Ghi Nợ</span>
+</label>
+<label class="flex items-center gap-4 p-4 border-2 border-on-surface bg-surface cursor-pointer hover:bg-surface-container-low transition-colors">
+<input class="w-6 h-6 text-primary border-2 border-on-surface focus:ring-primary focus:ring-2" name="payment" type="radio"/>
+<span class="material-symbols-outlined text-3xl text-on-surface-variant">account_balance_wallet</span>
+<span class="font-body-lg text-body-lg font-bold text-on-surface flex-grow">Ví Điện Tử (Momo/ZaloPay)</span>
+</label>
+</div>
+</section>
+</div>
+<!-- Right Column: Summary & CTA -->
+<div class="lg:col-span-5">
+<div class="sticky top-28 flex flex-col gap-6 border-2 border-on-surface bg-surface-container-lowest">
+<div class="bg-primary border-b-2 border-on-surface p-6">
+<h2 class="font-h3 text-h3 text-on-primary uppercase">ORDER SUMMARY</h2>
+</div>
+<div class="p-6 flex flex-col gap-4">
+<div class="flex justify-between items-center font-body-lg text-body-lg text-on-surface">
+<span>Subtotal (2 tickets)</span>
+<span>3,000,000 đ</span>
+</div>
+<div class="flex justify-between items-center font-body-lg text-body-lg text-on-surface">
+<span>Service Fee</span>
+<span>150,000 đ</span>
+</div>
+<div class="flex justify-between items-center font-body-lg text-body-lg text-on-surface">
+<span>VAT (10%)</span>
+<span>300,000 đ</span>
+</div>
+<div class="h-0.5 bg-on-surface my-2"></div>
+<div class="flex justify-between items-end mb-6">
+<span class="font-h3 text-h3 text-on-surface uppercase">TOTAL</span>
+<span class="font-h1 text-h1 text-primary tracking-tighter">3,450,000 đ</span>
+</div>
+<button class="w-full h-16 bg-primary border-2 border-on-surface text-on-primary font-h3 text-h3 uppercase hover:scale-[1.02] hover:bg-on-primary-fixed-variant transition-all duration-200 active:scale-95 flex items-center justify-center gap-2">CONFIRM <span class="material-symbols-outlined text-3xl">arrow_forward</span></button>
+<p class="text-center font-body-md text-body-md text-on-surface-variant mt-2">By confirming, you agree to our <a class="text-primary underline font-bold" href="#">Terms &amp; Conditions</a>.</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-on-surface w-full border-t-4 border-primary py-12 px-8 flex flex-col md:flex-row justify-between items-center gap-6 relative z-10">
+<div class="text-xl font-black text-white">TicketRush</div>
+<div class="font-body-lg text-xs font-medium uppercase text-white flex gap-6">
+<a class="text-outline hover:text-white transition-colors" href="#">About</a>
+<a class="text-outline hover:text-white transition-colors" href="#">Terms of Service</a>
+<a class="text-outline hover:text-white transition-colors" href="#">Privacy Policy</a>
+<a class="text-outline hover:text-white transition-colors" href="#">Contact Support</a>
+</div>
+<div class="font-body-lg text-xs font-medium uppercase text-white">
+            © 2024 TicketRush. Digital-Print Velocity.
+        </div>
+</footer>
+</body></html>
