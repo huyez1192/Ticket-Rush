@@ -1,50 +1,97 @@
-:root {
-  color: #141b2b;
-  background: #f9f9ff;
-  font-family: Outfit, Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-}
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap");
+@import "./tokens.css";
+@import "./utilities.css";
+@import "../components/common/common.css";
 
 * {
   box-sizing: border-box;
+}
+
+html {
+  min-width: 320px;
+  background: var(--color-background);
+  color: var(--color-text-primary);
+  font-family: var(--font-family-base);
 }
 
 body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+  background: var(--color-background);
+  color: var(--color-text-primary);
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-body);
 }
 
-.app-shell {
-  min-height: 100vh;
-  display: grid;
-  place-items: center;
-  padding: 32px;
+button,
+input,
+select,
+textarea {
+  font: inherit;
 }
 
-.app-shell__panel {
-  max-width: 720px;
-  border: 2px solid #141b2b;
-  border-radius: 8px;
-  background: #ffffff;
-  padding: 32px;
+button {
+  cursor: pointer;
 }
 
-.app-shell__eyebrow {
-  margin: 0 0 12px;
-  font-size: 14px;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: #0058be;
+button:disabled,
+input:disabled,
+select:disabled,
+textarea:disabled {
+  cursor: not-allowed;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--color-primary);
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin-top: 0;
 }
 
 h1 {
-  margin: 0 0 16px;
-  font-size: 40px;
-  line-height: 1.1;
+  font-size: var(--font-size-h1);
+  line-height: var(--line-height-tight);
+  font-weight: 800;
+}
+
+h2 {
+  font-size: var(--font-size-h2);
+  line-height: var(--line-height-heading);
+  font-weight: 800;
+}
+
+h3 {
+  font-size: var(--font-size-h3);
+  line-height: 1.25;
+  font-weight: 700;
 }
 
 p {
-  font-size: 16px;
-  line-height: 1.5;
+  color: var(--color-text-secondary);
+}
+
+:focus-visible {
+  outline: 3px solid rgba(0, 88, 190, 0.35);
+  outline-offset: 2px;
+}
+
+#root {
+  min-height: 100vh;
 }
