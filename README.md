@@ -100,6 +100,23 @@ For local development, a standalone MongoDB instance may be used. In that case t
 
 For production, use a MongoDB replica set or another transaction-capable MongoDB deployment. If transactions are unavailable outside development, critical write flows fail fast instead of silently continuing without transaction guarantees. Checkout consistency depends on transaction support because it updates orders, seats, seat locks, and tickets together.
 
+## Admin APIs
+
+The backend implements the Swagger-defined admin APIs under `/api/admin/*` for:
+
+- user listing, detail, deletion, and role assignment
+- role listing and detail
+- dashboard overview, event revenue, event seat occupancy, and event customer demographics
+- audit log listing
+
+All admin APIs require a valid bearer token for a user with the `Admin` role. Demo credentials from the seed script are:
+
+```txt
+admin@example.com / Admin@123456
+```
+
+Dashboard metrics are derived from events, users, seats, paid orders, tickets, and waiting queue data. Demographics use customer `gender` and `dateOfBirth` when available; missing birth dates are counted in the `Unknown` age bucket. Audit log listing is available, and this phase writes minimal audit entries for admin user deletion and role assignment.
+
 ## Run Frontend
 
 ```bash
