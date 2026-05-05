@@ -80,7 +80,6 @@ export const updateEventSchema = {
       description: optionalNullableTrimmedString,
       startTime: dateTimeSchema.optional(),
       endTime: dateTimeSchema.optional(),
-      status: z.enum(EVENT_STATUS_VALUES).optional(),
       location: z.string().trim().min(1).optional()
     })
     .strict()

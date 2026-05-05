@@ -82,6 +82,24 @@ Health check:
 GET http://localhost:5000/api/health
 ```
 
+The health response follows the Swagger `HealthResponse` shape:
+
+```json
+{
+  "status": "ok",
+  "service": "ticket-rush-api",
+  "timestamp": "2026-05-05T00:00:00.000Z"
+}
+```
+
+## MongoDB Transactions
+
+Seat locking and checkout use MongoDB transactions when the deployment supports them.
+
+For local development, a standalone MongoDB instance may be used. In that case the API falls back to non-transaction mode only when `NODE_ENV=development`, so the demo flow can run without configuring a local replica set.
+
+For production, use a MongoDB replica set or another transaction-capable MongoDB deployment. If transactions are unavailable outside development, critical write flows fail fast instead of silently continuing without transaction guarantees. Checkout consistency depends on transaction support because it updates orders, seats, seat locks, and tickets together.
+
 ## Run Frontend
 
 ```bash

@@ -228,6 +228,10 @@ export async function generateAdminSeats(eventId, sectionId, payload) {
 export async function updateAdminSeatStatus(eventId, seatId, payload) {
   await assertEvent(eventId);
 
+  if (payload.status === SEAT_STATUSES.SOLD) {
+    throw new AppError("Seats cannot be manually marked Sold. Use the checkout/order flow to sell seats.", 400);
+  }
+
   const seat = await updateSeatByIdForEvent(eventId, seatId, {
     status: payload.status
   });

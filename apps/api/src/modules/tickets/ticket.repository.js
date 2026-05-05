@@ -40,3 +40,7 @@ export function findTicketByQrCode(qrCode) {
 export function findTicketByOrderItemId(orderItemId, session) {
   return Ticket.findOne({ orderItemId }).session(session || null);
 }
+
+export function countTicketsByEventId(eventId) {
+  return Ticket.countDocuments({ eventId });
+}

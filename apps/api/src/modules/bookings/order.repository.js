@@ -1,3 +1,4 @@
+import { ORDER_STATUSES } from "../../common/constants/index.js";
 import { Order, OrderItem } from "./order.model.js";
 
 const ITEM_POPULATE = {
@@ -64,4 +65,31 @@ export async function findAdminOrders(filters, pagination) {
 
 export function findOrderItemsByOrderId(orderId, session) {
   return OrderItem.find({ orderId }).populate(ITEM_POPULATE).sort({ createdAt: 1, _id: 1 }).session(session || null);
+}
+
+export function countOrdersByEventId(eventId) {
+  return Order.countDocuments({ eventId });
+}
+
+export function countOrderItemsBySeatIds(seatIds) {
+  return OrderItem.countDocuments({ seatId: { $in: seatIds } });
+}
+
+export async function findBlockingOrderItemsForSeats(seatIds, session) {
+  const blockingOrders = await Order.find({
+    status: { $in: [ORDER_STATUSES.PENDING, ORDER_STATUSES.PAID] }
+  })
+    .select("_id")
+    .session(session || null);
+
+  if (blockingOrders.length === 0) {
+    return [];
+  }
+
+  return OrderItem.find({
+    seatId: { $in: seatIds },
+    orderId: { $in: blockingOrders.map((order) => order._id) }
+  })
+    .select("_id orderId seatId")
+    .session(session || null);
 }

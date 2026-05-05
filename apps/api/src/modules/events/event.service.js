@@ -1,6 +1,17 @@
 import { AppError } from "../../common/errors/AppError.js";
 import { mapEventImageToDto, mapEventToDto, mapPagination } from "./event.mapper.js";
 import {
+  countOrderItemsBySeatIds,
+  countOrdersByEventId
+} from "../bookings/order.repository.js";
+import { countSeatLocksBySeatIds } from "../seats/seatLock.repository.js";
+import { countTicketsByEventId } from "../tickets/ticket.repository.js";
+import {
+  deleteSeatSectionsByEventId,
+  deleteSeatsByEventId,
+  findSeatIdsByEventId
+} from "../seats/seat.repository.js";
+import {
   createEvent,
   createEventImage,
   deleteEventById,
@@ -13,7 +24,6 @@ import {
   findPublicEvents,
   updateEventById
 } from "./event.repository.js";
-import { deleteSeatSectionsByEventId, deleteSeatsByEventId } from "../seats/seat.repository.js";
 
 const STATUS_TRANSITIONS = Object.freeze({
   Published: ["Draft"],
@@ -48,6 +58,24 @@ function assertStatusTransition(currentStatus, nextStatus) {
 
   if (!allowedFrom.includes(currentStatus)) {
     throw new AppError(`Cannot change event status from ${currentStatus} to ${nextStatus}.`, 400);
+  }
+}
+
+async function assertEventCanBeDeleted(eventId) {
+  const seatRecords = await findSeatIdsByEventId(eventId);
+  const seatIds = seatRecords.map((seat) => seat._id);
+  const [orderCount, orderItemCount, ticketCount, seatLockCount] = await Promise.all([
+    countOrdersByEventId(eventId),
+    seatIds.length > 0 ? countOrderItemsBySeatIds(seatIds) : 0,
+    countTicketsByEventId(eventId),
+    seatIds.length > 0 ? countSeatLocksBySeatIds(seatIds) : 0
+  ]);
+
+  if (orderCount > 0 || orderItemCount > 0 || ticketCount > 0 || seatLockCount > 0) {
+    throw new AppError(
+      "Cannot delete an event with related orders, order items, tickets, or seat locks.",
+      409
+    );
   }
 }
 
@@ -127,6 +155,10 @@ export async function updateAdminEvent(eventId, payload) {
     throw new AppError("Event not found.", 404);
   }
 
+  if (Object.prototype.hasOwnProperty.call(payload, "status")) {
+    throw new AppError("Event status cannot be changed through general update. Use a dedicated status endpoint.", 400);
+  }
+
   const update = normalizeEventPayload(payload);
   assertValidEventTimes(event, update);
 
@@ -141,6 +173,8 @@ export async function deleteAdminEvent(eventId) {
   if (!event) {
     throw new AppError("Event not found.", 404);
   }
+
+  await assertEventCanBeDeleted(eventId);
 
   await deleteEventImagesByEventId(eventId);
   await deleteSeatsByEventId(eventId);

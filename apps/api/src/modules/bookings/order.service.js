@@ -15,6 +15,7 @@ import { mapOrderToDto, mapPagination } from "./order.mapper.js";
 import {
   createOrder,
   createOrderItems,
+  findBlockingOrderItemsForSeats,
   findAdminOrders,
   findOrderById,
   findOrderByIdForUser,
@@ -22,6 +23,14 @@ import {
   findOrdersByUser,
   updateOrderById
 } from "./order.repository.js";
+
+function assertUniqueSeatIds(seatIds) {
+  const uniqueSeatIds = new Set(seatIds.map((seatId) => seatId.toString()));
+
+  if (uniqueSeatIds.size !== seatIds.length) {
+    throw new AppError("Duplicate seats are not allowed in the same order.", 400);
+  }
+}
 
 async function assertSellingEvent(eventId) {
   const event = await findEventById(eventId);
@@ -74,6 +83,7 @@ export async function getMyOrder(orderId, userId) {
 
 export async function createPendingOrder(userId, payload) {
   await assertSellingEvent(payload.eventId);
+  assertUniqueSeatIds(payload.seatIds);
 
   let createdOrderId;
 
@@ -94,6 +104,12 @@ export async function createPendingOrder(userId, payload) {
 
     if (validLocks.length !== payload.seatIds.length) {
       throw new AppError("All selected seats must be actively locked by the current customer.", 409);
+    }
+
+    const blockingOrderItems = await findBlockingOrderItemsForSeats(payload.seatIds, session);
+
+    if (blockingOrderItems.length > 0) {
+      throw new AppError("One or more selected seats already belong to an existing pending or paid order.", 409);
     }
 
     const totalAmount = seats.reduce((sum, seat) => sum + Number(seat.sectionId?.price || 0), 0);
@@ -174,6 +190,7 @@ export async function checkoutMyOrder(orderId, userId, payload) {
 
     const items = await findOrderItemsByOrderId(order._id, session);
     const seatIds = items.map((item) => item.seatId._id || item.seatId);
+    assertUniqueSeatIds(seatIds);
     const locks = await findActiveSeatLocksForUserSeats(userId, seatIds, session);
     const now = new Date();
 
@@ -181,9 +198,28 @@ export async function checkoutMyOrder(orderId, userId, payload) {
       throw new AppError("Selected seat locks are missing or expired.", 409);
     }
 
-    await mongoose
+    const lockedSeatCount = await mongoose.model("Seat").countDocuments({
+      _id: { $in: seatIds },
+      eventId: order.eventId,
+      status: SEAT_STATUSES.LOCKED
+    }).session(session);
+
+    if (lockedSeatCount !== seatIds.length) {
+      throw new AppError("One or more selected seats are no longer locked for checkout.", 409);
+    }
+
+    const seatUpdateResult = await mongoose
       .model("Seat")
-      .updateMany({ _id: { $in: seatIds }, status: SEAT_STATUSES.LOCKED }, { status: SEAT_STATUSES.SOLD }, { session });
+      .updateMany(
+        { _id: { $in: seatIds }, eventId: order.eventId, status: SEAT_STATUSES.LOCKED },
+        { status: SEAT_STATUSES.SOLD },
+        { session }
+      );
+
+    if (seatUpdateResult.matchedCount !== seatIds.length || seatUpdateResult.modifiedCount !== seatIds.length) {
+      throw new AppError("Checkout could not sell every selected seat. Please refresh and try again.", 409);
+    }
+
     await updateLocksByIds(
       locks.map((lock) => lock._id),
       { status: SEAT_LOCK_STATUSES.PAID },

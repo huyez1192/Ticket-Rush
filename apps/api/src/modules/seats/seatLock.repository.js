@@ -50,3 +50,7 @@ export async function findExpiredActiveLocks(now, session) {
 export function updateLocksByIds(lockIds, update, session) {
   return SeatLock.updateMany({ _id: { $in: lockIds } }, update, { session });
 }
+
+export function countSeatLocksBySeatIds(seatIds) {
+  return SeatLock.countDocuments({ seatId: { $in: seatIds } });
+}

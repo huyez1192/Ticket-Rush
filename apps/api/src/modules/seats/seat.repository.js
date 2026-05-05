@@ -96,6 +96,10 @@ export function findAllSeatsForEvent(eventId) {
     .lean();
 }
 
+export function findSeatIdsByEventId(eventId) {
+  return Seat.find({ eventId }).select("_id").lean();
+}
+
 export function findSeatChanges(eventId, since) {
   const query = { eventId };
 
