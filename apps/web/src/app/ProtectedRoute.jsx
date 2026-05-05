@@ -16,7 +16,7 @@ export default function ProtectedRoute({ requiredRole = ROLES.CUSTOMER, loginPat
   }
 
   if (requiredRole && !roles.includes(requiredRole)) {
-    return <Navigate to="/unauthorized" replace />;
+    return <Navigate to="/unauthorized" state={{ from: location }} replace />;
   }
 
   return <Outlet />;

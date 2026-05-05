@@ -1,9 +1,15 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import Button from "../components/common/Button";
 import { useAuth } from "../features/auth/useAuth";
 
 export default function CustomerHeader() {
   const { isAuthenticated, user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  async function handleLogout() {
+    await logout();
+    navigate("/login", { replace: true });
+  }
 
   return (
     <header className="customer-header">
@@ -18,7 +24,7 @@ export default function CustomerHeader() {
         {isAuthenticated ? (
           <>
             <span className="phase-note">{user?.fullName || user?.username || user?.email}</span>
-            <Button variant="outline" size="sm" onClick={logout}>
+            <Button variant="outline" size="sm" onClick={handleLogout}>
               Logout
             </Button>
           </>

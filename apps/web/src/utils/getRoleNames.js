@@ -5,6 +5,9 @@ export function getRoleNames(userOrRoles) {
     if (typeof userOrRoles?.role === "string") {
       return [userOrRoles.role];
     }
+    if (typeof userOrRoles?.name === "string") {
+      return [userOrRoles.name];
+    }
     return [];
   }
 
@@ -13,7 +16,7 @@ export function getRoleNames(userOrRoles) {
       if (typeof role === "string") {
         return role;
       }
-      return role?.name || role?.role || role?.title;
+      return role?.name || role?.role || role?.title || role?.roleName;
     })
     .filter(Boolean);
 }

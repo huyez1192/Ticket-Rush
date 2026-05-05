@@ -78,7 +78,7 @@ export function AuthProvider({ children }) {
       return user;
     } catch (error) {
       clearAuthStorage();
-      dispatch({ type: "AUTH_ERROR", payload: error });
+      dispatch({ type: error?.statusCode === 401 ? "AUTH_CLEAR" : "AUTH_ERROR", payload: error });
       return null;
     }
   }, [clearAuth]);
@@ -142,10 +142,11 @@ export function AuthProvider({ children }) {
       login,
       register,
       logout,
+      clearAuth,
       setAuthFromToken,
       loadCurrentUser,
     }),
-    [state, roleNames, isAdmin, isCustomer, login, register, logout, setAuthFromToken, loadCurrentUser],
+    [state, roleNames, isAdmin, isCustomer, login, register, logout, clearAuth, setAuthFromToken, loadCurrentUser],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

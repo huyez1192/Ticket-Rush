@@ -1,61 +1,120 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Button from "../../components/common/Button";
 import Card from "../../components/common/Card";
 import ErrorState from "../../components/common/ErrorState";
 import Input from "../../components/common/Input";
 import { useAuth } from "../../features/auth/useAuth";
+import { getFieldError } from "../../utils/formErrors";
 import { getRoleNames } from "../../utils/getRoleNames";
 import { mapApiError } from "../../utils/mapApiError";
 
 export default function AdminLoginPage() {
   const navigate = useNavigate();
-  const { login, isLoading } = useAuth();
+  const { login, isLoading, clearAuth } = useAuth();
   const [form, setForm] = useState({ usernameOrEmail: "", password: "" });
+  const [fieldErrors, setFieldErrors] = useState({});
   const [error, setError] = useState(null);
 
   function updateField(event) {
     setForm((current) => ({ ...current, [event.target.name]: event.target.value }));
+    setFieldErrors((current) => ({ ...current, [event.target.name]: "" }));
   }
 
   async function handleSubmit(event) {
     event.preventDefault();
     setError(null);
 
+    const validationErrors = validateAdminLogin(form);
+    setFieldErrors(validationErrors);
+
+    if (Object.keys(validationErrors).length > 0) {
+      return;
+    }
+
     try {
-      const user = await login(form);
+      const user = await login({
+        usernameOrEmail: form.usernameOrEmail.trim(),
+        password: form.password,
+      });
       const roles = getRoleNames(user);
-      navigate(roles.includes("Admin") ? "/admin/dashboard" : "/unauthorized", { replace: true });
+
+      if (!roles.includes("Admin")) {
+        clearAuth();
+        navigate("/unauthorized", { replace: true, state: { reason: "Admin access requires an Admin role." } });
+        return;
+      }
+
+      navigate("/admin/dashboard", { replace: true });
     } catch (apiError) {
-      setError(mapApiError(apiError));
+      const mappedError = mapApiError(apiError);
+      setError(mappedError);
+      setFieldErrors(mappedError.errors || {});
     }
   }
 
   return (
-    <main className="auth-page">
+    <main className="auth-page auth-page--admin">
       <section className="auth-brand-panel">
-        <div>
+        <div className="auth-brand-content">
+          <h1 className="auth-logo">TicketRush</h1>
           <p className="page-kicker">Ticket Rush Admin</p>
-          <h1>Operational control for events and ticketing.</h1>
+          <h2 className="auth-brand-title">Operational control for events and ticketing.</h2>
+          <p className="auth-brand-copy">Authorized access only. Admin routes are protected by role-based guards.</p>
         </div>
-        <p>Admin access uses the shared login API and role-based guards.</p>
       </section>
       <section className="auth-form-panel">
         <Card className="auth-form-card">
           <form className="form-stack" onSubmit={handleSubmit}>
-            <div>
-              <p className="page-kicker">Admin login</p>
-              <h2>Sign in</h2>
+            <div className="auth-form-header">
+              <p className="page-kicker">Admin portal</p>
+              <h1>Sign in</h1>
+              <p>Use an account with the Admin role.</p>
             </div>
             {error ? <ErrorState title="Login failed" message={error.message} /> : null}
-            <Input label="Username or email" name="usernameOrEmail" value={form.usernameOrEmail} onChange={updateField} required />
-            <Input label="Password" name="password" type="password" value={form.password} onChange={updateField} required />
-            <Button type="submit" loading={isLoading}>
+            <Input
+              label="Username or email"
+              name="usernameOrEmail"
+              value={form.usernameOrEmail}
+              onChange={updateField}
+              error={getFieldError(fieldErrors, "usernameOrEmail")}
+              autoComplete="username"
+              required
+            />
+            <Input
+              label="Password"
+              name="password"
+              type="password"
+              value={form.password}
+              onChange={updateField}
+              error={getFieldError(fieldErrors, "password")}
+              autoComplete="current-password"
+              required
+            />
+            <Button type="submit" loading={isLoading} disabled={isLoading}>
               Login as admin
             </Button>
           </form>
+          <footer className="auth-links">
+            <Link className="auth-link" to="/login">Customer login</Link>
+            <Link className="auth-link" to="/events">Back to events</Link>
+          </footer>
         </Card>
       </section>
     </main>
   );
+}
+
+function validateAdminLogin(values) {
+  const errors = {};
+
+  if (!values.usernameOrEmail.trim()) {
+    errors.usernameOrEmail = "Username or email is required.";
+  }
+
+  if (!values.password) {
+    errors.password = "Password is required.";
+  }
+
+  return errors;
 }

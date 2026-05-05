@@ -1,4 +1,4 @@
-import { NavLink, Outlet } from "react-router-dom";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import Button from "../components/common/Button";
 import { useAuth } from "../features/auth/useAuth";
 import "./layouts.css";
@@ -15,6 +15,12 @@ const adminLinks = [
 
 export default function AdminLayout() {
   const { logout, user } = useAuth();
+  const navigate = useNavigate();
+
+  async function handleLogout() {
+    await logout();
+    navigate("/admin/login", { replace: true });
+  }
 
   return (
     <div className="admin-layout">
@@ -32,7 +38,7 @@ export default function AdminLayout() {
         </nav>
         <div className="admin-sidebar__footer">
           <p className="phase-note">{user?.fullName || user?.username || user?.email}</p>
-          <Button variant="outline" size="sm" onClick={logout}>
+          <Button variant="outline" size="sm" onClick={handleLogout}>
             Logout
           </Button>
         </div>

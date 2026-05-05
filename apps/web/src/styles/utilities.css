@@ -40,50 +40,6 @@
   gap: var(--space-5);
 }
 
-.auth-page {
-  min-height: 100vh;
-  display: grid;
-  grid-template-columns: minmax(280px, 0.9fr) minmax(320px, 1fr);
-  background: var(--color-background);
-}
-
-.auth-brand-panel {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  gap: var(--space-8);
-  padding: var(--space-12);
-  background: var(--color-primary);
-  color: var(--color-text-inverse);
-  border-right: var(--border-strong);
-}
-
-.auth-brand-panel p {
-  color: rgba(255, 255, 255, 0.86);
-}
-
-.auth-form-panel {
-  display: grid;
-  place-items: center;
-  padding: var(--space-8);
-}
-
-.auth-form-card {
-  width: min(100%, var(--layout-auth-width));
-}
-
-@media (max-width: 920px) {
-  .auth-page {
-    grid-template-columns: 1fr;
-  }
-
-  .auth-brand-panel {
-    min-height: 260px;
-    border-right: 0;
-    border-bottom: var(--border-strong);
-  }
-}
-
 @media (max-width: 720px) {
   .page-shell {
     padding: var(--space-5);
