@@ -3,6 +3,8 @@ import { sendSuccess } from "../common/responses/apiResponse.js";
 import { env } from "../config/env.js";
 import authRoutes from "../modules/auth/auth.routes.js";
 import userRoutes from "../modules/users/user.routes.js";
+import eventRoutes from "../modules/events/event.routes.js";
+import seatRoutes from "../modules/seats/seat.routes.js";
 
 const router = Router();
 
@@ -16,5 +18,7 @@ router.get("/health", (_req, res) => {
 
 router.use("/auth", authRoutes);
 router.use("/users", userRoutes);
+router.use("/events", seatRoutes);
+router.use("/events", eventRoutes);
 
 export default router;

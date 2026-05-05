@@ -21,7 +21,7 @@ export function mapEventImageToDto(image) {
   };
 }
 
-export function mapEventToDto(event) {
+export function mapEventToDto(event, options = {}) {
   const value = toPlainObject(event);
 
   if (!value) {
@@ -38,6 +38,16 @@ export function mapEventToDto(event) {
     status: value.status,
     createdBy: value.createdBy?._id?.toString?.() || value.createdBy?.toString?.(),
     createdAt: value.createdAt,
-    updatedAt: value.updatedAt
+    updatedAt: value.updatedAt,
+    images: Array.isArray(options.images) ? options.images.map((image) => mapEventImageToDto(image)).filter(Boolean) : undefined
+  };
+}
+
+export function mapPagination({ page, limit, total }) {
+  return {
+    page,
+    limit,
+    total,
+    totalPages: Math.ceil(total / limit) || 0
   };
 }
