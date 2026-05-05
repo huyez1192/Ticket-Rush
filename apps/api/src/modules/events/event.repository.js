@@ -53,10 +53,44 @@ export function findPublicEventById(eventId) {
   }).lean();
 }
 
+export function findEventById(eventId) {
+  return Event.findById(eventId).lean();
+}
+
+export async function createEvent(eventData) {
+  const event = await Event.create(eventData);
+  return event.toObject();
+}
+
+export function updateEventById(eventId, update) {
+  return Event.findByIdAndUpdate(eventId, update, { new: true, runValidators: true }).lean();
+}
+
+export function deleteEventById(eventId) {
+  return Event.findByIdAndDelete(eventId);
+}
+
 export function findEventImages(eventId) {
   return EventImage.find({ eventId }).sort({ createdAt: 1, _id: 1 }).lean();
 }
 
 export function countEventImages(eventId) {
   return EventImage.countDocuments({ eventId });
+}
+
+export async function createEventImage(imageData) {
+  const image = await EventImage.create(imageData);
+  return image.toObject();
+}
+
+export function findEventImageByIdForEvent(eventId, imageId) {
+  return EventImage.findOne({ _id: imageId, eventId }).lean();
+}
+
+export function deleteEventImageByIdForEvent(eventId, imageId) {
+  return EventImage.findOneAndDelete({ _id: imageId, eventId });
+}
+
+export function deleteEventImagesByEventId(eventId) {
+  return EventImage.deleteMany({ eventId });
 }

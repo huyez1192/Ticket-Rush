@@ -52,3 +52,52 @@ export const seatMapChangesSchema = {
     })
     .strict()
 };
+
+const nullableTrimmedString = z
+  .string()
+  .trim()
+  .nullable()
+  .optional()
+  .transform((value) => (value === null ? undefined : value));
+
+export const createSeatSectionSchema = {
+  params: eventIdParamsSchema.params,
+  body: z
+    .object({
+      name: z.string().trim().min(1),
+      price: z.coerce.number().positive(),
+      description: nullableTrimmedString
+    })
+    .strict()
+};
+
+export const updateSeatSectionSchema = {
+  params: sectionParamsSchema.params,
+  body: z
+    .object({
+      name: z.string().trim().min(1).optional(),
+      price: z.coerce.number().positive().optional(),
+      description: nullableTrimmedString
+    })
+    .strict()
+};
+
+export const generateSeatsSchema = {
+  params: sectionParamsSchema.params,
+  body: z
+    .object({
+      rows: z.coerce.number().int().min(1),
+      seatsPerRow: z.coerce.number().int().min(1),
+      initialStatus: z.enum(SEAT_STATUS_VALUES).optional()
+    })
+    .strict()
+};
+
+export const updateSeatStatusSchema = {
+  params: seatParamsSchema.params,
+  body: z
+    .object({
+      status: z.enum(SEAT_STATUS_VALUES)
+    })
+    .strict()
+};

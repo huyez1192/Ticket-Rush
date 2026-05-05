@@ -7,6 +7,18 @@ const objectIdSchema = z.string().refine((value) => mongoose.Types.ObjectId.isVa
 });
 
 const dateTimeSchema = z.coerce.date();
+const nullableTrimmedString = z
+  .string()
+  .trim()
+  .nullable()
+  .optional()
+  .transform((value) => (value === null ? undefined : value));
+const optionalNullableTrimmedString = z
+  .string()
+  .trim()
+  .nullable()
+  .optional()
+  .transform((value) => (value === null ? undefined : value));
 
 export const listEventsSchema = {
   query: z
@@ -29,6 +41,56 @@ export const eventIdParamsSchema = {
   params: z
     .object({
       eventId: objectIdSchema
+    })
+    .strict()
+};
+
+export const eventImageParamsSchema = {
+  params: z
+    .object({
+      eventId: objectIdSchema,
+      id: objectIdSchema
+    })
+    .strict()
+};
+
+export const createEventSchema = {
+  body: z
+    .object({
+      name: z.string().trim().min(1),
+      description: nullableTrimmedString,
+      startTime: dateTimeSchema,
+      endTime: dateTimeSchema,
+      status: z.enum(EVENT_STATUS_VALUES),
+      imageUrls: z.array(z.string().trim().url()).optional(),
+      location: z.string().trim().min(1)
+    })
+    .strict()
+    .refine((value) => value.endTime > value.startTime, {
+      message: "endTime must be after startTime.",
+      path: ["endTime"]
+    })
+};
+
+export const updateEventSchema = {
+  params: eventIdParamsSchema.params,
+  body: z
+    .object({
+      name: z.string().trim().min(1).optional(),
+      description: optionalNullableTrimmedString,
+      startTime: dateTimeSchema.optional(),
+      endTime: dateTimeSchema.optional(),
+      status: z.enum(EVENT_STATUS_VALUES).optional(),
+      location: z.string().trim().min(1).optional()
+    })
+    .strict()
+};
+
+export const createEventImageSchema = {
+  params: eventIdParamsSchema.params,
+  body: z
+    .object({
+      imageUrl: z.string().trim().url()
     })
     .strict()
 };

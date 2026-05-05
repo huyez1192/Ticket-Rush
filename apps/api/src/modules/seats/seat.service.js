@@ -1,5 +1,6 @@
 import { AppError } from "../../common/errors/AppError.js";
-import { findPublicEventById } from "../events/event.repository.js";
+import { SEAT_STATUSES } from "../../common/constants/index.js";
+import { findEventById, findPublicEventById } from "../events/event.repository.js";
 import { mapEventToDto } from "../events/event.mapper.js";
 import {
   mapPagination,
@@ -9,16 +10,32 @@ import {
   mapSeatToDto
 } from "./seat.mapper.js";
 import {
+  countSeatsBySectionId,
+  createSeatSection,
+  createSeats,
+  deleteSeatSectionByIdForEvent,
   findAllSeatsForEvent,
   findSeatByIdForEvent,
   findSeatChanges,
   findSeatSectionByIdForEvent,
   findSeatSectionsByEventId,
-  findSeatsByEventId
+  findSeatsByEventId,
+  updateSeatByIdForEvent,
+  updateSeatSectionByIdForEvent
 } from "./seat.repository.js";
 
 async function assertPublicEvent(eventId) {
   const event = await findPublicEventById(eventId);
+
+  if (!event) {
+    throw new AppError("Event not found.", 404);
+  }
+
+  return event;
+}
+
+async function assertEvent(eventId) {
+  const event = await findEventById(eventId);
 
   if (!event) {
     throw new AppError("Event not found.", 404);
@@ -112,4 +129,112 @@ export async function getPublicSeatMapChanges(eventId, query) {
     changes: changes.map((seat) => mapSeatMapChangeToDto(seat)).filter(Boolean),
     serverTime: new Date().toISOString()
   };
+}
+
+export async function createAdminSeatSection(eventId, payload) {
+  await assertEvent(eventId);
+
+  try {
+    const section = await createSeatSection({
+      eventId,
+      name: payload.name,
+      price: payload.price,
+      description: payload.description
+    });
+
+    return mapSeatSectionToDto(section);
+  } catch (error) {
+    if (error?.code === 11000) {
+      throw new AppError("Seat section name already exists for this event.", 409);
+    }
+
+    throw error;
+  }
+}
+
+export async function updateAdminSeatSection(eventId, sectionId, payload) {
+  await assertEvent(eventId);
+
+  try {
+    const section = await updateSeatSectionByIdForEvent(eventId, sectionId, payload);
+
+    if (!section) {
+      throw new AppError("Seat section not found.", 404);
+    }
+
+    return mapSeatSectionToDto(section);
+  } catch (error) {
+    if (error?.code === 11000) {
+      throw new AppError("Seat section name already exists for this event.", 409);
+    }
+
+    throw error;
+  }
+}
+
+export async function deleteAdminSeatSection(eventId, sectionId) {
+  await assertEvent(eventId);
+
+  const section = await findSeatSectionByIdForEvent(eventId, sectionId);
+
+  if (!section) {
+    throw new AppError("Seat section not found.", 404);
+  }
+
+  const seatCount = await countSeatsBySectionId(sectionId);
+
+  if (seatCount > 0) {
+    throw new AppError("Cannot delete a seat section that still has seats.", 409);
+  }
+
+  await deleteSeatSectionByIdForEvent(eventId, sectionId);
+}
+
+export async function generateAdminSeats(eventId, sectionId, payload) {
+  await assertEvent(eventId);
+
+  const section = await findSeatSectionByIdForEvent(eventId, sectionId);
+
+  if (!section) {
+    throw new AppError("Seat section not found.", 404);
+  }
+
+  const existingSeats = await countSeatsBySectionId(sectionId);
+
+  if (existingSeats > 0) {
+    throw new AppError("Seats have already been generated for this section.", 409);
+  }
+
+  const seats = [];
+
+  for (let rowNumber = 1; rowNumber <= payload.rows; rowNumber += 1) {
+    for (let seatNumber = 1; seatNumber <= payload.seatsPerRow; seatNumber += 1) {
+      seats.push({
+        eventId,
+        sectionId,
+        rowNumber,
+        seatNumber,
+        status: payload.initialStatus || SEAT_STATUSES.AVAILABLE
+      });
+    }
+  }
+
+  const createdSeats = await createSeats(seats);
+  const populatedSeats = await findSeatsByEventId(eventId, { sectionId }, { page: 1, limit: createdSeats.length });
+
+  return mapSeatMapSectionToDto(section, populatedSeats.items);
+}
+
+export async function updateAdminSeatStatus(eventId, seatId, payload) {
+  await assertEvent(eventId);
+
+  const seat = await updateSeatByIdForEvent(eventId, seatId, {
+    status: payload.status
+  });
+
+  if (!seat) {
+    throw new AppError("Seat not found.", 404);
+  }
+
+  return mapSeatToDto(seat);
 }

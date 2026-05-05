@@ -13,6 +13,23 @@ export function countSeatSectionsByEventId(eventId) {
   return SeatSection.countDocuments({ eventId });
 }
 
+export async function createSeatSection(sectionData) {
+  const section = await SeatSection.create(sectionData);
+  return section.toObject();
+}
+
+export function updateSeatSectionByIdForEvent(eventId, sectionId, update) {
+  return SeatSection.findOneAndUpdate({ _id: sectionId, eventId }, update, { new: true, runValidators: true }).lean();
+}
+
+export function deleteSeatSectionByIdForEvent(eventId, sectionId) {
+  return SeatSection.findOneAndDelete({ _id: sectionId, eventId });
+}
+
+export function deleteSeatSectionsByEventId(eventId) {
+  return SeatSection.deleteMany({ eventId });
+}
+
 function buildSeatFilter(eventId, filters = {}) {
   const query = { eventId };
 
@@ -48,6 +65,28 @@ export function findSeatByIdForEvent(eventId, seatId) {
   return Seat.findOne({ _id: seatId, eventId })
     .populate({ path: "sectionId", select: "eventId name description price createdAt updatedAt" })
     .lean();
+}
+
+export function updateSeatByIdForEvent(eventId, seatId, update) {
+  return Seat.findOneAndUpdate({ _id: seatId, eventId }, update, { new: true, runValidators: true })
+    .populate({ path: "sectionId", select: "eventId name description price createdAt updatedAt" })
+    .lean();
+}
+
+export function countSeatsBySectionId(sectionId) {
+  return Seat.countDocuments({ sectionId });
+}
+
+export function countSeatsByEventId(eventId) {
+  return Seat.countDocuments({ eventId });
+}
+
+export function deleteSeatsByEventId(eventId) {
+  return Seat.deleteMany({ eventId });
+}
+
+export async function createSeats(seats) {
+  return Seat.insertMany(seats, { ordered: true });
 }
 
 export function findAllSeatsForEvent(eventId) {
