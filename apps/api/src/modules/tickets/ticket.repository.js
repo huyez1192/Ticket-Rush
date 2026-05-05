@@ -1,0 +1,42 @@
+import { Ticket } from "./ticket.model.js";
+
+const TICKET_POPULATE = [
+  { path: "eventId" },
+  {
+    path: "seatId",
+    populate: { path: "sectionId", select: "eventId name description price createdAt updatedAt" }
+  }
+];
+
+export async function createTicket(ticketData, session) {
+  const [ticket] = await Ticket.create([ticketData], { session });
+  return ticket;
+}
+
+export async function findTicketsByUser(userId, filters, pagination) {
+  const query = { userId };
+
+  if (filters.eventId) {
+    query.eventId = filters.eventId;
+  }
+
+  const skip = (pagination.page - 1) * pagination.limit;
+  const [items, total] = await Promise.all([
+    Ticket.find(query).populate(TICKET_POPULATE).sort({ issuedAt: -1, _id: -1 }).skip(skip).limit(pagination.limit).lean(),
+    Ticket.countDocuments(query)
+  ]);
+
+  return { items, total };
+}
+
+export function findTicketByIdForUser(ticketId, userId) {
+  return Ticket.findOne({ _id: ticketId, userId }).populate(TICKET_POPULATE).lean();
+}
+
+export function findTicketByQrCode(qrCode) {
+  return Ticket.findOne({ qrCode }).populate(TICKET_POPULATE).lean();
+}
+
+export function findTicketByOrderItemId(orderItemId, session) {
+  return Ticket.findOne({ orderItemId }).session(session || null);
+}
