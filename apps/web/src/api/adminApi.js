@@ -79,3 +79,48 @@ export async function deleteEventImage(eventId, imageId) {
   const response = await axiosClient.delete(`/events/${eventId}/images/${imageId}`);
   return unwrapData(response);
 }
+
+export async function getEventSections(eventId) {
+  const response = await axiosClient.get(`/events/${eventId}/sections`);
+  return unwrapData(response);
+}
+
+export async function getEventSectionById(eventId, sectionId) {
+  const response = await axiosClient.get(`/events/${eventId}/sections/${sectionId}`);
+  return unwrapData(response);
+}
+
+export async function createEventSection(eventId, payload) {
+  const response = await axiosClient.post(`/events/${eventId}/sections`, payload);
+  return unwrapData(response);
+}
+
+export async function updateEventSection(eventId, sectionId, payload) {
+  const response = await axiosClient.put(`/events/${eventId}/sections/${sectionId}`, payload);
+  return unwrapData(response);
+}
+
+export async function deleteEventSection(eventId, sectionId) {
+  const response = await axiosClient.delete(`/events/${eventId}/sections/${sectionId}`);
+  return unwrapData(response);
+}
+
+export async function generateSeats(eventId, sectionId, payload) {
+  const response = await axiosClient.post(`/events/${eventId}/sections/${sectionId}/generate-seats`, payload);
+  return unwrapData(response);
+}
+
+export async function getEventSeats(eventId, params = {}) {
+  const response = await axiosClient.get(`/events/${eventId}/seats`, { params });
+  return unwrapData(response);
+}
+
+export async function getEventSeatMap(eventId) {
+  const response = await axiosClient.get(`/events/${eventId}/seat-map`);
+  return unwrapData(response);
+}
+
+export async function updateSeatStatus(eventId, seatId, payload) {
+  const response = await axiosClient.patch(`/events/${eventId}/seats/${seatId}`, payload);
+  return unwrapData(response);
+}
