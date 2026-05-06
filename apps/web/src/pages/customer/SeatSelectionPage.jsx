@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { getEventById } from "../../api/eventApi";
+import { createOrder } from "../../api/orderApi";
 import { getEventSeatMap, getEventSections } from "../../api/seatApi";
 import { createSeatLocks, getMySeatLocks, releaseSeatLock } from "../../api/seatLockApi";
 import Button from "../../components/common/Button";
@@ -14,6 +15,7 @@ import SeatMap from "../../components/seat/SeatMap";
 import SeatSelectionToolbar from "../../components/seat/SeatSelectionToolbar";
 import SeatSummary from "../../components/seat/SeatSummary";
 import SectionSelector from "../../components/seat/SectionSelector";
+import { checkout } from "../../constants/routes";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { formatDateRange } from "../../utils/formatDate";
 import { getCollectionItems, normalizeEvent } from "../../utils/eventMappers";
@@ -30,6 +32,7 @@ const POLL_INTERVAL_MS = 12000;
 
 export default function SeatSelectionPage() {
   const { eventId } = useParams();
+  const navigate = useNavigate();
   const [event, setEvent] = useState(null);
   const [seatMapSections, setSeatMapSections] = useState([]);
   const [activeSectionId, setActiveSectionId] = useState("");
@@ -38,6 +41,7 @@ export default function SeatSelectionPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isPolling, setIsPolling] = useState(false);
   const [isLocking, setIsLocking] = useState(false);
+  const [isCreatingOrder, setIsCreatingOrder] = useState(false);
   const [releasingSeatId, setReleasingSeatId] = useState("");
   const [error, setError] = useState(null);
   const [actionError, setActionError] = useState(null);
@@ -183,7 +187,7 @@ export default function SeatSelectionPage() {
       await refreshSeatData({ silent: true });
 
       if (lockedSeats.length) {
-        setNotice(`${lockedSeats.length} seat${lockedSeats.length === 1 ? "" : "s"} locked. Checkout starts in Phase 12.`);
+        setNotice(`${lockedSeats.length} seat${lockedSeats.length === 1 ? "" : "s"} locked. You can now create an order.`);
       }
 
       if (failedSeatIds.length) {
@@ -217,6 +221,35 @@ export default function SeatSelectionPage() {
     setNotice("A seat lock expired. Refreshing seat availability.");
     refreshSeatData({ silent: true });
   }, [refreshSeatData]);
+
+  async function handleCreateOrder() {
+    if (!activeLocks.length) {
+      setActionError("Lock seats before creating an order.");
+      return;
+    }
+
+    setIsCreatingOrder(true);
+    setActionError(null);
+    setNotice("");
+
+    try {
+      const order = await createOrder({
+        eventId,
+        seatIds: activeLocks.map((lock) => lock.seatId).filter(Boolean),
+      });
+
+      if (!order?.id && !order?._id) {
+        throw new Error("The API did not return an order id.");
+      }
+
+      navigate(checkout(order.id || order._id));
+    } catch (apiError) {
+      setActionError(mapApiError(apiError).message);
+      await refreshSeatData({ silent: true });
+    } finally {
+      setIsCreatingOrder(false);
+    }
+  }
 
   if (isLoading) {
     return (
@@ -336,10 +369,9 @@ export default function SeatSelectionPage() {
                       {lockedSeats.length} locked seat{lockedSeats.length === 1 ? "" : "s"} are ready for the checkout
                       phase.
                     </p>
-                    <Button type="button" disabled>
-                      Continue to checkout
+                    <Button type="button" loading={isCreatingOrder} disabled={isCreatingOrder} onClick={handleCreateOrder}>
+                      Create order and continue
                     </Button>
-                    <p className="phase-note">Order creation and checkout are intentionally deferred to Phase 12.</p>
                   </>
                 ) : (
                   <p>Lock seats before continuing. This phase does not create orders.</p>

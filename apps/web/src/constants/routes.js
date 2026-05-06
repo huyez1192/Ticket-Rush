@@ -22,3 +22,15 @@ export function eventSeats(eventId) {
 export function checkout(orderId) {
   return `/orders/${orderId}/checkout`;
 }
+
+export function checkoutSuccess(orderId) {
+  return orderId ? `/checkout/success?orderId=${encodeURIComponent(orderId)}` : "/checkout/success";
+}
+
+export function checkoutFailure(orderId) {
+  return orderId ? `/checkout/failure?orderId=${encodeURIComponent(orderId)}` : "/checkout/failure";
+}
+
+export function ticketDetail(ticketId) {
+  return `/my-tickets/${ticketId}`;
+}
