@@ -14,3 +14,14 @@ export function formatDate(value, options = {}) {
     ...options,
   }).format(date);
 }
+
+export function formatDateRange(startValue, endValue) {
+  const start = formatDate(startValue, { dateStyle: "medium", timeStyle: "short" });
+  const end = formatDate(endValue, { dateStyle: "medium", timeStyle: "short" });
+
+  if (start && end) {
+    return `${start} - ${end}`;
+  }
+
+  return start || end || "Date to be announced";
+}

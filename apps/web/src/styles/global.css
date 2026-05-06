@@ -3,6 +3,7 @@
 @import "./utilities.css";
 @import "../features/auth/auth.css";
 @import "../components/common/common.css";
+@import "../components/event/event.css";
 
 * {
   box-sizing: border-box;
