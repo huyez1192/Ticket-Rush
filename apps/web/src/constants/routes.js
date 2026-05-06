@@ -10,3 +10,15 @@ export const ROUTES = {
   ADMIN_DASHBOARD: "/admin/dashboard",
   ADMIN_EVENTS: "/admin/events",
 };
+
+export function eventDetail(eventId) {
+  return `/events/${eventId}`;
+}
+
+export function eventSeats(eventId) {
+  return `/events/${eventId}/seats`;
+}
+
+export function checkout(orderId) {
+  return `/orders/${orderId}/checkout`;
+}
