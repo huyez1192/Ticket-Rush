@@ -21,7 +21,7 @@ export default function AdminEventTable({ events = [], onEdit, onDelete, onStatu
   }
 
   return (
-    <AdminDataTable columns={columns} footer={footer}>
+    <AdminDataTable columns={columns} footer={footer} tableClassName="admin-event-table">
       {events.map((event) => (
         <tr key={event.id}>
           <td>
@@ -48,7 +48,7 @@ export default function AdminEventTable({ events = [], onEdit, onDelete, onStatu
             <AdminEventStatusActions event={event} onAction={onStatusAction} loadingAction={loadingAction} />
           </td>
           <td>
-            <div className="admin-row-actions">
+            <div className="admin-event-table__actions">
               <Link className="btn btn--outline btn--sm" to={adminEventDetail(event.id)}>
                 View
               </Link>

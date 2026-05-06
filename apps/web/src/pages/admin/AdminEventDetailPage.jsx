@@ -13,6 +13,7 @@ import {
 } from "../../api/adminApi";
 import AdminEventForm from "../../components/admin/AdminEventForm";
 import AdminEventImageManager from "../../components/admin/AdminEventImageManager";
+import AdminEventImagePreview from "../../components/admin/AdminEventImagePreview";
 import AdminEventStatusActions from "../../components/admin/AdminEventStatusActions";
 import AdminPageHeader from "../../components/admin/AdminPageHeader";
 import Button from "../../components/common/Button";
@@ -221,14 +222,16 @@ export default function AdminEventDetailPage() {
         </Card>
       </section>
 
-      <Card title="Image URL manager">
-        <AdminEventImageManager
-          images={images}
-          onAdd={handleAddImage}
-          onDelete={handleDeleteImage}
-          loading={imageLoading}
-          error={imageError}
-        />
+      <Card title="Event images">
+        {images.length ? (
+          <div className="admin-image-gallery" aria-label="Event image previews">
+            {images.map((image) => (
+              <AdminEventImagePreview key={image.id || image.imageUrl} image={image} alt={`${event.name} preview`} />
+            ))}
+          </div>
+        ) : (
+          <p>No images have been added for this event.</p>
+        )}
       </Card>
 
       <div className="admin-row-actions">
@@ -246,6 +249,15 @@ export default function AdminEventDetailPage() {
           onCancel={() => setEditOpen(false)}
           loading={editLoading}
           apiError={editError}
+          imageManager={
+            <AdminEventImageManager
+              images={images}
+              onAdd={handleAddImage}
+              onDelete={handleDeleteImage}
+              loading={imageLoading}
+              error={imageError}
+            />
+          }
         />
       </Modal>
     </div>

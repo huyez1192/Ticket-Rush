@@ -7,7 +7,15 @@ import Select from "../common/Select";
 import Textarea from "../common/Textarea";
 import "./admin.css";
 
-export default function AdminEventForm({ event, mode = "create", onSubmit, onCancel, loading, apiError }) {
+export default function AdminEventForm({
+  event,
+  mode = "create",
+  onSubmit,
+  onCancel,
+  loading,
+  apiError,
+  imageManager,
+}) {
   const initialValues = useMemo(() => getEventFormInitialValues(event), [event]);
   const [values, setValues] = useState(initialValues);
   const [errors, setErrors] = useState({});
@@ -80,6 +88,15 @@ export default function AdminEventForm({ event, mode = "create", onSubmit, onCan
           />
         ) : null}
       </div>
+      {!isCreate && imageManager ? (
+        <section className="admin-form__section admin-form__full">
+          <div>
+            <h3>Event images</h3>
+            <p>Manage image URLs used by event pages.</p>
+          </div>
+          {imageManager}
+        </section>
+      ) : null}
       <div className="admin-form__actions">
         <Button type="submit" loading={loading}>
           {isCreate ? "Create event" : "Save changes"}

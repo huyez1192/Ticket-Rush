@@ -2,14 +2,14 @@ import { useState } from "react";
 import Button from "../common/Button";
 import EmptyState from "../common/EmptyState";
 import Input from "../common/Input";
+import AdminEventImagePreview from "./AdminEventImagePreview";
 import "./admin.css";
 
 export default function AdminEventImageManager({ images = [], onAdd, onDelete, loading, error }) {
   const [imageUrl, setImageUrl] = useState("");
   const [localError, setLocalError] = useState("");
 
-  function handleSubmit(event) {
-    event.preventDefault();
+  function handleAddImage() {
     setLocalError("");
 
     if (!imageUrl.trim()) {
@@ -28,30 +28,37 @@ export default function AdminEventImageManager({ images = [], onAdd, onDelete, l
     setImageUrl("");
   }
 
+  function handleKeyDown(event) {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      handleAddImage();
+    }
+  }
+
   return (
     <section className="admin-image-manager">
-      <form className="admin-image-manager__actions" onSubmit={handleSubmit}>
+      <div className="admin-image-manager__actions">
         <Input
           label="Image URL"
           name="imageUrl"
           value={imageUrl}
           onChange={(event) => setImageUrl(event.target.value)}
+          onKeyDown={handleKeyDown}
+          disabled={loading}
           error={localError}
           placeholder="https://example.com/event.jpg"
         />
-        <Button type="submit" loading={loading}>
+        <Button type="button" loading={loading} onClick={handleAddImage}>
           Add image
         </Button>
-      </form>
+      </div>
       {error ? <p className="field__error">{error}</p> : null}
       {images.length ? (
         <ul className="admin-image-list">
           {images.map((image) => (
             <li className="admin-image-row" key={image.id || image.imageUrl}>
-              <a className="admin-image-row__url" href={image.imageUrl} target="_blank" rel="noreferrer">
-                {image.imageUrl}
-              </a>
-              <Button variant="danger" size="sm" onClick={() => onDelete?.(image)}>
+              <AdminEventImagePreview image={image} alt="Event image preview" />
+              <Button type="button" variant="danger" size="sm" disabled={loading} onClick={() => onDelete?.(image)}>
                 Delete
               </Button>
             </li>

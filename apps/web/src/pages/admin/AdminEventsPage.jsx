@@ -4,8 +4,11 @@ import {
   cancelEvent,
   closeEvent,
   createEvent,
+  createEventImage,
+  deleteEventImage,
   deleteEvent,
   getAdminEvents,
+  getEventImages,
   openSellingEvent,
   publishEvent,
   updateEvent,
@@ -13,6 +16,7 @@ import {
 import AdminConfirmDialog from "../../components/admin/AdminConfirmDialog";
 import AdminEventFilters from "../../components/admin/AdminEventFilters";
 import AdminEventForm from "../../components/admin/AdminEventForm";
+import AdminEventImageManager from "../../components/admin/AdminEventImageManager";
 import AdminEventTable from "../../components/admin/AdminEventTable";
 import AdminPageHeader from "../../components/admin/AdminPageHeader";
 import Button from "../../components/common/Button";
@@ -20,7 +24,7 @@ import ErrorState from "../../components/common/ErrorState";
 import LoadingState from "../../components/common/LoadingState";
 import Modal from "../../components/common/Modal";
 import Pagination from "../../components/common/Pagination";
-import { normalizeAdminEventsPayload } from "../../utils/adminEventMappers";
+import { normalizeAdminEventsPayload, normalizeEventImagesPayload } from "../../utils/adminEventMappers";
 
 const STATUS_ACTIONS = {
   publish: publishEvent,
@@ -50,6 +54,9 @@ export default function AdminEventsPage() {
   const [formModal, setFormModal] = useState({ open: false, mode: "create", event: null });
   const [formLoading, setFormLoading] = useState(false);
   const [formError, setFormError] = useState("");
+  const [formImages, setFormImages] = useState([]);
+  const [formImageLoading, setFormImageLoading] = useState(false);
+  const [formImageError, setFormImageError] = useState("");
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [deleteError, setDeleteError] = useState("");
@@ -122,17 +129,37 @@ export default function AdminEventsPage() {
 
   function openCreateModal() {
     setFormError("");
+    setFormImages([]);
+    setFormImageError("");
     setFormModal({ open: true, mode: "create", event: null });
   }
 
   function openEditModal(event) {
     setFormError("");
+    setFormImages([]);
+    setFormImageError("");
     setFormModal({ open: true, mode: "edit", event });
+    loadFormImages(event.id);
   }
 
   function closeFormModal() {
     setFormModal({ open: false, mode: "create", event: null });
     setFormError("");
+    setFormImageError("");
+  }
+
+  async function loadFormImages(eventId) {
+    setFormImageLoading(true);
+    setFormImageError("");
+
+    try {
+      const payload = await getEventImages(eventId);
+      setFormImages(normalizeEventImagesPayload(payload));
+    } catch (apiError) {
+      setFormImageError(apiError.message);
+    } finally {
+      setFormImageLoading(false);
+    }
   }
 
   async function handleSaveEvent(payload) {
@@ -154,6 +181,45 @@ export default function AdminEventsPage() {
       setFormError(apiError.message);
     } finally {
       setFormLoading(false);
+    }
+  }
+
+  async function handleAddFormImage(payload) {
+    if (!formModal.event?.id) {
+      return;
+    }
+
+    setFormImageLoading(true);
+    setFormImageError("");
+
+    try {
+      await createEventImage(formModal.event.id, payload);
+      const imagePayload = await getEventImages(formModal.event.id);
+      setFormImages(normalizeEventImagesPayload(imagePayload));
+      setNotice("Image added.");
+    } catch (apiError) {
+      setFormImageError(apiError.message);
+    } finally {
+      setFormImageLoading(false);
+    }
+  }
+
+  async function handleDeleteFormImage(image) {
+    if (!formModal.event?.id) {
+      return;
+    }
+
+    setFormImageLoading(true);
+    setFormImageError("");
+
+    try {
+      await deleteEventImage(formModal.event.id, image.id);
+      setFormImages((current) => current.filter((item) => item.id !== image.id));
+      setNotice("Image deleted.");
+    } catch (apiError) {
+      setFormImageError(apiError.message);
+    } finally {
+      setFormImageLoading(false);
     }
   }
 
@@ -257,6 +323,17 @@ export default function AdminEventsPage() {
           onCancel={closeFormModal}
           loading={formLoading}
           apiError={formError}
+          imageManager={
+            formModal.mode === "edit" ? (
+              <AdminEventImageManager
+                images={formImages}
+                onAdd={handleAddFormImage}
+                onDelete={handleDeleteFormImage}
+                loading={formImageLoading}
+                error={formImageError}
+              />
+            ) : null
+          }
         />
       </Modal>
 
