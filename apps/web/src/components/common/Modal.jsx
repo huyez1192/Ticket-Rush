@@ -12,7 +12,9 @@ export default function Modal({ title, children, isOpen, onClose, actions }) {
           <h2 id="modal-title">{title}</h2>
         </header>
         <div className="modal__content">{children}</div>
-        <footer className="modal__footer">{actions || <Button onClick={onClose}>Close</Button>}</footer>
+        {actions !== null ? (
+          <footer className="modal__footer">{actions === undefined ? <Button onClick={onClose}>Close</Button> : actions}</footer>
+        ) : null}
       </section>
     </div>
   );

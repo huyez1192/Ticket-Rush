@@ -25,6 +25,36 @@ function getRoleNames(user) {
     : [];
 }
 
+async function resolveUserFromToken(token) {
+  let decoded;
+
+  try {
+    decoded = jwt.verify(token, env.JWT_ACCESS_SECRET);
+  } catch (_error) {
+    return null;
+  }
+
+  const userId = decoded.sub || decoded.id;
+
+  if (!userId) {
+    return null;
+  }
+
+  const user = await findUserById(userId);
+
+  if (!user) {
+    return null;
+  }
+
+  return {
+    id: user._id.toString(),
+    username: user.username,
+    email: user.email,
+    roles: getRoleNames(user),
+    document: user
+  };
+}
+
 export async function authenticate(req, _res, next) {
   try {
     const token = getBearerToken(req);
@@ -33,33 +63,34 @@ export async function authenticate(req, _res, next) {
       throw new AppError("Authentication token is required.", 401);
     }
 
-    let decoded;
-
-    try {
-      decoded = jwt.verify(token, env.JWT_ACCESS_SECRET);
-    } catch (_error) {
-      throw new AppError("Invalid or expired authentication token.", 401);
-    }
-
-    const userId = decoded.sub || decoded.id;
-
-    if (!userId) {
-      throw new AppError("Invalid or expired authentication token.", 401);
-    }
-
-    const user = await findUserById(userId);
+    const user = await resolveUserFromToken(token);
 
     if (!user) {
-      throw new AppError("Authenticated user no longer exists.", 401);
+      throw new AppError("Invalid or expired authentication token.", 401);
     }
 
-    req.user = {
-      id: user._id.toString(),
-      username: user.username,
-      email: user.email,
-      roles: getRoleNames(user),
-      document: user
-    };
+    req.user = user;
+
+    next();
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function optionalAuthenticate(req, _res, next) {
+  try {
+    const token = getBearerToken(req);
+
+    if (!token) {
+      next();
+      return;
+    }
+
+    const user = await resolveUserFromToken(token);
+
+    if (user) {
+      req.user = user;
+    }
 
     next();
   } catch (error) {

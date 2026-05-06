@@ -4,14 +4,20 @@ import { Event } from "./event.model.js";
 
 export const PUBLIC_EVENT_STATUSES = Object.freeze([EVENT_STATUSES.PUBLISHED, EVENT_STATUSES.SELLING]);
 
-function buildPublicEventFilter(filters = {}) {
+function buildEventFilter(filters = {}, { publicOnly = true } = {}) {
   const query = {};
   const requestedStatus = filters.status;
 
   if (requestedStatus) {
-    query.status = PUBLIC_EVENT_STATUSES.includes(requestedStatus) ? requestedStatus : { $in: [] };
-  } else {
+    if (publicOnly && !PUBLIC_EVENT_STATUSES.includes(requestedStatus)) {
+      query.status = { $in: [] };
+    } else {
+      query.status = requestedStatus;
+    }
+  } else if (publicOnly) {
     query.status = { $in: PUBLIC_EVENT_STATUSES };
+  } else {
+    query.status = { $in: Object.values(EVENT_STATUSES) };
   }
 
   if (filters.keyword) {
@@ -34,8 +40,8 @@ function buildPublicEventFilter(filters = {}) {
   return query;
 }
 
-export async function findPublicEvents(filters, pagination) {
-  const query = buildPublicEventFilter(filters);
+export async function findEvents(filters, pagination, options = {}) {
+  const query = buildEventFilter(filters, options);
   const skip = (pagination.page - 1) * pagination.limit;
 
   const [items, total] = await Promise.all([
@@ -44,6 +50,10 @@ export async function findPublicEvents(filters, pagination) {
   ]);
 
   return { items, total };
+}
+
+export function findPublicEvents(filters, pagination) {
+  return findEvents(filters, pagination, { publicOnly: true });
 }
 
 export function findPublicEventById(eventId) {

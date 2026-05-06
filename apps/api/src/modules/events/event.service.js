@@ -1,4 +1,5 @@
 import { AppError } from "../../common/errors/AppError.js";
+import { ROLES } from "../../common/constants/index.js";
 import { mapEventImageToDto, mapEventToDto, mapPagination } from "./event.mapper.js";
 import {
   countOrderItemsBySeatIds,
@@ -17,6 +18,7 @@ import {
   deleteEventById,
   deleteEventImageByIdForEvent,
   deleteEventImagesByEventId,
+  findEvents,
   findEventById,
   findEventImageByIdForEvent,
   findEventImages,
@@ -31,6 +33,10 @@ const STATUS_TRANSITIONS = Object.freeze({
   Closed: ["Selling"],
   Cancelled: ["Published", "Selling"]
 });
+
+function isAdminUser(user) {
+  return Array.isArray(user?.roles) && user.roles.includes(ROLES.ADMIN);
+}
 
 function normalizeEventPayload(payload) {
   return {
@@ -80,12 +86,19 @@ async function assertEventCanBeDeleted(eventId) {
 }
 
 export async function getPublicEvents(query) {
+  return getEvents(query);
+}
+
+export async function getEvents(query, user) {
   const pagination = {
     page: query.page,
     limit: query.limit
   };
 
-  const { items, total } = await findPublicEvents(query, pagination);
+  const adminUser = isAdminUser(user);
+  const { items, total } = adminUser
+    ? await findEvents(query, pagination, { publicOnly: false })
+    : await findPublicEvents(query, pagination);
   const imagesByEventId = new Map();
   const imageGroups = await Promise.all(items.map((event) => findEventImages(event._id)));
 
@@ -100,7 +113,11 @@ export async function getPublicEvents(query) {
 }
 
 export async function getPublicEventDetail(eventId) {
-  const event = await findPublicEventById(eventId);
+  return getEventDetail(eventId);
+}
+
+export async function getEventDetail(eventId, user) {
+  const event = isAdminUser(user) ? await findEventById(eventId) : await findPublicEventById(eventId);
 
   if (!event) {
     throw new AppError("Event not found.", 404);
@@ -112,7 +129,11 @@ export async function getPublicEventDetail(eventId) {
 }
 
 export async function getPublicEventImages(eventId) {
-  const event = await findPublicEventById(eventId);
+  return getEventImages(eventId);
+}
+
+export async function getEventImages(eventId, user) {
+  const event = isAdminUser(user) ? await findEventById(eventId) : await findPublicEventById(eventId);
 
   if (!event) {
     throw new AppError("Event not found.", 404);

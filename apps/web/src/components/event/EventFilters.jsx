@@ -7,7 +7,6 @@ const statusOptions = [
   { value: "", label: "All public statuses" },
   { value: "Published", label: "Published" },
   { value: "Selling", label: "Selling" },
-  { value: "Closed", label: "Closed" },
 ];
 
 export default function EventFilters({ filters, onChange, onSubmit, onReset, isLoading }) {

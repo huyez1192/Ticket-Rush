@@ -34,3 +34,19 @@ export function checkoutFailure(orderId) {
 export function ticketDetail(ticketId) {
   return `/my-tickets/${ticketId}`;
 }
+
+export function adminDashboard() {
+  return "/admin/dashboard";
+}
+
+export function adminEvents() {
+  return "/admin/events";
+}
+
+export function adminEventDetail(eventId) {
+  return `/admin/events/${eventId}`;
+}
+
+export function adminEventSeating(eventId) {
+  return `/admin/events/${eventId}/seating`;
+}

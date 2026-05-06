@@ -6,15 +6,15 @@ import {
   createAdminEventImage,
   deleteAdminEvent,
   deleteAdminEventImage,
-  getPublicEventDetail,
-  getPublicEventImages,
-  getPublicEvents,
+  getEventDetail as getEventDetailForViewer,
+  getEventImages,
+  getEvents,
   updateAdminEvent
 } from "./event.service.js";
 
 export async function listEvents(req, res, next) {
   try {
-    const data = await getPublicEvents(req.query);
+    const data = await getEvents(req.query, req.user);
     sendSuccess(res, 200, "Events fetched successfully.", data);
   } catch (error) {
     next(error);
@@ -23,7 +23,7 @@ export async function listEvents(req, res, next) {
 
 export async function getEventDetail(req, res, next) {
   try {
-    const data = await getPublicEventDetail(req.params.eventId);
+    const data = await getEventDetailForViewer(req.params.eventId, req.user);
     sendSuccess(res, 200, "Event fetched successfully.", data);
   } catch (error) {
     next(error);
@@ -32,7 +32,7 @@ export async function getEventDetail(req, res, next) {
 
 export async function listEventImages(req, res, next) {
   try {
-    const data = await getPublicEventImages(req.params.eventId);
+    const data = await getEventImages(req.params.eventId, req.user);
     sendSuccess(res, 200, "Event images fetched successfully.", data);
   } catch (error) {
     next(error);

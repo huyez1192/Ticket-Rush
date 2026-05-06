@@ -219,7 +219,11 @@
 }
 
 .modal__dialog {
-  width: min(100%, 560px);
+  width: min(100%, 720px);
+  max-height: min(90vh, 900px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   border: var(--border-strong);
   border-radius: var(--radius-card);
   background: var(--color-surface);
@@ -227,6 +231,7 @@
 
 .modal__header,
 .modal__footer {
+  flex: 0 0 auto;
   padding: var(--space-4) var(--space-6);
 }
 
@@ -236,6 +241,8 @@
 }
 
 .modal__content {
+  min-height: 0;
+  overflow-y: auto;
   padding: var(--space-6);
 }
 
@@ -244,6 +251,22 @@
   justify-content: flex-end;
   gap: var(--space-3);
   border-top: var(--border-strong);
+}
+
+@media (max-width: 720px) {
+  .modal {
+    padding: var(--space-3);
+  }
+
+  .modal__dialog {
+    max-height: 94vh;
+  }
+
+  .modal__header,
+  .modal__content,
+  .modal__footer {
+    padding: var(--space-4);
+  }
 }
 
 .table-wrap {
