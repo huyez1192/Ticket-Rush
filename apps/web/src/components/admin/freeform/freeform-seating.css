@@ -1,0 +1,453 @@
+.freeform-designer {
+  overflow: visible;
+}
+
+.freeform-designer__header {
+  align-items: center;
+}
+
+.freeform-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  border-bottom: var(--border-strong);
+  padding: var(--space-4) var(--space-5);
+}
+
+.freeform-toolbar__state {
+  min-width: 180px;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-small);
+  font-weight: 900;
+}
+
+.freeform-toolbar__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-2);
+}
+
+.freeform-status-bar {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 0;
+  margin: 0;
+  border-bottom: var(--border-strong);
+}
+
+.freeform-status-bar div {
+  min-width: 0;
+  border-right: 1px solid var(--color-border-muted);
+  background: var(--color-surface);
+  padding: var(--space-3) var(--space-4);
+}
+
+.freeform-status-bar div:last-child {
+  border-right: 0;
+}
+
+.freeform-status-bar dt,
+.freeform-inspector-details dt {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-caption);
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.freeform-status-bar dd,
+.freeform-inspector-details dd {
+  margin: var(--space-1) 0 0;
+  overflow-wrap: anywhere;
+  font-weight: 900;
+}
+
+.freeform-status-bar__warning {
+  background: var(--color-warning-bg) !important;
+}
+
+.freeform-alert {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  border-bottom: var(--border-strong);
+  padding: var(--space-4) var(--space-5);
+  font-weight: 800;
+}
+
+.freeform-alert div {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.freeform-alert span {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-small);
+}
+
+.freeform-alert--success {
+  border-color: var(--color-success);
+  background: var(--color-success-bg);
+}
+
+.freeform-alert--warning,
+.freeform-warning {
+  border-color: var(--color-warning);
+  background: var(--color-warning-bg);
+}
+
+.freeform-warning {
+  margin: 0 var(--space-4);
+  border: var(--border-muted);
+  border-left: 6px solid var(--color-warning);
+  padding: var(--space-3);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-small);
+  font-weight: 800;
+}
+
+.freeform-designer__workspace {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  background: var(--color-background);
+}
+
+.freeform-designer__canvas-area,
+.freeform-designer__side {
+  min-width: 0;
+}
+
+.freeform-designer__side {
+  display: grid;
+  grid-template-columns: minmax(300px, 1fr) minmax(300px, 1fr) minmax(320px, 1.1fr);
+  gap: var(--space-4);
+}
+
+.freeform-canvas-shell {
+  min-width: 0;
+  display: grid;
+  border: var(--border-strong);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+}
+
+.freeform-canvas-shell__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  border-bottom: var(--border-strong);
+  background: var(--color-surface-tinted);
+  padding: var(--space-3) var(--space-4);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-caption);
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.freeform-canvas-shell__bar button {
+  border: var(--border-strong);
+  border-radius: var(--radius-input);
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  padding: var(--space-1) var(--space-3);
+  font: inherit;
+}
+
+.freeform-canvas-scroll {
+  max-width: 100%;
+  height: clamp(620px, 72vh, 920px);
+  overflow: auto;
+  background: var(--color-surface);
+}
+
+.freeform-canvas-viewport {
+  position: relative;
+  margin: 0 auto;
+}
+
+.freeform-canvas {
+  position: relative;
+  overflow: hidden;
+  min-width: 640px;
+  min-height: 420px;
+  background: var(--color-surface);
+  transform-origin: top left;
+  touch-action: none;
+}
+
+.freeform-canvas-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, rgba(20, 27, 43, 0.11) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(20, 27, 43, 0.11) 1px, transparent 1px);
+  pointer-events: none;
+}
+
+.freeform-stage {
+  position: absolute;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  border: var(--border-strong);
+  background: var(--color-text-primary);
+  color: var(--color-text-inverse);
+  box-shadow: 0 0 0 8px rgba(20, 27, 43, 0.08);
+  font-size: 0.875rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.freeform-seat {
+  position: absolute;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  border: var(--border-strong);
+  border-radius: var(--radius-input);
+  padding: 0;
+  color: var(--color-text-inverse);
+  font-size: 0.6875rem;
+  font-weight: 900;
+  line-height: 1;
+  touch-action: none;
+  user-select: none;
+  cursor: grab;
+}
+
+.freeform-seat:active {
+  cursor: grabbing;
+}
+
+.freeform-seat:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.freeform-seat:hover {
+  outline: 3px solid rgba(0, 88, 190, 0.18);
+}
+
+.freeform-seat--selected {
+  z-index: 4;
+  outline: 4px solid var(--color-primary);
+  outline-offset: 2px;
+  background: var(--color-primary);
+  color: var(--color-text-inverse);
+}
+
+.freeform-marquee {
+  position: absolute;
+  z-index: 3;
+  border: 2px dashed var(--color-primary);
+  background: rgba(0, 88, 190, 0.16);
+  pointer-events: none;
+}
+
+.freeform-seat--dirty::after {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  width: 10px;
+  height: 10px;
+  border: 2px solid var(--color-border-strong);
+  border-radius: 50%;
+  background: var(--color-warning);
+  content: "";
+}
+
+.freeform-seat--dimmed {
+  opacity: 0.45;
+}
+
+.freeform-seat--available {
+  background: var(--color-secondary);
+}
+
+.freeform-seat--locked {
+  background:
+    linear-gradient(45deg, transparent 25%, rgba(20, 27, 43, 0.16) 25%, rgba(20, 27, 43, 0.16) 50%, transparent 50%, transparent 75%, rgba(20, 27, 43, 0.16) 75%),
+    var(--color-disabled-bg);
+  background-size: 10px 10px;
+  color: var(--color-text-secondary);
+}
+
+.freeform-seat--sold {
+  background: var(--color-text-primary);
+}
+
+.freeform-seat--released {
+  background: var(--color-background-alt);
+  color: var(--color-muted);
+}
+
+.freeform-seat-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-2);
+}
+
+.freeform-seat-legend__item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-caption);
+  font-weight: 900;
+}
+
+.freeform-seat-legend__swatch {
+  width: 18px;
+  height: 18px;
+  border: var(--border-strong);
+  border-radius: var(--radius-input);
+}
+
+.freeform-seat-legend__swatch--available {
+  background: var(--color-secondary);
+}
+
+.freeform-seat-legend__swatch--locked {
+  background: var(--color-disabled-bg);
+}
+
+.freeform-seat-legend__swatch--sold {
+  background: var(--color-text-primary);
+}
+
+.freeform-seat-legend__swatch--released {
+  background: var(--color-background-alt);
+}
+
+.freeform-seat-legend__swatch--selected {
+  background: var(--color-primary);
+}
+
+.freeform-side-panel {
+  min-width: 0;
+  display: grid;
+  gap: var(--space-4);
+  overflow: hidden;
+  border: var(--border-strong);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+}
+
+.freeform-side-panel__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+  border-bottom: var(--border-strong);
+  background: var(--color-surface-tinted);
+  padding: var(--space-4);
+}
+
+.freeform-side-panel__header h3,
+.freeform-side-panel__header p {
+  margin: 0;
+}
+
+.freeform-side-panel__header p,
+.freeform-empty-copy {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-small);
+  font-weight: 800;
+}
+
+.freeform-empty-copy {
+  margin: 0;
+  padding: var(--space-4);
+}
+
+.freeform-inspector-details {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0 var(--space-4);
+}
+
+.freeform-inspector-details div {
+  min-width: 0;
+  border: 1px solid var(--color-border-muted);
+  background: var(--color-surface-tinted);
+  padding: var(--space-3);
+}
+
+.freeform-inspector-form,
+.freeform-stage-form,
+.freeform-batch-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+  padding: var(--space-4);
+}
+
+.freeform-form__full {
+  grid-column: 1 / -1;
+}
+
+.freeform-batch-note {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-small);
+  font-weight: 800;
+}
+
+.freeform-unplaced-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  max-height: 220px;
+  overflow: auto;
+  padding: var(--space-4);
+}
+
+.freeform-unplaced-chip {
+  border: 1px solid var(--color-border-muted);
+  border-radius: var(--radius-input);
+  background: var(--color-background-alt);
+  padding: var(--space-1) var(--space-2);
+  font-size: var(--font-size-caption);
+  font-weight: 900;
+}
+
+@media (max-width: 1280px) {
+  .freeform-designer__side {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 860px) {
+  .freeform-toolbar,
+  .freeform-alert,
+  .freeform-designer__header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .freeform-toolbar__actions,
+  .freeform-seat-legend {
+    justify-content: flex-start;
+  }
+
+  .freeform-status-bar,
+  .freeform-designer__side,
+  .freeform-inspector-details,
+  .freeform-inspector-form,
+  .freeform-batch-form,
+  .freeform-stage-form {
+    grid-template-columns: 1fr;
+  }
+}

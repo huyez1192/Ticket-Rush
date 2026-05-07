@@ -31,9 +31,22 @@
 
 .admin-seating-layout {
   display: grid;
-  grid-template-columns: minmax(360px, 440px) minmax(0, 1fr);
+  grid-template-areas:
+    "main"
+    "sidebar";
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-5);
   align-items: start;
+}
+
+.admin-seating-layout__sidebar {
+  grid-area: sidebar;
+  grid-template-columns: minmax(280px, 1.1fr) minmax(280px, 0.9fr) minmax(280px, 0.9fr);
+  align-items: stretch;
+}
+
+.admin-seating-layout__main {
+  grid-area: main;
 }
 
 .admin-seating-layout__sidebar,
@@ -394,8 +407,28 @@
   padding: var(--space-3);
 }
 
+.admin-seating-fallback-preview {
+  min-width: 0;
+  border: var(--border-strong);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+}
+
+.admin-seating-fallback-preview summary {
+  cursor: pointer;
+  border-bottom: var(--border-strong);
+  background: var(--color-surface-tinted);
+  padding: var(--space-4) var(--space-5);
+  font-weight: 900;
+}
+
+.admin-seating-fallback-preview .admin-seat-map-panel {
+  border: 0;
+  border-radius: 0;
+}
+
 @media (max-width: 1180px) {
-  .admin-seating-layout {
+  .admin-seating-layout__sidebar {
     grid-template-columns: 1fr;
   }
 }

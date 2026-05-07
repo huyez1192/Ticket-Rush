@@ -120,6 +120,26 @@ export async function getEventSeatMap(eventId) {
   return unwrapData(response);
 }
 
+export async function updateSeatMapLayout(eventId, payload) {
+  const response = await axiosClient.put(`/events/${eventId}/seat-map/layout`, payload);
+  return unwrapData(response);
+}
+
+export async function updateSeatMapStage(eventId, payload) {
+  const response = await axiosClient.patch(`/events/${eventId}/seat-map/stage`, payload);
+  return unwrapData(response);
+}
+
+export async function updateSeatLayout(eventId, seatId, payload) {
+  const response = await axiosClient.patch(`/events/${eventId}/seats/${seatId}/layout`, payload);
+  return unwrapData(response);
+}
+
+export async function bulkUpdateSeatLayouts(eventId, payload) {
+  const response = await axiosClient.patch(`/events/${eventId}/seats/layout/bulk`, payload);
+  return unwrapData(response);
+}
+
 export async function updateSeatStatus(eventId, seatId, payload) {
   const response = await axiosClient.patch(`/events/${eventId}/seats/${seatId}`, payload);
   return unwrapData(response);
