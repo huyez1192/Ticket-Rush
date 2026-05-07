@@ -23,8 +23,66 @@ export function mapSeatSectionToDto(section) {
     name: value.name,
     price: value.price,
     description: value.description,
+    color: value.color,
+    displayOrder: value.displayOrder,
+    defaultSeatWidth: value.defaultSeatWidth,
+    defaultSeatHeight: value.defaultSeatHeight,
     createdAt: value.createdAt,
     updatedAt: value.updatedAt
+  };
+}
+
+export function mapSeatMapLayoutToDto(layout) {
+  const value = toPlainObject(layout);
+
+  if (!value) {
+    return null;
+  }
+
+  return {
+    id: value._id?.toString(),
+    eventId: value.eventId?.toString(),
+    canvasWidth: value.canvasWidth,
+    canvasHeight: value.canvasHeight,
+    gridSize: value.gridSize,
+    stage: value.stage
+      ? {
+          x: value.stage.x,
+          y: value.stage.y,
+          width: value.stage.width,
+          height: value.stage.height,
+          label: value.stage.label
+        }
+      : undefined,
+    defaultZoom: value.defaultZoom,
+    viewport: value.viewport
+      ? {
+          x: value.viewport.x,
+          y: value.viewport.y,
+          zoom: value.viewport.zoom
+        }
+      : undefined,
+    version: value.version,
+    updatedBy: value.updatedBy?.toString?.(),
+    createdAt: value.createdAt,
+    updatedAt: value.updatedAt
+  };
+}
+
+function mapSeatLayoutToDto(layout) {
+  if (!layout) {
+    return undefined;
+  }
+
+  return {
+    x: layout.x,
+    y: layout.y,
+    rotation: layout.rotation,
+    width: layout.width,
+    height: layout.height,
+    label: layout.label,
+    rowLabel: layout.rowLabel,
+    isPlaced: layout.isPlaced
   };
 }
 
@@ -47,6 +105,7 @@ export function mapSeatToDto(seat) {
     code: `${sectionName}-R${value.rowNumber}-${value.seatNumber}`,
     status: value.status,
     price: section?.price,
+    layout: mapSeatLayoutToDto(value.layout),
     createdAt: value.createdAt,
     updatedAt: value.updatedAt
   };

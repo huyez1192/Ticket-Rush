@@ -1,8 +1,10 @@
 import { SeatSection } from "./seatSection.model.js";
 import { Seat } from "./seat.model.js";
 
+const SECTION_SELECT = "eventId name description price color displayOrder defaultSeatWidth defaultSeatHeight createdAt updatedAt";
+
 export function findSeatSectionsByEventId(eventId) {
-  return SeatSection.find({ eventId }).sort({ name: 1, _id: 1 }).lean();
+  return SeatSection.find({ eventId }).sort({ displayOrder: 1, name: 1, _id: 1 }).lean();
 }
 
 export function findSeatSectionByIdForEvent(eventId, sectionId) {
@@ -50,7 +52,7 @@ export async function findSeatsByEventId(eventId, filters, pagination) {
 
   const [items, total] = await Promise.all([
     Seat.find(query)
-      .populate({ path: "sectionId", select: "eventId name description price createdAt updatedAt" })
+      .populate({ path: "sectionId", select: SECTION_SELECT })
       .sort({ sectionId: 1, rowNumber: 1, seatNumber: 1, _id: 1 })
       .skip(skip)
       .limit(pagination.limit)
@@ -63,13 +65,24 @@ export async function findSeatsByEventId(eventId, filters, pagination) {
 
 export function findSeatByIdForEvent(eventId, seatId) {
   return Seat.findOne({ _id: seatId, eventId })
-    .populate({ path: "sectionId", select: "eventId name description price createdAt updatedAt" })
+    .populate({ path: "sectionId", select: SECTION_SELECT })
     .lean();
 }
 
 export function updateSeatByIdForEvent(eventId, seatId, update) {
   return Seat.findOneAndUpdate({ _id: seatId, eventId }, update, { new: true, runValidators: true })
-    .populate({ path: "sectionId", select: "eventId name description price createdAt updatedAt" })
+    .populate({ path: "sectionId", select: SECTION_SELECT })
+    .lean();
+}
+
+export function updateSeatLayout(eventId, seatId, layoutPayload, session) {
+  return Seat.findOneAndUpdate(
+    { _id: seatId, eventId },
+    { $set: { layout: layoutPayload } },
+    { new: true, runValidators: true }
+  )
+    .populate({ path: "sectionId", select: SECTION_SELECT })
+    .session(session || null)
     .lean();
 }
 
@@ -91,9 +104,31 @@ export async function createSeats(seats) {
 
 export function findAllSeatsForEvent(eventId) {
   return Seat.find({ eventId })
-    .populate({ path: "sectionId", select: "eventId name description price createdAt updatedAt" })
+    .populate({ path: "sectionId", select: SECTION_SELECT })
     .sort({ sectionId: 1, rowNumber: 1, seatNumber: 1, _id: 1 })
     .lean();
+}
+
+export function findSeatsByIdsForEvent(eventId, seatIds, session) {
+  return Seat.find({ _id: { $in: seatIds }, eventId })
+    .populate({ path: "sectionId", select: SECTION_SELECT })
+    .session(session || null)
+    .lean();
+}
+
+export async function bulkUpdateSeatLayouts(eventId, seatLayouts, session) {
+  const operations = seatLayouts.map((seatLayout) => ({
+    updateOne: {
+      filter: { _id: seatLayout.seatId, eventId },
+      update: { $set: { layout: seatLayout.layout } }
+    }
+  }));
+
+  if (!operations.length) {
+    return { modifiedCount: 0, matchedCount: 0 };
+  }
+
+  return Seat.bulkWrite(operations, { session, ordered: true });
 }
 
 export function findSeatIdsByEventId(eventId) {
@@ -108,7 +143,7 @@ export function findSeatChanges(eventId, since) {
   }
 
   return Seat.find(query)
-    .populate({ path: "sectionId", select: "eventId name description price createdAt updatedAt" })
+    .populate({ path: "sectionId", select: SECTION_SELECT })
     .sort({ updatedAt: 1, _id: 1 })
     .lean();
 }

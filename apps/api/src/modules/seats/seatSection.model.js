@@ -1,5 +1,12 @@
 import mongoose from "mongoose";
 
+const finiteNumberValidator = {
+  validator(value) {
+    return value === undefined || value === null || Number.isFinite(value);
+  },
+  message: "Visual number fields must be finite."
+};
+
 const seatSectionSchema = new mongoose.Schema(
   {
     eventId: {
@@ -20,6 +27,25 @@ const seatSectionSchema = new mongoose.Schema(
       type: Number,
       required: true,
       min: 0.01
+    },
+    color: {
+      type: String,
+      trim: true,
+      maxlength: 32
+    },
+    displayOrder: {
+      type: Number,
+      validate: finiteNumberValidator
+    },
+    defaultSeatWidth: {
+      type: Number,
+      min: 0.01,
+      validate: finiteNumberValidator
+    },
+    defaultSeatHeight: {
+      type: Number,
+      min: 0.01,
+      validate: finiteNumberValidator
     }
   },
   {

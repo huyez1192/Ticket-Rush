@@ -1,9 +1,11 @@
 import { AppError } from "../../common/errors/AppError.js";
 import { SEAT_STATUSES } from "../../common/constants/index.js";
+import { runWithOptionalTransaction } from "../../common/utils/runWithOptionalTransaction.js";
 import { findEventById, findPublicEventById } from "../events/event.repository.js";
 import { mapEventToDto } from "../events/event.mapper.js";
 import {
   mapPagination,
+  mapSeatMapLayoutToDto,
   mapSeatMapChangeToDto,
   mapSeatMapSectionToDto,
   mapSeatSectionToDto,
@@ -17,12 +19,16 @@ import {
   findAllSeatsForEvent,
   findSeatByIdForEvent,
   findSeatChanges,
+  findSeatsByIdsForEvent,
   findSeatSectionByIdForEvent,
   findSeatSectionsByEventId,
   findSeatsByEventId,
+  bulkUpdateSeatLayouts as bulkUpdateSeatLayoutsRepository,
   updateSeatByIdForEvent,
+  updateSeatLayout as updateSeatLayoutRepository,
   updateSeatSectionByIdForEvent
 } from "./seat.repository.js";
+import { findSeatMapLayoutByEventId, upsertSeatMapLayout } from "./seatMapLayout.repository.js";
 
 async function assertPublicEvent(eventId) {
   const event = await findPublicEventById(eventId);
@@ -104,10 +110,15 @@ export async function getPublicSeatDetail(eventId, seatId) {
 
 export async function getPublicSeatMap(eventId) {
   const event = await assertPublicEvent(eventId);
-  const [sections, seats] = await Promise.all([findSeatSectionsByEventId(eventId), findAllSeatsForEvent(eventId)]);
+  const [sections, seats, layout] = await Promise.all([
+    findSeatSectionsByEventId(eventId),
+    findAllSeatsForEvent(eventId),
+    findSeatMapLayoutByEventId(eventId)
+  ]);
 
   return {
     event: mapEventToDto(event),
+    layout: mapSeatMapLayoutToDto(layout),
     sections: sections.map((section) => {
       const sectionSeats = seats.filter((seat) => {
         const seatSectionId = seat.sectionId?._id?.toString?.() || seat.sectionId?.toString?.();
@@ -139,7 +150,11 @@ export async function createAdminSeatSection(eventId, payload) {
       eventId,
       name: payload.name,
       price: payload.price,
-      description: payload.description
+      description: payload.description,
+      color: payload.color,
+      displayOrder: payload.displayOrder,
+      defaultSeatWidth: payload.defaultSeatWidth,
+      defaultSeatHeight: payload.defaultSeatHeight
     });
 
     return mapSeatSectionToDto(section);
@@ -214,7 +229,8 @@ export async function generateAdminSeats(eventId, sectionId, payload) {
         sectionId,
         rowNumber,
         seatNumber,
-        status: payload.initialStatus || SEAT_STATUSES.AVAILABLE
+        status: payload.initialStatus || SEAT_STATUSES.AVAILABLE,
+        layout: buildAutoLayout(payload.autoLayout, rowNumber, seatNumber)
       });
     }
   }
@@ -241,4 +257,128 @@ export async function updateAdminSeatStatus(eventId, seatId, payload) {
   }
 
   return mapSeatToDto(seat);
+}
+
+export async function updateAdminSeatMapLayout(eventId, payload, currentUser) {
+  await assertEvent(eventId);
+
+  const layout = await upsertSeatMapLayout(eventId, payload, currentUser?.id || currentUser?._id);
+  return mapSeatMapLayoutToDto(layout);
+}
+
+export async function updateAdminSeatMapStage(eventId, payload, currentUser) {
+  await assertEvent(eventId);
+
+  const existingLayout = await findSeatMapLayoutByEventId(eventId);
+  const layoutPayload = {
+    canvasWidth: existingLayout?.canvasWidth || 1200,
+    canvasHeight: existingLayout?.canvasHeight || 800,
+    gridSize: existingLayout?.gridSize || 16,
+    defaultZoom: existingLayout?.defaultZoom || 1,
+    viewport: existingLayout?.viewport,
+    stage: payload
+  };
+  const layout = await upsertSeatMapLayout(eventId, layoutPayload, currentUser?.id || currentUser?._id);
+  return mapSeatMapLayoutToDto(layout);
+}
+
+export async function updateAdminSeatLayout(eventId, seatId, payload) {
+  await assertEvent(eventId);
+
+  const seat = await updateSeatLayoutRepository(eventId, seatId, buildSeatLayout(payload));
+
+  if (!seat) {
+    throw new AppError("Seat not found.", 404);
+  }
+
+  return mapSeatToDto(seat);
+}
+
+export async function bulkUpdateAdminSeatLayouts(eventId, payload) {
+  await assertEvent(eventId);
+
+  const seatIds = payload.seats.map((seat) => seat.seatId);
+  let updatedSeats = [];
+  let updateResult = { matchedCount: 0, modifiedCount: 0 };
+
+  await runWithOptionalTransaction(async (session) => {
+    const existingSeats = await findSeatsByIdsForEvent(eventId, seatIds, session);
+
+    if (existingSeats.length !== seatIds.length) {
+      throw new AppError("One or more seats were not found for this event.", 404);
+    }
+
+    updateResult = await bulkUpdateSeatLayoutsRepository(
+      eventId,
+      payload.seats.map((seat) => ({
+        seatId: seat.seatId,
+        layout: buildSeatLayout(seat)
+      })),
+      session
+    );
+
+    if (updateResult.matchedCount !== seatIds.length) {
+      throw new AppError("One or more seat layouts could not be updated.", 409);
+    }
+  });
+
+  updatedSeats = await findSeatsByIdsForEvent(eventId, seatIds);
+
+  return {
+    updatedCount: Number(updateResult.modifiedCount || updateResult.matchedCount || 0),
+    seats: updatedSeats.map((seat) => mapSeatToDto(seat)).filter(Boolean)
+  };
+}
+
+function buildSeatLayout(payload = {}) {
+  const layout = {
+    x: payload.x,
+    y: payload.y,
+    rotation: payload.rotation ?? 0,
+    width: payload.width,
+    height: payload.height,
+    label: payload.label,
+    rowLabel: payload.rowLabel,
+    isPlaced: payload.isPlaced
+  };
+
+  return Object.fromEntries(Object.entries(layout).filter(([, value]) => value !== undefined));
+}
+
+function buildAutoLayout(autoLayout, rowNumber, seatNumber) {
+  if (!autoLayout?.enabled) {
+    return undefined;
+  }
+
+  const startX = autoLayout.startX ?? 120;
+  const startY = autoLayout.startY ?? 200;
+  const seatGapX = autoLayout.seatGapX ?? 40;
+  const seatGapY = autoLayout.seatGapY ?? 40;
+  const seatWidth = autoLayout.seatWidth ?? 32;
+  const seatHeight = autoLayout.seatHeight ?? 32;
+  const rowLabel = getRowLabel(rowNumber);
+
+  return {
+    x: startX + (seatNumber - 1) * seatGapX,
+    y: startY + (rowNumber - 1) * seatGapY,
+    rotation: 0,
+    width: seatWidth,
+    height: seatHeight,
+    label: `${rowLabel}${seatNumber}`,
+    rowLabel,
+    isPlaced: true
+  };
+}
+
+function getRowLabel(rowNumber) {
+  let value = Number(rowNumber);
+  let label = "";
+
+  while (value > 0) {
+    value -= 1;
+    label = String.fromCharCode(65 + (value % 26)) + label;
+    value = Math.floor(value / 26);
+  }
+
+  return label || String(rowNumber);
 }

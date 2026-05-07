@@ -44,7 +44,10 @@ export async function lockSeatsForUser(eventId, userId, payload) {
       const seat = await mongoose
         .model("Seat")
         .findOne({ _id: seatId, eventId })
-        .populate({ path: "sectionId", select: "eventId name description price createdAt updatedAt" })
+        .populate({
+          path: "sectionId",
+          select: "eventId name description price color displayOrder defaultSeatWidth defaultSeatHeight createdAt updatedAt"
+        })
         .session(session);
 
       if (!seat || seat.status !== SEAT_STATUSES.AVAILABLE) {
@@ -73,7 +76,10 @@ export async function lockSeatsForUser(eventId, userId, payload) {
           { status: SEAT_STATUSES.LOCKED },
           { new: true, session }
         )
-        .populate({ path: "sectionId", select: "eventId name description price createdAt updatedAt" });
+        .populate({
+          path: "sectionId",
+          select: "eventId name description price color displayOrder defaultSeatWidth defaultSeatHeight createdAt updatedAt"
+        });
 
       if (!updatedSeat) {
         failedSeatIds.push(seatId);

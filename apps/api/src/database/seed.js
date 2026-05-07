@@ -9,8 +9,10 @@ import "../modules/events/event.model.js";
 import { EventImage } from "../modules/events/eventImage.model.js";
 import { Event } from "../modules/events/event.model.js";
 import "../modules/seats/seatLock.model.js";
+import "../modules/seats/eventSeatMapLayout.model.js";
 import "../modules/seats/seat.model.js";
 import "../modules/seats/seatSection.model.js";
+import { EventSeatMapLayout } from "../modules/seats/eventSeatMapLayout.model.js";
 import { Seat } from "../modules/seats/seat.model.js";
 import { SeatSection } from "../modules/seats/seatSection.model.js";
 import "../modules/tickets/ticket.model.js";
@@ -57,6 +59,10 @@ const demoEvents = [
         name: "VIP",
         description: "Front section near the stage.",
         price: 1500000,
+        color: "#0058be",
+        displayOrder: 1,
+        defaultSeatWidth: 32,
+        defaultSeatHeight: 32,
         rows: 2,
         seatsPerRow: 5
       },
@@ -64,6 +70,10 @@ const demoEvents = [
         name: "Standard",
         description: "Main seating section.",
         price: 750000,
+        color: "#00714d",
+        displayOrder: 2,
+        defaultSeatWidth: 32,
+        defaultSeatHeight: 32,
         rows: 2,
         seatsPerRow: 5
       }
@@ -82,6 +92,10 @@ const demoEvents = [
         name: "Balcony",
         description: "Upper balcony seating.",
         price: 450000,
+        color: "#a36700",
+        displayOrder: 1,
+        defaultSeatWidth: 32,
+        defaultSeatHeight: 32,
         rows: 1,
         seatsPerRow: 6
       }
@@ -192,7 +206,11 @@ async function seedEventSections(event, sections) {
           eventId: event._id,
           name: sectionData.name,
           description: sectionData.description,
-          price: sectionData.price
+          price: sectionData.price,
+          color: sectionData.color,
+          displayOrder: sectionData.displayOrder,
+          defaultSeatWidth: sectionData.defaultSeatWidth,
+          defaultSeatHeight: sectionData.defaultSeatHeight
         }
       },
       { new: true, upsert: true, runValidators: true }
@@ -209,8 +227,84 @@ async function seedDemoEvents() {
     const event = await upsertDemoEvent(eventData, adminUser);
     await seedEventImages(event, eventData.images);
     await seedEventSections(event, eventData.sections);
+    await seedEventSeatMapLayout(event, adminUser);
     console.log(`Seeded demo event: ${event.name}`);
   }
+}
+
+async function seedEventSeatMapLayout(event, adminUser) {
+  await EventSeatMapLayout.findOneAndUpdate(
+    { eventId: event._id },
+    {
+      $setOnInsert: {
+        eventId: event._id,
+        canvasWidth: 960,
+        canvasHeight: 640,
+        gridSize: 16,
+        stage: {
+          x: 280,
+          y: 48,
+          width: 400,
+          height: 72,
+          label: "Stage"
+        },
+        defaultZoom: 1,
+        viewport: {
+          x: 0,
+          y: 0,
+          zoom: 1
+        },
+        version: 1,
+        updatedBy: adminUser?._id || null
+      }
+    },
+    { new: true, upsert: true, runValidators: true }
+  );
+
+  const sections = await SeatSection.find({ eventId: event._id }).sort({ displayOrder: 1, name: 1, _id: 1 }).lean();
+
+  for (const [sectionIndex, section] of sections.entries()) {
+    const startX = 180 + sectionIndex * 280;
+    const startY = 180;
+    const gapX = 42;
+    const gapY = 44;
+    const seats = await Seat.find({ eventId: event._id, sectionId: section._id }).sort({ rowNumber: 1, seatNumber: 1 });
+
+    for (const seat of seats) {
+      const rowLabel = getSeedRowLabel(seat.rowNumber);
+      await Seat.updateOne(
+        { _id: seat._id, "layout.x": { $exists: false }, "layout.y": { $exists: false } },
+        {
+          $set: {
+            layout: {
+              x: startX + (seat.seatNumber - 1) * gapX,
+              y: startY + (seat.rowNumber - 1) * gapY,
+              rotation: 0,
+              width: section.defaultSeatWidth || 32,
+              height: section.defaultSeatHeight || 32,
+              label: `${rowLabel}${seat.seatNumber}`,
+              rowLabel,
+              isPlaced: true
+            }
+          }
+        },
+        { runValidators: true }
+      );
+    }
+  }
+}
+
+function getSeedRowLabel(rowNumber) {
+  let value = Number(rowNumber);
+  let label = "";
+
+  while (value > 0) {
+    value -= 1;
+    label = String.fromCharCode(65 + (value % 26)) + label;
+    value = Math.floor(value / 26);
+  }
+
+  return label || String(rowNumber);
 }
 
 async function runSeed() {

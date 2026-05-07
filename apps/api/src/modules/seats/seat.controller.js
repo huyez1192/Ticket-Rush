@@ -9,7 +9,11 @@ import {
   getPublicSeatSectionDetail,
   getPublicSeatSections,
   getPublicSeats,
+  bulkUpdateAdminSeatLayouts,
   updateAdminSeatSection,
+  updateAdminSeatLayout,
+  updateAdminSeatMapLayout,
+  updateAdminSeatMapStage,
   updateAdminSeatStatus
 } from "./seat.service.js";
 
@@ -107,6 +111,42 @@ export async function updateSeatStatus(req, res, next) {
   try {
     const data = await updateAdminSeatStatus(req.params.eventId, req.params.seatId, req.body);
     sendSuccess(res, 200, "Seat status updated successfully.", data);
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function updateSeatMapLayout(req, res, next) {
+  try {
+    const data = await updateAdminSeatMapLayout(req.params.eventId, req.body, req.user);
+    sendSuccess(res, 200, "Seat map layout updated successfully.", data);
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function updateSeatMapStage(req, res, next) {
+  try {
+    const data = await updateAdminSeatMapStage(req.params.eventId, req.body, req.user);
+    sendSuccess(res, 200, "Seat map stage updated successfully.", data);
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function updateSeatLayout(req, res, next) {
+  try {
+    const data = await updateAdminSeatLayout(req.params.eventId, req.params.seatId, req.body, req.user);
+    sendSuccess(res, 200, "Seat layout updated successfully.", data);
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function bulkUpdateSeatLayouts(req, res, next) {
+  try {
+    const data = await bulkUpdateAdminSeatLayouts(req.params.eventId, req.body, req.user);
+    sendSuccess(res, 200, "Seat layouts updated successfully.", data);
   } catch (error) {
     next(error);
   }

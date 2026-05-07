@@ -3,7 +3,10 @@ import { Order, OrderItem } from "./order.model.js";
 
 const ITEM_POPULATE = {
   path: "seatId",
-  populate: { path: "sectionId", select: "eventId name description price createdAt updatedAt" }
+  populate: {
+    path: "sectionId",
+    select: "eventId name description price color displayOrder defaultSeatWidth defaultSeatHeight createdAt updatedAt"
+  }
 };
 
 export async function createOrder(orderData, session) {

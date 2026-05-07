@@ -4,7 +4,10 @@ const TICKET_POPULATE = [
   { path: "eventId" },
   {
     path: "seatId",
-    populate: { path: "sectionId", select: "eventId name description price createdAt updatedAt" }
+    populate: {
+      path: "sectionId",
+      select: "eventId name description price color displayOrder defaultSeatWidth defaultSeatHeight createdAt updatedAt"
+    }
   }
 ];
 

@@ -2,7 +2,10 @@ import { SeatLock } from "./seatLock.model.js";
 
 const SEAT_POPULATE = {
   path: "seatId",
-  populate: { path: "sectionId", select: "eventId name description price createdAt updatedAt" }
+  populate: {
+    path: "sectionId",
+    select: "eventId name description price color displayOrder defaultSeatWidth defaultSeatHeight createdAt updatedAt"
+  }
 };
 
 export function findActiveSeatLockBySeatId(seatId, session) {

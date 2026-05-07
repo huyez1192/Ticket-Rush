@@ -91,7 +91,10 @@ export async function createPendingOrder(userId, payload) {
     const seats = await mongoose
       .model("Seat")
       .find({ _id: { $in: payload.seatIds }, eventId: payload.eventId })
-      .populate({ path: "sectionId", select: "eventId name description price createdAt updatedAt" })
+      .populate({
+        path: "sectionId",
+        select: "eventId name description price color displayOrder defaultSeatWidth defaultSeatHeight createdAt updatedAt"
+      })
       .session(session);
 
     if (seats.length !== payload.seatIds.length) {

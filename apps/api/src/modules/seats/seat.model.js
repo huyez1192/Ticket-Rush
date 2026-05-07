@@ -1,6 +1,13 @@
 import mongoose from "mongoose";
 import { SEAT_STATUS_VALUES, SEAT_STATUSES } from "../../common/constants/index.js";
 
+const finiteNumberValidator = {
+  validator(value) {
+    return value === undefined || value === null || Number.isFinite(value);
+  },
+  message: "Layout number fields must be finite."
+};
+
 const seatSchema = new mongoose.Schema(
   {
     eventId: {
@@ -28,6 +35,44 @@ const seatSchema = new mongoose.Schema(
       enum: SEAT_STATUS_VALUES,
       required: true,
       default: SEAT_STATUSES.AVAILABLE
+    },
+    layout: {
+      x: {
+        type: Number,
+        validate: finiteNumberValidator
+      },
+      y: {
+        type: Number,
+        validate: finiteNumberValidator
+      },
+      rotation: {
+        type: Number,
+        default: 0,
+        validate: finiteNumberValidator
+      },
+      width: {
+        type: Number,
+        min: 0.01,
+        validate: finiteNumberValidator
+      },
+      height: {
+        type: Number,
+        min: 0.01,
+        validate: finiteNumberValidator
+      },
+      label: {
+        type: String,
+        trim: true,
+        maxlength: 80
+      },
+      rowLabel: {
+        type: String,
+        trim: true,
+        maxlength: 40
+      },
+      isPlaced: {
+        type: Boolean
+      }
     }
   },
   {

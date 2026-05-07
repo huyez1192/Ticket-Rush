@@ -4,6 +4,7 @@ import { authenticate } from "../../middlewares/auth.middleware.js";
 import { requireRole } from "../../middlewares/role.middleware.js";
 import { validate } from "../../middlewares/validate.middleware.js";
 import {
+  bulkUpdateSeatLayouts,
   createSeatSection,
   deleteSeatSection,
   generateSeats,
@@ -13,17 +14,24 @@ import {
   getSeatSectionDetail,
   listSeatSections,
   listSeats,
+  updateSeatLayout,
+  updateSeatMapLayout,
+  updateSeatMapStage,
   updateSeatSection,
   updateSeatStatus
 } from "./seat.controller.js";
 import {
   createSeatSectionSchema,
+  bulkUpdateSeatLayoutsSchema,
   eventIdParamsSchema,
   generateSeatsSchema,
   listSeatsSchema,
   seatMapChangesSchema,
   seatParamsSchema,
   sectionParamsSchema,
+  updateSeatLayoutSchema,
+  updateSeatMapLayoutSchema,
+  updateStageSchema,
   updateSeatSectionSchema,
   updateSeatStatusSchema
 } from "./seat.validation.js";
@@ -43,9 +51,13 @@ router.post(
   generateSeats
 );
 router.get("/:eventId/seat-map", validate(eventIdParamsSchema), getSeatMap);
+router.put("/:eventId/seat-map/layout", ...adminOnly, validate(updateSeatMapLayoutSchema), updateSeatMapLayout);
+router.patch("/:eventId/seat-map/stage", ...adminOnly, validate(updateStageSchema), updateSeatMapStage);
 router.get("/:eventId/seat-map/changes", validate(seatMapChangesSchema), getSeatMapChanges);
 router.get("/:eventId/seats", validate(listSeatsSchema), listSeats);
+router.patch("/:eventId/seats/layout/bulk", ...adminOnly, validate(bulkUpdateSeatLayoutsSchema), bulkUpdateSeatLayouts);
 router.get("/:eventId/seats/:seatId", validate(seatParamsSchema), getSeatDetail);
+router.patch("/:eventId/seats/:seatId/layout", ...adminOnly, validate(updateSeatLayoutSchema), updateSeatLayout);
 router.patch("/:eventId/seats/:seatId", ...adminOnly, validate(updateSeatStatusSchema), updateSeatStatus);
 
 export default router;
