@@ -50,3 +50,11 @@ export function adminEventDetail(eventId) {
 export function adminEventSeating(eventId) {
   return `/admin/events/${eventId}/seating`;
 }
+
+export function adminOrders() {
+  return "/admin/orders";
+}
+
+export function adminTicketVerify() {
+  return "/admin/tickets/verify";
+}

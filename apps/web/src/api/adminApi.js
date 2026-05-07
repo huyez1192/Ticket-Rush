@@ -124,3 +124,18 @@ export async function updateSeatStatus(eventId, seatId, payload) {
   const response = await axiosClient.patch(`/events/${eventId}/seats/${seatId}`, payload);
   return unwrapData(response);
 }
+
+export async function getAdminOrders(params = {}) {
+  const response = await axiosClient.get("/admin/orders", { params });
+  return unwrapData(response);
+}
+
+export async function getAdminOrderById(orderId) {
+  const response = await axiosClient.get(`/admin/orders/${orderId}`);
+  return unwrapData(response);
+}
+
+export async function verifyTicket(payload) {
+  const response = await axiosClient.post("/admin/tickets/verify", payload);
+  return unwrapData(response);
+}
