@@ -2,6 +2,10 @@ import { getCollectionItems, getEntityId, normalizeEvent } from "./eventMappers"
 import { normalizeSeatStatus } from "./seatStatus";
 
 export function normalizeSection(section = {}) {
+  const displayOrder = Number(section.displayOrder);
+  const defaultSeatWidth = Number(section.defaultSeatWidth);
+  const defaultSeatHeight = Number(section.defaultSeatHeight);
+
   return {
     ...section,
     id: getEntityId(section) || section.sectionId || "",
@@ -9,6 +13,10 @@ export function normalizeSection(section = {}) {
     name: section.name || "Section",
     description: section.description || "",
     price: Number.isFinite(Number(section.price)) ? Number(section.price) : 0,
+    color: section.color || "",
+    displayOrder: Number.isFinite(displayOrder) ? displayOrder : null,
+    defaultSeatWidth: Number.isFinite(defaultSeatWidth) && defaultSeatWidth > 0 ? defaultSeatWidth : 32,
+    defaultSeatHeight: Number.isFinite(defaultSeatHeight) && defaultSeatHeight > 0 ? defaultSeatHeight : 32,
   };
 }
 
@@ -18,6 +26,13 @@ export function normalizeSeat(seat = {}, section = null) {
   const rowNumber = Number(seat.rowNumber ?? seat.row ?? 0);
   const seatNumber = Number(seat.seatNumber ?? seat.number ?? 0);
   const code = seat.code || buildSeatCode(normalizedSection?.name, rowNumber, seatNumber);
+  const rowLabel = seat.rowLabel || getRowLabel(rowNumber);
+  const layout = normalizeSeatLayout(seat.layout, {
+    label: seat.layout?.label || seat.label || code || `${rowLabel}${seatNumber || ""}`,
+    rowLabel,
+    width: normalizedSection?.defaultSeatWidth,
+    height: normalizedSection?.defaultSeatHeight,
+  });
 
   return {
     ...seat,
@@ -30,6 +45,8 @@ export function normalizeSeat(seat = {}, section = null) {
     code,
     status: normalizeSeatStatus(seat.status),
     price: Number.isFinite(Number(seat.price)) ? Number(seat.price) : normalizedSection?.price || 0,
+    layout,
+    isPlaced: isSeatPlaced({ ...seat, layout }),
   };
 }
 
@@ -64,6 +81,7 @@ export function normalizeSeatMap(payload = {}, fallbackEvent = null, fallbackSec
 
   return {
     event: normalizeEvent(payload.event || fallbackEvent || {}),
+    layout: normalizeSeatMapLayout(payload.layout),
     sections: sections.length
       ? sections
       : fallbackSections.map((section) => ({
@@ -100,6 +118,15 @@ export function groupSeatsByRow(seats = []) {
 
 export function sortSeats(seats = []) {
   return [...seats].sort((seatA, seatB) => {
+    const sectionCompare = String(seatA.sectionName || "").localeCompare(String(seatB.sectionName || ""), undefined, {
+      numeric: true,
+      sensitivity: "base",
+    });
+
+    if (sectionCompare !== 0 && seatA.sectionId !== seatB.sectionId) {
+      return sectionCompare;
+    }
+
     if (seatA.rowNumber !== seatB.rowNumber) {
       return Number(seatA.rowNumber) - Number(seatB.rowNumber);
     }
@@ -122,4 +149,91 @@ export function getSeatDisplayName(seat) {
   }
 
   return `Row ${seat.rowNumber || "-"}, Seat ${seat.seatNumber || "-"}`;
+}
+
+export function normalizeSeatMapLayout(layout = null) {
+  if (!layout) {
+    return null;
+  }
+
+  const canvasWidth = Number(layout.canvasWidth);
+  const canvasHeight = Number(layout.canvasHeight);
+  const gridSize = Number(layout.gridSize);
+  const defaultZoom = Number(layout.defaultZoom);
+  const stage = layout.stage || {};
+  const viewport = layout.viewport || {};
+
+  return {
+    ...layout,
+    canvasWidth: Number.isFinite(canvasWidth) && canvasWidth > 0 ? canvasWidth : 1200,
+    canvasHeight: Number.isFinite(canvasHeight) && canvasHeight > 0 ? canvasHeight : 720,
+    gridSize: Number.isFinite(gridSize) && gridSize > 0 ? gridSize : 16,
+    stage: {
+      x: finiteOrDefault(stage.x, 360),
+      y: finiteOrDefault(stage.y, 48),
+      width: positiveOrDefault(stage.width, 480),
+      height: positiveOrDefault(stage.height, 72),
+      label: stage.label || "Stage",
+    },
+    defaultZoom: Number.isFinite(defaultZoom) && defaultZoom > 0 ? defaultZoom : 1,
+    viewport: {
+      x: finiteOrDefault(viewport.x, 0),
+      y: finiteOrDefault(viewport.y, 0),
+      zoom: positiveOrDefault(viewport.zoom, 1),
+    },
+  };
+}
+
+export function normalizeSeatLayout(layout = null, defaults = {}) {
+  const source = layout || {};
+  const x = Number(source.x);
+  const y = Number(source.y);
+  const rotation = Number(source.rotation);
+  const width = Number(source.width);
+  const height = Number(source.height);
+
+  return {
+    x: Number.isFinite(x) ? x : null,
+    y: Number.isFinite(y) ? y : null,
+    rotation: Number.isFinite(rotation) ? rotation : 0,
+    width: Number.isFinite(width) && width > 0 ? width : positiveOrDefault(defaults.width, 32),
+    height: Number.isFinite(height) && height > 0 ? height : positiveOrDefault(defaults.height, 32),
+    label: source.label || defaults.label || "",
+    rowLabel: source.rowLabel || defaults.rowLabel || "",
+    isPlaced: source.isPlaced === true || (Number.isFinite(x) && Number.isFinite(y)),
+  };
+}
+
+export function isSeatPlaced(seat = {}) {
+  const layout = seat.layout || {};
+  return layout.isPlaced === true || (Number.isFinite(Number(layout.x)) && Number.isFinite(Number(layout.y)));
+}
+
+export function getRowLabel(rowNumber) {
+  const numericRow = Number(rowNumber);
+
+  if (!Number.isFinite(numericRow) || numericRow <= 0) {
+    return "-";
+  }
+
+  let value = numericRow;
+  let label = "";
+
+  while (value > 0) {
+    value -= 1;
+    label = String.fromCharCode(65 + (value % 26)) + label;
+    value = Math.floor(value / 26);
+  }
+
+  return label;
+}
+
+function finiteOrDefault(value, fallback) {
+  const numeric = Number(value);
+  return Number.isFinite(numeric) ? numeric : fallback;
+}
+
+function positiveOrDefault(value, fallback) {
+  const numeric = Number(value);
+  return Number.isFinite(numeric) && numeric > 0 ? numeric : fallback;
 }
