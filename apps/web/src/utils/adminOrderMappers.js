@@ -13,10 +13,11 @@ function normalizeCustomer(order = {}) {
   const customer = firstDefined(order.customer, order.user, order.userId);
 
   if (customer && typeof customer === "object") {
-    const name = firstDefined(customer.fullName, customer.name, customer.username, customer.email);
+    const name = firstDefined(customer.fullName, customer.username, customer.email, customer.name);
     return {
       id: getEntityId(customer),
       name: name || "Customer",
+      username: customer.username || "",
       email: customer.email || "",
       phone: customer.phone || "",
     };
@@ -24,7 +25,8 @@ function normalizeCustomer(order = {}) {
 
   return {
     id: String(firstDefined(order.userId, "") || ""),
-    name: order.customerName || "Customer unavailable",
+    name: firstDefined(order.customerName, order.customerEmail, order.userId, "Customer unavailable"),
+    username: "",
     email: order.customerEmail || "",
     phone: "",
   };

@@ -18,6 +18,7 @@ import {
   deleteOrderById,
   deleteOrderItemsByOrderId,
   findBlockingOrderItemsForSeats,
+  findAdminOrderById,
   findAdminOrders,
   findOrderById,
   findOrderByIdForUser,
@@ -330,7 +331,7 @@ export async function listAdminOrders(query) {
 }
 
 export async function getAdminOrder(orderId) {
-  const order = await findOrderById(orderId);
+  const order = await findAdminOrderById(orderId);
 
   if (!order) {
     throw new AppError("Order not found.", 404);

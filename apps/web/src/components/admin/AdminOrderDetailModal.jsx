@@ -52,6 +52,7 @@ function OrderDetail({ order }) {
           title="Customer"
           rows={[
             ["Name", order.customer.name],
+            ["Username", order.customer.username || "Unavailable"],
             ["Email", order.customer.email || "Unavailable"],
             ["User ID", order.customer.id || order.userId || "Unavailable"],
           ]}

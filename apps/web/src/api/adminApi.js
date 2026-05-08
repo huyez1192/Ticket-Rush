@@ -159,3 +159,28 @@ export async function verifyTicket(payload) {
   const response = await axiosClient.post("/admin/tickets/verify", payload);
   return unwrapData(response);
 }
+
+export async function getAdminUsers(params = {}) {
+  const response = await axiosClient.get("/admin/users", { params });
+  return unwrapData(response);
+}
+
+export async function getAdminUserById(userId) {
+  const response = await axiosClient.get(`/admin/users/${userId}`);
+  return unwrapData(response);
+}
+
+export async function deleteAdminUser(userId) {
+  const response = await axiosClient.delete(`/admin/users/${userId}`);
+  return unwrapData(response);
+}
+
+export async function assignAdminUserRoles(userId, payload) {
+  const response = await axiosClient.put(`/admin/users/${userId}/roles`, payload);
+  return unwrapData(response);
+}
+
+export async function getAdminRoles(params = {}) {
+  const response = await axiosClient.get("/admin/roles", { params });
+  return unwrapData(response);
+}

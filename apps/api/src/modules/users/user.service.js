@@ -59,7 +59,8 @@ export async function changeMyPassword(userId, payload) {
     throw new AppError("User not found.", 404);
   }
 
-  const oldPasswordMatches = await bcrypt.compare(payload.oldPassword, user.passwordHash);
+  const currentPassword = payload.oldPassword || payload.currentPassword;
+  const oldPasswordMatches = await bcrypt.compare(currentPassword, user.passwordHash);
 
   if (!oldPasswordMatches) {
     throw new AppError("Old password is incorrect.", 400);

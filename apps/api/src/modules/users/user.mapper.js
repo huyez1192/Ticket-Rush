@@ -49,6 +49,7 @@ export function mapUserToDto(user) {
     username: value.username,
     email: value.email,
     fullName: value.fullName,
+    avatarUrl: value.avatarUrl,
     dateOfBirth: mapDateOnly(value.dateOfBirth),
     gender: value.gender,
     roles: Array.isArray(value.roles) ? value.roles.map((role) => mapRoleToDto(role)).filter(Boolean) : [],

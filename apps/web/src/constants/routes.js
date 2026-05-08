@@ -4,11 +4,13 @@ export const ROUTES = {
   REGISTER: "/register",
   EVENTS: "/events",
   MY_TICKETS: "/my-tickets",
+  PROFILE: "/profile",
   UNAUTHORIZED: "/unauthorized",
   NOT_FOUND: "/not-found",
   ADMIN_LOGIN: "/admin/login",
   ADMIN_DASHBOARD: "/admin/dashboard",
   ADMIN_EVENTS: "/admin/events",
+  ADMIN_PROFILE: "/admin/profile",
 };
 
 export function eventDetail(eventId) {
@@ -57,4 +59,12 @@ export function adminOrders() {
 
 export function adminTicketVerify() {
   return "/admin/tickets/verify";
+}
+
+export function profile() {
+  return "/profile";
+}
+
+export function adminProfile() {
+  return "/admin/profile";
 }

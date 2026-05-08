@@ -1,5 +1,6 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import Button from "../components/common/Button";
+import ProfileAvatar from "../components/profile/ProfileAvatar";
 import { useAuth } from "../features/auth/useAuth";
 
 export default function CustomerHeader() {
@@ -19,11 +20,18 @@ export default function CustomerHeader() {
       <nav className="customer-nav" aria-label="Customer navigation">
         <NavLink to="/events">Events</NavLink>
         {isAuthenticated ? <NavLink to="/my-tickets">My Tickets</NavLink> : null}
+        {isAuthenticated ? <NavLink to="/profile">Profile</NavLink> : null}
       </nav>
       <div className="customer-actions">
         {isAuthenticated ? (
           <>
-            <span className="phase-note">{user?.fullName || user?.username || user?.email}</span>
+            <NavLink to="/profile" className="profile-user-chip">
+              <ProfileAvatar user={user} size="sm" />
+              <span className="profile-user-chip__text">
+                <span>{user?.fullName || user?.username || user?.email}</span>
+                <small>Profile</small>
+              </span>
+            </NavLink>
             <Button variant="outline" size="sm" onClick={handleLogout}>
               Logout
             </Button>

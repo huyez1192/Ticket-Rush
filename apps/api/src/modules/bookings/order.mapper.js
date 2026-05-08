@@ -1,5 +1,6 @@
 import { mapTicketToDto } from "../tickets/ticket.mapper.js";
 import { mapSeatToDto } from "../seats/seat.mapper.js";
+import { mapUserToDto } from "../users/user.mapper.js";
 
 function toPlainObject(document) {
   if (!document) {
@@ -37,6 +38,8 @@ export function mapOrderToDto(order, items = []) {
   return {
     id: value._id?.toString(),
     userId: value.userId?._id?.toString?.() || value.userId?.toString?.(),
+    user: value.userId && typeof value.userId === "object" ? mapUserToDto(value.userId) : undefined,
+    customer: value.userId && typeof value.userId === "object" ? mapUserToDto(value.userId) : undefined,
     eventId: value.eventId?._id?.toString?.() || value.eventId?.toString?.(),
     status: value.status,
     items: items.map((item) => mapOrderItemToDto(item)).filter(Boolean),

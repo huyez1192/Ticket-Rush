@@ -103,8 +103,14 @@
 }
 
 .admin-sidebar__footer {
+  display: grid;
+  gap: var(--space-3);
   border-top: var(--border-strong);
   padding: var(--space-4);
+}
+
+.admin-profile-chip {
+  width: 100%;
 }
 
 .admin-main {

@@ -1,6 +1,7 @@
 import { ORDER_STATUSES } from "../../common/constants/index.js";
 import { Order, OrderItem } from "./order.model.js";
 
+const USER_SELECT = "username email fullName avatarUrl dateOfBirth gender roles createdAt updatedAt";
 const ITEM_POPULATE = {
   path: "seatId",
   populate: {
@@ -71,11 +72,22 @@ export async function findAdminOrders(filters, pagination) {
 
   const skip = (pagination.page - 1) * pagination.limit;
   const [items, total] = await Promise.all([
-    Order.find(query).sort({ createdAt: -1, _id: -1 }).skip(skip).limit(pagination.limit).lean(),
+    Order.find(query)
+      .populate({ path: "userId", select: USER_SELECT, populate: { path: "roles", select: "name" } })
+      .sort({ createdAt: -1, _id: -1 })
+      .skip(skip)
+      .limit(pagination.limit)
+      .lean(),
     Order.countDocuments(query)
   ]);
 
   return { items, total };
+}
+
+export function findAdminOrderById(orderId, session) {
+  return Order.findById(orderId)
+    .populate({ path: "userId", select: USER_SELECT, populate: { path: "roles", select: "name" } })
+    .session(session || null);
 }
 
 export function findOrderItemsByOrderId(orderId, session) {

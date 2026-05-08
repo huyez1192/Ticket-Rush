@@ -13,6 +13,7 @@ import AdminEventsPage from "../pages/admin/AdminEventsPage";
 import AdminEventSeatingPage from "../pages/admin/AdminEventSeatingPage";
 import AdminLoginPage from "../pages/admin/AdminLoginPage";
 import AdminOrdersPage from "../pages/admin/AdminOrdersPage";
+import AdminProfilePage from "../pages/admin/AdminProfilePage";
 import AdminRolesPage from "../pages/admin/AdminRolesPage";
 import AdminTicketVerifyPage from "../pages/admin/AdminTicketVerifyPage";
 import AdminUsersPage from "../pages/admin/AdminUsersPage";
@@ -20,6 +21,7 @@ import CheckoutFailurePage from "../pages/customer/CheckoutFailurePage";
 import CheckoutPage from "../pages/customer/CheckoutPage";
 import CheckoutSuccessPage from "../pages/customer/CheckoutSuccessPage";
 import MyTicketsPage from "../pages/customer/MyTicketsPage";
+import ProfilePage from "../pages/customer/ProfilePage";
 import SeatSelectionPage from "../pages/customer/SeatSelectionPage";
 import TicketDetailPage from "../pages/customer/TicketDetailPage";
 import WaitingRoomPage from "../pages/customer/WaitingRoomPage";
@@ -65,6 +67,7 @@ export const router = createBrowserRouter([
           { path: "/checkout/failure", element: <CheckoutFailurePage /> },
           { path: "/my-tickets", element: <MyTicketsPage /> },
           { path: "/my-tickets/:ticketId", element: <TicketDetailPage /> },
+          { path: "/profile", element: <ProfilePage /> },
           { path: "/events/:eventId/waiting-room", element: <WaitingRoomPage /> },
         ],
       },
@@ -82,6 +85,7 @@ export const router = createBrowserRouter([
           { path: "/admin/events/:eventId/seating", element: <AdminEventSeatingPage /> },
           { path: "/admin/orders", element: <AdminOrdersPage /> },
           { path: "/admin/users", element: <AdminUsersPage /> },
+          { path: "/admin/profile", element: <AdminProfilePage /> },
           { path: "/admin/roles", element: <AdminRolesPage /> },
           { path: "/admin/audit-logs", element: <AdminAuditLogsPage /> },
           { path: "/admin/tickets/verify", element: <AdminTicketVerifyPage /> },

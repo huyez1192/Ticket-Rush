@@ -35,6 +35,8 @@ function authReducer(state, action) {
       return { ...state, user: null, token: null, isLoading: false, error: action.payload };
     case "AUTH_CLEAR":
       return { ...state, user: null, token: null, isLoading: false, error: null };
+    case "AUTH_USER_UPDATED":
+      return { ...state, user: action.payload, isLoading: false, error: null };
     default:
       return state;
   }
@@ -125,6 +127,11 @@ export function AuthProvider({ children }) {
     }
   }, [clearAuth]);
 
+  const updateCurrentUser = useCallback((user) => {
+    setStoredUser(user);
+    dispatch({ type: "AUTH_USER_UPDATED", payload: user });
+  }, []);
+
   const roleNames = useMemo(() => getRoleNames(state.user), [state.user]);
   const isAdmin = roleNames.includes(ROLES.ADMIN);
   const isCustomer = roleNames.includes(ROLES.CUSTOMER);
@@ -144,9 +151,10 @@ export function AuthProvider({ children }) {
       logout,
       clearAuth,
       setAuthFromToken,
+      updateCurrentUser,
       loadCurrentUser,
     }),
-    [state, roleNames, isAdmin, isCustomer, login, register, logout, clearAuth, setAuthFromToken, loadCurrentUser],
+    [state, roleNames, isAdmin, isCustomer, login, register, logout, clearAuth, setAuthFromToken, updateCurrentUser, loadCurrentUser],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -23,6 +23,10 @@ const userSchema = new mongoose.Schema(
       type: String,
       trim: true
     },
+    avatarUrl: {
+      type: String,
+      trim: true
+    },
     dateOfBirth: {
       type: Date
     },
