@@ -9,7 +9,8 @@
     "start": "node src/server.js",
     "lint": "node -e \"console.log('No API lint configured yet.')\"",
     "test": "node -e \"console.log('No API tests configured yet.')\"",
-    "seed": "node src/database/seed.js"
+    "seed": "node src/database/seed.js",
+    "smoke:seat-lock-race": "node src/database/concurrency-seat-lock-smoke.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

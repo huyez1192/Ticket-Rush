@@ -49,6 +49,12 @@ const orderItemSchema = new mongoose.Schema(
       ref: "Seat",
       required: true
     },
+    status: {
+      type: String,
+      enum: ORDER_STATUS_VALUES,
+      required: true,
+      default: ORDER_STATUSES.PENDING
+    },
     priceSnapshot: {
       type: Number,
       required: true,
@@ -66,6 +72,14 @@ const orderItemSchema = new mongoose.Schema(
 
 orderItemSchema.index({ orderId: 1 }, { name: "idx_order_items_order_id" });
 orderItemSchema.index({ seatId: 1 }, { name: "idx_order_items_seat_id" });
+orderItemSchema.index(
+  { seatId: 1 },
+  {
+    unique: true,
+    partialFilterExpression: { status: { $in: [ORDER_STATUSES.PENDING, ORDER_STATUSES.PAID] } },
+    name: "uq_order_items_active_seat"
+  }
+);
 orderItemSchema.index({ orderId: 1, seatId: 1 }, { unique: true, name: "uq_order_items_order_seat" });
 
 export const Order = mongoose.models.Order || mongoose.model("Order", orderSchema);

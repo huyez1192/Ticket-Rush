@@ -48,6 +48,6 @@ ticketSchema.index({ orderItemId: 1 }, { unique: true, name: "idx_tickets_order_
 ticketSchema.index({ qrCode: 1 }, { unique: true, name: "idx_tickets_qr_code_unique" });
 ticketSchema.index({ userId: 1 }, { name: "idx_tickets_user_id" });
 ticketSchema.index({ eventId: 1 }, { name: "idx_tickets_event_id" });
-ticketSchema.index({ seatId: 1 }, { name: "idx_tickets_seat_id" });
+ticketSchema.index({ seatId: 1 }, { unique: true, name: "uq_tickets_seat_id" });
 
 export const Ticket = mongoose.models.Ticket || mongoose.model("Ticket", ticketSchema);

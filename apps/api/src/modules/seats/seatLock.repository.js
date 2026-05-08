@@ -1,4 +1,5 @@
 import { SeatLock } from "./seatLock.model.js";
+import { SEAT_LOCK_STATUSES } from "../../common/constants/index.js";
 
 const SEAT_POPULATE = {
   path: "seatId",
@@ -9,14 +10,14 @@ const SEAT_POPULATE = {
 };
 
 export function findActiveSeatLockBySeatId(seatId, session) {
-  return SeatLock.findOne({ seatId, status: "Active" }).session(session || null);
+  return SeatLock.findOne({ seatId, status: SEAT_LOCK_STATUSES.ACTIVE }).session(session || null);
 }
 
 export function findActiveSeatLocksForUserEvent(userId, eventSeatIds, session) {
   return SeatLock.find({
     userId,
     seatId: { $in: eventSeatIds },
-    status: "Active"
+    status: SEAT_LOCK_STATUSES.ACTIVE
   })
     .populate(SEAT_POPULATE)
     .sort({ lockedAt: 1, _id: 1 })
@@ -27,7 +28,7 @@ export function findActiveSeatLocksForUserSeats(userId, seatIds, session) {
   return SeatLock.find({
     userId,
     seatId: { $in: seatIds },
-    status: "Active"
+    status: SEAT_LOCK_STATUSES.ACTIVE
   })
     .populate(SEAT_POPULATE)
     .session(session || null);
@@ -43,15 +44,23 @@ export function updateSeatLockById(lockId, update, session) {
 }
 
 export function findOwnActiveLockForSeat(userId, seatId, session) {
-  return SeatLock.findOne({ userId, seatId, status: "Active" }).session(session || null);
+  return SeatLock.findOne({ userId, seatId, status: SEAT_LOCK_STATUSES.ACTIVE }).session(session || null);
 }
 
 export async function findExpiredActiveLocks(now, session) {
-  return SeatLock.find({ status: "Active", expiresAt: { $lte: now } }).session(session || null);
+  return SeatLock.find({ status: SEAT_LOCK_STATUSES.ACTIVE, expiresAt: { $lte: now } }).session(session || null);
 }
 
 export function updateLocksByIds(lockIds, update, session) {
   return SeatLock.updateMany({ _id: { $in: lockIds } }, update, { session });
+}
+
+export function updateActiveLocksByIds(lockIds, update, session) {
+  return SeatLock.updateMany(
+    { _id: { $in: lockIds }, status: SEAT_LOCK_STATUSES.ACTIVE },
+    update,
+    { session }
+  );
 }
 
 export function countSeatLocksBySeatIds(seatIds) {

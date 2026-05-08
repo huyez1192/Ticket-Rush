@@ -15,13 +15,16 @@ import { mapOrderToDto, mapPagination } from "./order.mapper.js";
 import {
   createOrder,
   createOrderItems,
+  deleteOrderById,
+  deleteOrderItemsByOrderId,
   findBlockingOrderItemsForSeats,
   findAdminOrders,
   findOrderById,
   findOrderByIdForUser,
   findOrderItemsByOrderId,
   findOrdersByUser,
-  updateOrderById
+  updateOrderById,
+  updateOrderItemsByOrderId
 } from "./order.repository.js";
 
 function assertUniqueSeatIds(seatIds) {
@@ -30,6 +33,14 @@ function assertUniqueSeatIds(seatIds) {
   if (uniqueSeatIds.size !== seatIds.length) {
     throw new AppError("Duplicate seats are not allowed in the same order.", 400);
   }
+}
+
+function isDuplicateKeyError(error) {
+  return error?.code === 11000 || error?.writeErrors?.some((writeError) => writeError?.code === 11000);
+}
+
+function buildOrderSeatConflictError() {
+  return new AppError("One or more selected seats already belong to an existing pending or paid order.", 409);
 }
 
 async function assertSellingEvent(eventId) {
@@ -88,6 +99,8 @@ export async function createPendingOrder(userId, payload) {
   let createdOrderId;
 
   await runWithOptionalTransaction(async (session) => {
+    let orderIdForCleanup;
+
     const seats = await mongoose
       .model("Seat")
       .find({ _id: { $in: payload.seatIds }, eventId: payload.eventId })
@@ -99,6 +112,10 @@ export async function createPendingOrder(userId, payload) {
 
     if (seats.length !== payload.seatIds.length) {
       throw new AppError("One or more seats were not found for this event.", 404);
+    }
+
+    if (seats.some((seat) => seat.status !== SEAT_STATUSES.LOCKED)) {
+      throw new AppError("All selected seats must still be locked before creating an order.", 409);
     }
 
     const locks = await findActiveSeatLocksForUserSeats(userId, payload.seatIds, session);
@@ -116,25 +133,40 @@ export async function createPendingOrder(userId, payload) {
     }
 
     const totalAmount = seats.reduce((sum, seat) => sum + Number(seat.sectionId?.price || 0), 0);
-    const order = await createOrder(
-      {
-        userId,
-        eventId: payload.eventId,
-        totalAmount,
-        status: ORDER_STATUSES.PENDING
-      },
-      session
-    );
-    createdOrderId = order._id;
+    try {
+      const order = await createOrder(
+        {
+          userId,
+          eventId: payload.eventId,
+          totalAmount,
+          status: ORDER_STATUSES.PENDING
+        },
+        session
+      );
+      orderIdForCleanup = order._id;
+      createdOrderId = order._id;
 
-    await createOrderItems(
-      seats.map((seat) => ({
-        orderId: order._id,
-        seatId: seat._id,
-        priceSnapshot: Number(seat.sectionId.price)
-      })),
-      session
-    );
+      await createOrderItems(
+        seats.map((seat) => ({
+          orderId: order._id,
+          seatId: seat._id,
+          status: ORDER_STATUSES.PENDING,
+          priceSnapshot: Number(seat.sectionId.price)
+        })),
+        session
+      );
+    } catch (error) {
+      if (!session && orderIdForCleanup) {
+        await deleteOrderItemsByOrderId(orderIdForCleanup, null);
+        await deleteOrderById(orderIdForCleanup, null);
+      }
+
+      if (isDuplicateKeyError(error)) {
+        throw buildOrderSeatConflictError();
+      }
+
+      throw error;
+    }
   });
 
   const order = await findOrderById(createdOrderId);
@@ -158,6 +190,7 @@ export async function cancelMyPendingOrder(orderId, userId) {
     const locks = await findActiveSeatLocksForUserSeats(userId, seatIds, session);
 
     await updateOrderById(order._id, { status: ORDER_STATUSES.CANCELLED }, session);
+    await updateOrderItemsByOrderId(order._id, { status: ORDER_STATUSES.CANCELLED }, session);
 
     if (locks.length > 0) {
       await updateLocksByIds(
@@ -201,53 +234,81 @@ export async function checkoutMyOrder(orderId, userId, payload) {
       throw new AppError("Selected seat locks are missing or expired.", 409);
     }
 
-    const lockedSeatCount = await mongoose.model("Seat").countDocuments({
-      _id: { $in: seatIds },
-      eventId: order.eventId,
-      status: SEAT_STATUSES.LOCKED
-    }).session(session);
+    const lockSeatIds = new Set(locks.map((lock) => (lock.seatId?._id || lock.seatId).toString()));
+    const existingTicketCount = await mongoose
+      .model("Ticket")
+      .countDocuments({ seatId: { $in: seatIds } })
+      .session(session);
 
-    if (lockedSeatCount !== seatIds.length) {
-      throw new AppError("One or more selected seats are no longer locked for checkout.", 409);
+    if (existingTicketCount > 0) {
+      throw new AppError("A ticket already exists for one or more selected seats.", 409);
     }
 
-    const seatUpdateResult = await mongoose
-      .model("Seat")
-      .updateMany(
-        { _id: { $in: seatIds }, eventId: order.eventId, status: SEAT_STATUSES.LOCKED },
-        { status: SEAT_STATUSES.SOLD },
-        { session }
-      );
+    const soldSeatIds = [];
 
-    if (seatUpdateResult.matchedCount !== seatIds.length || seatUpdateResult.modifiedCount !== seatIds.length) {
-      throw new AppError("Checkout could not sell every selected seat. Please refresh and try again.", 409);
-    }
+    try {
+      for (const seatId of seatIds) {
+        if (!lockSeatIds.has(seatId.toString())) {
+          throw new AppError("Selected seat locks do not match this checkout.", 409);
+        }
 
-    await updateLocksByIds(
-      locks.map((lock) => lock._id),
-      { status: SEAT_LOCK_STATUSES.PAID },
-      session
-    );
-    await updateOrderById(order._id, { status: ORDER_STATUSES.PAID }, session);
+        const seatUpdateResult = await mongoose
+          .model("Seat")
+          .updateOne(
+            { _id: seatId, eventId: order.eventId, status: SEAT_STATUSES.LOCKED },
+            { status: SEAT_STATUSES.SOLD },
+            { session }
+          );
 
-    for (const item of items) {
-      const existingTicket = await mongoose.model("Ticket").findOne({ orderItemId: item._id }).session(session);
+        if (seatUpdateResult.modifiedCount !== 1) {
+          throw new AppError("Checkout could not sell every selected seat. Please refresh and try again.", 409);
+        }
 
-      if (existingTicket) {
-        continue;
+        soldSeatIds.push(seatId);
       }
 
-      await createTicket(
-        {
-          orderItemId: item._id,
-          orderId: order._id,
-          userId,
-          eventId: order.eventId,
-          seatId: item.seatId._id || item.seatId,
-          qrCode: `TICKETRUSH-${order._id.toString()}-${item._id.toString()}-${crypto.randomUUID()}`
-        },
+      await updateLocksByIds(
+        locks.map((lock) => lock._id),
+        { status: SEAT_LOCK_STATUSES.PAID },
         session
       );
+      await updateOrderById(order._id, { status: ORDER_STATUSES.PAID }, session);
+      await updateOrderItemsByOrderId(order._id, { status: ORDER_STATUSES.PAID }, session);
+
+      for (const item of items) {
+        const existingTicket = await mongoose.model("Ticket").findOne({ orderItemId: item._id }).session(session);
+
+        if (existingTicket) {
+          continue;
+        }
+
+        await createTicket(
+          {
+            orderItemId: item._id,
+            orderId: order._id,
+            userId,
+            eventId: order.eventId,
+            seatId: item.seatId._id || item.seatId,
+            qrCode: `TICKETRUSH-${order._id.toString()}-${item._id.toString()}-${crypto.randomUUID()}`
+          },
+          session
+        );
+      }
+    } catch (error) {
+      if (!session && soldSeatIds.length > 0) {
+        await mongoose
+          .model("Seat")
+          .updateMany(
+            { _id: { $in: soldSeatIds }, eventId: order.eventId, status: SEAT_STATUSES.SOLD },
+            { status: SEAT_STATUSES.LOCKED }
+          );
+      }
+
+      if (isDuplicateKeyError(error)) {
+        throw new AppError("A ticket already exists for one or more selected seats.", 409);
+      }
+
+      throw error;
     }
 
     paidOrderId = order._id;

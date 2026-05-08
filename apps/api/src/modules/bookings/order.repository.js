@@ -18,8 +18,20 @@ export function updateOrderById(orderId, update, session) {
   return Order.findByIdAndUpdate(orderId, update, { new: true }).session(session || null);
 }
 
+export function deleteOrderById(orderId, session) {
+  return Order.deleteOne({ _id: orderId }, { session });
+}
+
 export async function createOrderItems(items, session) {
   return OrderItem.insertMany(items, { session, ordered: true });
+}
+
+export function deleteOrderItemsByOrderId(orderId, session) {
+  return OrderItem.deleteMany({ orderId }, { session });
+}
+
+export function updateOrderItemsByOrderId(orderId, update, session) {
+  return OrderItem.updateMany({ orderId }, update, { session });
 }
 
 export function findOrderById(orderId, session) {

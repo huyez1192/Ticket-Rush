@@ -3,7 +3,7 @@ import { EVENT_STATUSES, SEAT_LOCK_STATUSES, SEAT_STATUSES } from "../../common/
 import { AppError } from "../../common/errors/AppError.js";
 import { runWithOptionalTransaction } from "../../common/utils/runWithOptionalTransaction.js";
 import { findEventById } from "../events/event.repository.js";
-import { findAllSeatsForEvent, updateSeatByIdForEvent } from "./seat.repository.js";
+import { findAllSeatsForEvent } from "./seat.repository.js";
 import { mapPagination, mapSeatLockToDto } from "./seatLock.mapper.js";
 import {
   createSeatLock,
@@ -11,11 +11,29 @@ import {
   findActiveSeatLocksForUserEvent,
   findExpiredActiveLocks,
   findOwnActiveLockForSeat,
-  updateLocksByIds,
+  updateActiveLocksByIds,
   updateSeatLockById
 } from "./seatLock.repository.js";
 
 const LOCK_DURATION_MS = 10 * 60 * 1000;
+const SEAT_POPULATE = {
+  path: "sectionId",
+  select: "eventId name description price color displayOrder defaultSeatWidth defaultSeatHeight createdAt updatedAt"
+};
+
+function buildSeatConflictError(seatIds) {
+  return new AppError("One or more seats are no longer available.", 409, {
+    seatIds: seatIds.map((seatId) => seatId.toString())
+  });
+}
+
+function assertUniqueSeatIds(seatIds) {
+  const uniqueSeatIds = new Set(seatIds.map((seatId) => seatId.toString()));
+
+  if (uniqueSeatIds.size !== seatIds.length) {
+    throw new AppError("Duplicate seats are not allowed in the same lock request.", 400);
+  }
+}
 
 async function assertSellingEvent(eventId) {
   const event = await findEventById(eventId);
@@ -33,89 +51,95 @@ async function assertSellingEvent(eventId) {
 
 export async function lockSeatsForUser(eventId, userId, payload) {
   await assertSellingEvent(eventId);
+  assertUniqueSeatIds(payload.seatIds);
 
   const lockedSeats = [];
-  const failedSeatIds = [];
   const now = new Date();
   const expiresAt = new Date(now.getTime() + LOCK_DURATION_MS);
 
   await runWithOptionalTransaction(async (session) => {
-    for (const seatId of payload.seatIds) {
-      const seat = await mongoose
-        .model("Seat")
-        .findOne({ _id: seatId, eventId })
-        .populate({
-          path: "sectionId",
-          select: "eventId name description price color displayOrder defaultSeatWidth defaultSeatHeight createdAt updatedAt"
-        })
-        .session(session);
+    const lockedSeatIds = [];
+    const createdLockIds = [];
 
-      if (!seat || seat.status !== SEAT_STATUSES.AVAILABLE) {
-        failedSeatIds.push(seatId);
-        continue;
-      }
+    try {
+      for (const seatId of payload.seatIds) {
+        const activeLock = await findActiveSeatLockBySeatId(seatId, session);
 
-      const activeLock = await findActiveSeatLockBySeatId(seatId, session);
-
-      if (activeLock && activeLock.expiresAt > now) {
-        failedSeatIds.push(seatId);
-        continue;
-      }
-
-      if (activeLock && activeLock.expiresAt <= now) {
-        await updateSeatLockById(activeLock._id, { status: SEAT_LOCK_STATUSES.EXPIRED }, session);
-        await mongoose
-          .model("Seat")
-          .updateOne({ _id: seatId, status: SEAT_STATUSES.LOCKED }, { status: SEAT_STATUSES.AVAILABLE }, { session });
-      }
-
-      const updatedSeat = await mongoose
-        .model("Seat")
-        .findOneAndUpdate(
-          { _id: seatId, eventId, status: SEAT_STATUSES.AVAILABLE },
-          { status: SEAT_STATUSES.LOCKED },
-          { new: true, session }
-        )
-        .populate({
-          path: "sectionId",
-          select: "eventId name description price color displayOrder defaultSeatWidth defaultSeatHeight createdAt updatedAt"
-        });
-
-      if (!updatedSeat) {
-        failedSeatIds.push(seatId);
-        continue;
-      }
-
-      try {
-        const lock = await createSeatLock(
-          {
-            seatId,
-            userId,
-            lockedAt: now,
-            expiresAt,
-            status: SEAT_LOCK_STATUSES.ACTIVE
-          },
-          session
-        );
-        lock.seatId = updatedSeat;
-        lockedSeats.push(lock);
-      } catch (error) {
-        if (error?.code === 11000) {
+        if (activeLock?.expiresAt && activeLock.expiresAt <= now) {
+          await updateSeatLockById(activeLock._id, { status: SEAT_LOCK_STATUSES.EXPIRED }, session);
           await mongoose
             .model("Seat")
-            .updateOne({ _id: seatId, status: SEAT_STATUSES.LOCKED }, { status: SEAT_STATUSES.AVAILABLE }, { session });
-          failedSeatIds.push(seatId);
-          continue;
+            .updateOne(
+              { _id: seatId, eventId, status: SEAT_STATUSES.LOCKED },
+              { status: SEAT_STATUSES.AVAILABLE },
+              { session }
+            );
         }
 
-        throw error;
+        const seatUpdateResult = await mongoose
+          .model("Seat")
+          .updateOne(
+            { _id: seatId, eventId, status: SEAT_STATUSES.AVAILABLE },
+            { status: SEAT_STATUSES.LOCKED },
+            { session }
+          );
+
+        if (seatUpdateResult.modifiedCount !== 1) {
+          throw buildSeatConflictError([seatId]);
+        }
+
+        lockedSeatIds.push(seatId);
+
+        try {
+          const lock = await createSeatLock(
+            {
+              seatId,
+              userId,
+              lockedAt: now,
+              expiresAt,
+              status: SEAT_LOCK_STATUSES.ACTIVE
+            },
+            session
+          );
+          createdLockIds.push(lock._id);
+
+          const lockedSeat = await mongoose
+            .model("Seat")
+            .findOne({ _id: seatId, eventId, status: SEAT_STATUSES.LOCKED })
+            .populate(SEAT_POPULATE)
+            .session(session);
+
+          lock.seatId = lockedSeat;
+          lockedSeats.push(lock);
+        } catch (error) {
+          if (error?.code === 11000) {
+            throw buildSeatConflictError([seatId]);
+          }
+
+          throw error;
+        }
       }
+    } catch (error) {
+      if (!session && lockedSeatIds.length > 0) {
+        if (createdLockIds.length > 0) {
+          await updateActiveLocksByIds(createdLockIds, { status: SEAT_LOCK_STATUSES.RELEASED }, null);
+        }
+
+        await mongoose
+          .model("Seat")
+          .updateMany(
+            { _id: { $in: lockedSeatIds }, eventId, status: SEAT_STATUSES.LOCKED },
+            { status: SEAT_STATUSES.AVAILABLE }
+          );
+      }
+
+      throw error;
     }
   });
 
   return {
     lockedSeats: lockedSeats.map((lock) => mapSeatLockToDto(lock)).filter(Boolean),
-    failedSeatIds,
+    failedSeatIds: [],
     expiresAt
   };
 }
@@ -172,7 +196,7 @@ export async function releaseExpiredSeatLocks() {
       return;
     }
 
-    await updateLocksByIds(
+    await updateActiveLocksByIds(
       locks.map((lock) => lock._id),
       { status: SEAT_LOCK_STATUSES.EXPIRED },
       session
