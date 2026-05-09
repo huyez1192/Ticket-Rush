@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import logoFull from "../../assets/logo-full.png";
 import Button from "../../components/common/Button";
 import Card from "../../components/common/Card";
 import ErrorState from "../../components/common/ErrorState";
@@ -57,7 +58,7 @@ export default function AdminLoginPage() {
     <main className="auth-page auth-page--admin">
       <section className="auth-brand-panel">
         <div className="auth-brand-content">
-          <h1 className="auth-logo">TicketRush</h1>
+          <img className="brand-logo brand-logo-full auth-logo-image auth-logo-image--inverse" src={logoFull} alt="Ticket Rush" />
           <p className="page-kicker">Ticket Rush Admin</p>
           <h2 className="auth-brand-title">Operational control for events and ticketing.</h2>
           <p className="auth-brand-copy">Authorized access only. Admin routes are protected by role-based guards.</p>
@@ -67,6 +68,7 @@ export default function AdminLoginPage() {
         <Card className="auth-form-card">
           <form className="form-stack" onSubmit={handleSubmit}>
             <div className="auth-form-header">
+              <img className="brand-logo brand-logo-full auth-form-logo" src={logoFull} alt="Ticket Rush" />
               <p className="page-kicker">Admin portal</p>
               <h1>Sign in</h1>
               <p>Use an account with the Admin role.</p>

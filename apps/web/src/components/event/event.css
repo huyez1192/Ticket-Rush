@@ -14,6 +14,12 @@
   align-items: end;
 }
 
+.home-logo {
+  width: min(100%, 240px);
+  margin-bottom: var(--space-4);
+  filter: brightness(0) invert(1);
+}
+
 .event-hero h1,
 .event-hero p {
   color: inherit;

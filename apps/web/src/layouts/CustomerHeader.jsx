@@ -1,4 +1,5 @@
 import { NavLink, useNavigate } from "react-router-dom";
+import logoMark from "../assets/logo-mark.png";
 import Button from "../components/common/Button";
 import ProfileAvatar from "../components/profile/ProfileAvatar";
 import { useAuth } from "../features/auth/useAuth";
@@ -15,7 +16,10 @@ export default function CustomerHeader() {
   return (
     <header className="customer-header">
       <NavLink to="/events" className="brand-link">
-        Ticket Rush
+        <span className="brand-lockup">
+          <img className="brand-logo brand-logo-mark" src={logoMark} alt="" aria-hidden="true" />
+          <span>Ticket Rush</span>
+        </span>
       </NavLink>
       <nav className="customer-nav" aria-label="Customer navigation">
         <NavLink to="/events">Events</NavLink>

@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import logoFull from "../../assets/logo-full.png";
 import Card from "../../components/common/Card";
 
 export default function HomePage() {
@@ -7,6 +8,7 @@ export default function HomePage() {
       <section className="event-hero">
         <div className="event-hero__inner">
           <div>
+            <img className="brand-logo brand-logo-full home-logo" src={logoFull} alt="Ticket Rush" />
             <p className="page-kicker">Ticket Rush</p>
             <h1>Book event seats with clear status and fast checkout.</h1>
             <p>

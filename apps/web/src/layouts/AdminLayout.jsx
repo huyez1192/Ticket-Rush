@@ -1,4 +1,5 @@
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import logoMark from "../assets/logo-mark.png";
 import Button from "../components/common/Button";
 import ProfileAvatar from "../components/profile/ProfileAvatar";
 import { useAuth } from "../features/auth/useAuth";
@@ -28,8 +29,13 @@ export default function AdminLayout() {
     <div className="admin-layout">
       <aside className="admin-sidebar">
         <div className="admin-sidebar__brand">
-          <span>Admin Portal</span>
-          <strong>Ticket Rush</strong>
+          <div className="brand-lockup brand-lockup--admin">
+            <img className="brand-logo brand-logo-mark" src={logoMark} alt="" aria-hidden="true" />
+            <div>
+              <strong>Ticket Rush</strong>
+              <span>Admin Portal</span>
+            </div>
+          </div>
         </div>
         <nav className="admin-nav" aria-label="Admin navigation">
           {adminLinks.map((link) => (

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import logoFull from "../../assets/logo-full.png";
 import Button from "../../components/common/Button";
 import Card from "../../components/common/Card";
 import ErrorState from "../../components/common/ErrorState";
@@ -84,7 +85,7 @@ export default function RegisterPage() {
         <Card className="auth-form-card auth-form-card--wide">
           <form className="form-stack" onSubmit={handleSubmit}>
             <div className="auth-form-header">
-              <h1 className="auth-logo auth-logo--dark">TicketRush</h1>
+              <img className="brand-logo brand-logo-full auth-form-logo" src={logoFull} alt="Ticket Rush" />
               <p className="page-kicker">Customer register</p>
               <h2>Create your account</h2>
               <p>Register as a customer. Admin registration is not public.</p>

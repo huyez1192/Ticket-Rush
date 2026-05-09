@@ -78,6 +78,20 @@
   color: var(--color-text-primary);
 }
 
+.auth-logo-image {
+  margin-bottom: var(--space-5);
+}
+
+.auth-logo-image--inverse {
+  filter: brightness(0) invert(1);
+}
+
+.auth-form-logo {
+  justify-self: center;
+  width: min(100%, 220px);
+  margin-bottom: var(--space-2);
+}
+
 .auth-brand-title {
   margin: 0;
   color: var(--color-text-inverse);
@@ -208,5 +222,10 @@
 
   .auth-links {
     display: grid;
+  }
+
+  .auth-form-logo,
+  .auth-logo-image {
+    width: min(100%, 190px);
   }
 }

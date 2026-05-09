@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import logoFull from "../../assets/logo-full.png";
 import Button from "../../components/common/Button";
 import Card from "../../components/common/Card";
 import ErrorState from "../../components/common/ErrorState";
@@ -53,7 +54,7 @@ export default function LoginPage() {
     <main className="auth-page">
       <section className="auth-brand-panel">
         <div className="auth-brand-content">
-          <h1 className="auth-logo">TicketRush</h1>
+          <img className="brand-logo brand-logo-full auth-logo-image auth-logo-image--inverse" src={logoFull} alt="Ticket Rush" />
           <p className="page-kicker">Ticket Rush</p>
           <h2 className="auth-brand-title">Digital ticketing with fast seat access.</h2>
           <p className="auth-brand-copy">
@@ -72,6 +73,7 @@ export default function LoginPage() {
         <Card className="auth-form-card">
           <form className="form-stack" onSubmit={handleSubmit}>
             <div className="auth-form-header">
+              <img className="brand-logo brand-logo-full auth-form-logo" src={logoFull} alt="Ticket Rush" />
               <p className="page-kicker">Customer login</p>
               <h1>Welcome back</h1>
               <p>Use your username or email address to continue.</p>

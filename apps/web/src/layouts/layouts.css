@@ -16,6 +16,8 @@
 }
 
 .brand-link {
+  display: inline-flex;
+  align-items: center;
   color: var(--color-text-primary);
   font-size: 1.25rem;
   font-weight: 900;
@@ -71,6 +73,17 @@
   padding: var(--space-6);
 }
 
+.brand-lockup--admin {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.brand-lockup--admin .brand-logo-mark {
+  width: 40px;
+  height: 40px;
+}
+
 .admin-sidebar__brand span {
   display: block;
   color: var(--color-primary);
@@ -81,6 +94,8 @@
 }
 
 .admin-sidebar__brand strong {
+  display: block;
+  margin-bottom: var(--space-1);
   font-size: 1.35rem;
   font-weight: 900;
 }
