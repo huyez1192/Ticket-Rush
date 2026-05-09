@@ -2,6 +2,15 @@ import mongoose from "mongoose";
 import { z } from "zod";
 import { EVENT_STATUS_VALUES } from "../../common/constants/index.js";
 
+const queueAdmissionModeSchema = z.enum(["Manual", "Auto"]);
+const queueConfigFields = {
+  virtualQueueEnabled: z.boolean().optional(),
+  queueBatchSize: z.coerce.number().int().min(1).max(500).optional(),
+  queueAccessTtlMinutes: z.coerce.number().int().min(1).max(240).optional(),
+  queueMaxActiveUsers: z.coerce.number().int().min(1).max(100000).nullable().optional(),
+  queueAdmissionMode: queueAdmissionModeSchema.optional()
+};
+
 const objectIdSchema = z.string().refine((value) => mongoose.Types.ObjectId.isValid(value), {
   message: "Invalid resource identifier."
 });
@@ -63,7 +72,8 @@ export const createEventSchema = {
       endTime: dateTimeSchema,
       status: z.enum(EVENT_STATUS_VALUES),
       imageUrls: z.array(z.string().trim().url()).optional(),
-      location: z.string().trim().min(1)
+      location: z.string().trim().min(1),
+      ...queueConfigFields
     })
     .strict()
     .refine((value) => value.endTime > value.startTime, {
@@ -81,6 +91,19 @@ export const updateEventSchema = {
       startTime: dateTimeSchema.optional(),
       endTime: dateTimeSchema.optional(),
       location: z.string().trim().min(1).optional()
+    })
+    .strict()
+};
+
+export const updateEventQueueConfigSchema = {
+  params: eventIdParamsSchema.params,
+  body: z
+    .object({
+      virtualQueueEnabled: z.boolean(),
+      queueBatchSize: z.coerce.number().int().min(1).max(500),
+      queueAccessTtlMinutes: z.coerce.number().int().min(1).max(240),
+      queueMaxActiveUsers: z.coerce.number().int().min(1).max(100000).nullable().optional(),
+      queueAdmissionMode: queueAdmissionModeSchema.default("Manual")
     })
     .strict()
 };

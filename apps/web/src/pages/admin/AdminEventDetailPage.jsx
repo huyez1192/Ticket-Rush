@@ -2,14 +2,17 @@ import { useCallback, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import {
   cancelEvent,
+  admitQueueBatch,
   closeEvent,
   createEventImage,
   deleteEventImage,
+  getAdminEventQueue,
   getAdminEventById,
   getEventImages,
   openSellingEvent,
   publishEvent,
   updateEvent,
+  updateEventQueueConfig,
 } from "../../api/adminApi";
 import AdminEventForm from "../../components/admin/AdminEventForm";
 import AdminEventImageManager from "../../components/admin/AdminEventImageManager";
@@ -19,15 +22,17 @@ import AdminPageHeader from "../../components/admin/AdminPageHeader";
 import Button from "../../components/common/Button";
 import Card from "../../components/common/Card";
 import ErrorState from "../../components/common/ErrorState";
+import Input from "../../components/common/Input";
 import LoadingState from "../../components/common/LoadingState";
 import Modal from "../../components/common/Modal";
+import Select from "../../components/common/Select";
 import StatusBadge from "../../components/common/StatusBadge";
 import { adminEventSeating, adminEvents } from "../../constants/routes";
 import {
   normalizeAdminEvent,
   normalizeEventImagesPayload,
 } from "../../utils/adminEventMappers";
-import { formatDateRange } from "../../utils/formatDate";
+import { formatDate, formatDateRange } from "../../utils/formatDate";
 
 const STATUS_ACTIONS = {
   publish: publishEvent,
@@ -49,6 +54,13 @@ export default function AdminEventDetailPage() {
   const [imageLoading, setImageLoading] = useState(false);
   const [imageError, setImageError] = useState("");
   const [loadingAction, setLoadingAction] = useState("");
+  const [queueConfig, setQueueConfig] = useState(getQueueConfigInitialValues());
+  const [queueEntries, setQueueEntries] = useState([]);
+  const [queueSummary, setQueueSummary] = useState(getEmptyQueueSummary());
+  const [queueError, setQueueError] = useState("");
+  const [queueLoading, setQueueLoading] = useState(false);
+  const [queueSaving, setQueueSaving] = useState(false);
+  const [queueAdmitting, setQueueAdmitting] = useState(false);
 
   const loadDetail = useCallback(async () => {
     setLoading(true);
@@ -59,7 +71,9 @@ export default function AdminEventDetailPage() {
         getAdminEventById(eventId),
         getEventImages(eventId),
       ]);
-      setEvent(normalizeAdminEvent(eventPayload));
+      const normalizedEvent = normalizeAdminEvent(eventPayload);
+      setEvent(normalizedEvent);
+      setQueueConfig(getQueueConfigInitialValues(normalizedEvent));
       setImages(normalizeEventImagesPayload(imagePayload));
     } catch (apiError) {
       setError(apiError.message);
@@ -68,9 +82,28 @@ export default function AdminEventDetailPage() {
     }
   }, [eventId]);
 
+  const loadQueue = useCallback(async () => {
+    setQueueLoading(true);
+    setQueueError("");
+
+    try {
+      const payload = await getAdminEventQueue(eventId, { page: 1, limit: 20 });
+      setQueueEntries(Array.isArray(payload?.items) ? payload.items : []);
+      setQueueSummary({ ...getEmptyQueueSummary(), ...(payload?.summary || {}) });
+    } catch (apiError) {
+      setQueueError(apiError.message);
+    } finally {
+      setQueueLoading(false);
+    }
+  }, [eventId]);
+
   useEffect(() => {
     loadDetail();
   }, [loadDetail]);
+
+  useEffect(() => {
+    loadQueue();
+  }, [loadQueue]);
 
   async function handleStatusAction(currentEvent, actionKey) {
     const action = STATUS_ACTIONS[actionKey];
@@ -106,6 +139,50 @@ export default function AdminEventDetailPage() {
       setEditError(apiError.message);
     } finally {
       setEditLoading(false);
+    }
+  }
+
+  function handleQueueConfigChange(eventTarget) {
+    const { name, type, checked, value } = eventTarget;
+    setQueueConfig((current) => ({
+      ...current,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+  }
+
+  async function handleSaveQueueConfig(event) {
+    event.preventDefault();
+    setQueueSaving(true);
+    setQueueError("");
+    setNotice("");
+
+    try {
+      const payload = buildQueueConfigPayload(queueConfig);
+      const updated = await updateEventQueueConfig(eventId, payload);
+      const normalized = normalizeAdminEvent(updated);
+      setEvent(normalized);
+      setQueueConfig(getQueueConfigInitialValues(normalized));
+      setNotice("Virtual queue configuration saved.");
+    } catch (apiError) {
+      setQueueError(apiError.message);
+    } finally {
+      setQueueSaving(false);
+    }
+  }
+
+  async function handleAdmitBatch() {
+    setQueueAdmitting(true);
+    setQueueError("");
+    setNotice("");
+
+    try {
+      const payload = await admitQueueBatch(eventId, { limit: Number(queueConfig.queueBatchSize || 50) });
+      setNotice(`${payload?.admittedCount || 0} queue entr${payload?.admittedCount === 1 ? "y" : "ies"} admitted.`);
+      await loadQueue();
+    } catch (apiError) {
+      setQueueError(apiError.message);
+    } finally {
+      setQueueAdmitting(false);
     }
   }
 
@@ -222,6 +299,117 @@ export default function AdminEventDetailPage() {
         </Card>
       </section>
 
+      <Card title="Virtual queue">
+        <div className="admin-queue-grid">
+          <form className="admin-form" onSubmit={handleSaveQueueConfig}>
+            <label className="admin-checkbox-row">
+              <input
+                type="checkbox"
+                name="virtualQueueEnabled"
+                checked={queueConfig.virtualQueueEnabled}
+                onChange={(changeEvent) => handleQueueConfigChange(changeEvent.target)}
+              />
+              <span>Enable virtual queue for this event</span>
+            </label>
+            <div className="admin-form__grid">
+              <Input
+                label="Batch size"
+                name="queueBatchSize"
+                type="number"
+                min="1"
+                max="500"
+                value={queueConfig.queueBatchSize}
+                onChange={(changeEvent) => handleQueueConfigChange(changeEvent.target)}
+              />
+              <Input
+                label="Access TTL minutes"
+                name="queueAccessTtlMinutes"
+                type="number"
+                min="1"
+                max="240"
+                value={queueConfig.queueAccessTtlMinutes}
+                onChange={(changeEvent) => handleQueueConfigChange(changeEvent.target)}
+              />
+              <Input
+                label="Max active users"
+                name="queueMaxActiveUsers"
+                type="number"
+                min="1"
+                value={queueConfig.queueMaxActiveUsers}
+                placeholder="Optional"
+                onChange={(changeEvent) => handleQueueConfigChange(changeEvent.target)}
+              />
+              <Select
+                label="Admission mode"
+                name="queueAdmissionMode"
+                value={queueConfig.queueAdmissionMode}
+                onChange={(changeEvent) => handleQueueConfigChange(changeEvent.target)}
+                options={[
+                  { value: "Manual", label: "Manual" },
+                  { value: "Auto", label: "Auto" },
+                ]}
+              />
+            </div>
+            <div className="admin-row-actions">
+              <Button type="submit" loading={queueSaving} disabled={queueSaving}>
+                Save config
+              </Button>
+              <Button type="button" variant="outline" loading={queueAdmitting} disabled={queueAdmitting} onClick={handleAdmitBatch}>
+                Admit next batch
+              </Button>
+            </div>
+          </form>
+
+          <div className="admin-queue-summary">
+            {Object.entries(queueSummary).map(([status, count]) => (
+              <div key={status} className="admin-queue-summary__item">
+                <span>{status}</span>
+                <strong>{count}</strong>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {queueError ? <div className="state state--error">{queueError}</div> : null}
+        {queueLoading ? <LoadingState title="Loading queue" message="Fetching waiting room entries." /> : null}
+
+        {!queueLoading ? (
+          queueEntries.length ? (
+            <div className="table-wrap">
+              <table className="table admin-queue-table">
+                <thead>
+                  <tr>
+                    <th>User</th>
+                    <th>Status</th>
+                    <th>Position</th>
+                    <th>Admitted</th>
+                    <th>Expires</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {queueEntries.map((entry) => (
+                    <tr key={entry.id}>
+                      <td>
+                        <strong>{entry.user?.fullName || entry.user?.username || entry.user?.email || "Customer"}</strong>
+                        <div className="admin-table__meta">{entry.user?.email || entry.userId}</div>
+                      </td>
+                      <td>
+                        <StatusBadge status={entry.status} />
+                      </td>
+                      <td>{entry.position || "--"}</td>
+                      <td>{formatQueueDate(entry.admittedAt)}</td>
+                      <td>{formatQueueDate(entry.expiresAt)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <p>No queue entries yet.</p>
+          )
+        ) : null}
+      </Card>
+
       <Card title="Event images">
         {images.length ? (
           <div className="admin-image-gallery" aria-label="Event image previews">
@@ -262,4 +450,39 @@ export default function AdminEventDetailPage() {
       </Modal>
     </div>
   );
+}
+
+function getEmptyQueueSummary() {
+  return {
+    Waiting: 0,
+    Admitted: 0,
+    Expired: 0,
+    Cancelled: 0,
+  };
+}
+
+function getQueueConfigInitialValues(event = {}) {
+  return {
+    virtualQueueEnabled: Boolean(event.virtualQueueEnabled),
+    queueBatchSize: event.queueBatchSize || 50,
+    queueAccessTtlMinutes: event.queueAccessTtlMinutes || 10,
+    queueMaxActiveUsers: event.queueMaxActiveUsers || "",
+    queueAdmissionMode: event.queueAdmissionMode || "Manual",
+  };
+}
+
+function buildQueueConfigPayload(values) {
+  const queueMaxActiveUsers = values.queueMaxActiveUsers === "" ? null : Number(values.queueMaxActiveUsers);
+
+  return {
+    virtualQueueEnabled: Boolean(values.virtualQueueEnabled),
+    queueBatchSize: Number(values.queueBatchSize || 50),
+    queueAccessTtlMinutes: Number(values.queueAccessTtlMinutes || 10),
+    queueMaxActiveUsers,
+    queueAdmissionMode: values.queueAdmissionMode || "Manual",
+  };
+}
+
+function formatQueueDate(value) {
+  return value ? formatDate(value, { dateStyle: "medium", timeStyle: "short" }) : "--";
 }

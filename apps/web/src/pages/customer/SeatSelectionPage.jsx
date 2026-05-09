@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { getEventById } from "../../api/eventApi";
 import { createOrder } from "../../api/orderApi";
+import { getMyEventQueue } from "../../api/queueApi";
 import { getEventSeatMap, getEventSeats, getEventSections } from "../../api/seatApi";
 import { createSeatLocks, getMySeatLocks, releaseSeatLock } from "../../api/seatLockApi";
 import Button from "../../components/common/Button";
@@ -16,7 +17,7 @@ import SeatSelectionToolbar from "../../components/seat/SeatSelectionToolbar";
 import SeatSummary from "../../components/seat/SeatSummary";
 import SectionSelector from "../../components/seat/SectionSelector";
 import CustomerFreeformSeatMap from "../../components/seat/freeform/CustomerFreeformSeatMap";
-import { checkout } from "../../constants/routes";
+import { checkout, eventWaitingRoom } from "../../constants/routes";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { formatDateRange } from "../../utils/formatDate";
 import { getCollectionItems, normalizeEvent } from "../../utils/eventMappers";
@@ -156,13 +157,39 @@ export default function SeatSelectionPage() {
     setActionError(null);
 
     try {
-      const [eventPayload, sectionsPayload, seatMapPayload, locksPayload] = await Promise.all([
-        getEventById(eventId),
+      const eventPayload = await getEventById(eventId);
+      const normalizedEvent = normalizeEvent(eventPayload);
+
+      if (normalizedEvent.virtualQueueEnabled) {
+        const access = getStoredQueueAccess(eventId);
+
+        if (!access) {
+          navigate(eventWaitingRoom(eventId), { replace: true });
+          return;
+        }
+
+        try {
+          const queuePayload = await getMyEventQueue(eventId);
+
+          if (queuePayload?.accessGranted && queuePayload?.queueToken) {
+            storeQueueAccess(eventId, queuePayload.queueToken, queuePayload.expiresAt);
+          } else if (!queuePayload?.accessGranted) {
+            clearStoredQueueAccess(eventId);
+            navigate(eventWaitingRoom(eventId), { replace: true });
+            return;
+          }
+        } catch {
+          clearStoredQueueAccess(eventId);
+          navigate(eventWaitingRoom(eventId), { replace: true });
+          return;
+        }
+      }
+
+      const [sectionsPayload, seatMapPayload, locksPayload] = await Promise.all([
         getEventSections(eventId),
-        getSeatMapPayloadWithFallback(eventId),
+        getSeatMapPayloadWithFallback(eventId, normalizedEvent),
         getMySeatLocks(eventId),
       ]);
-      const normalizedEvent = normalizeEvent(eventPayload);
       const sectionItems = getCollectionItems(sectionsPayload).map(normalizeSection);
       const normalizedMap = normalizeSeatMap(
         seatMapPayload.__fallbackSeatList ? buildSeatMapFromSeatList(seatMapPayload, normalizedEvent, sectionItems) : seatMapPayload,
@@ -192,7 +219,7 @@ export default function SeatSelectionPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [eventId]);
+  }, [eventId, navigate]);
 
   useEffect(() => {
     loadSeatSelection();
@@ -232,7 +259,8 @@ export default function SeatSelectionPage() {
     setNotice("");
 
     try {
-      const payload = await createSeatLocks(eventId, selectedSeatIds);
+      const queueAccess = event?.virtualQueueEnabled ? getStoredQueueAccess(eventId) : null;
+      const payload = await createSeatLocks(eventId, selectedSeatIds, queueAccess?.token);
       const lockedSeats = Array.isArray(payload?.lockedSeats) ? payload.lockedSeats.map(normalizeSeatLock) : [];
       const failedSeatIds = Array.isArray(payload?.failedSeatIds) ? payload.failedSeatIds : [];
 
@@ -247,7 +275,15 @@ export default function SeatSelectionPage() {
         setActionError(`${failedSeatIds.length} seat${failedSeatIds.length === 1 ? " was" : "s were"} no longer available.`);
       }
     } catch (apiError) {
-      setActionError(mapApiError(apiError).message);
+      const normalizedError = mapApiError(apiError);
+
+      if (event?.virtualQueueEnabled && isQueueAccessError(normalizedError)) {
+        clearStoredQueueAccess(eventId);
+        navigate(eventWaitingRoom(eventId), { replace: true });
+        return;
+      }
+
+      setActionError(normalizedError.message);
       await refreshSeatData({ silent: true });
     } finally {
       setIsLocking(false);
@@ -541,4 +577,50 @@ function buildSeatMapFromSeatList(payload = {}, fallbackEvent = null, fallbackSe
     layout: null,
     sections: Array.from(sectionsById.values()),
   };
+}
+
+function queueTokenKey(eventId) {
+  return `ticketRush.queueToken.${eventId}`;
+}
+
+function queueExpiryKey(eventId) {
+  return `ticketRush.queueTokenExpiresAt.${eventId}`;
+}
+
+function getStoredQueueAccess(eventId) {
+  const token = window.sessionStorage.getItem(queueTokenKey(eventId));
+  const expiresAt = window.sessionStorage.getItem(queueExpiryKey(eventId));
+
+  if (!token) {
+    return null;
+  }
+
+  if (expiresAt && new Date(expiresAt).getTime() <= Date.now()) {
+    clearStoredQueueAccess(eventId);
+    return null;
+  }
+
+  return { token, expiresAt };
+}
+
+function storeQueueAccess(eventId, queueToken, expiresAt) {
+  if (!queueToken) {
+    return;
+  }
+
+  window.sessionStorage.setItem(queueTokenKey(eventId), queueToken);
+
+  if (expiresAt) {
+    window.sessionStorage.setItem(queueExpiryKey(eventId), expiresAt);
+  }
+}
+
+function clearStoredQueueAccess(eventId) {
+  window.sessionStorage.removeItem(queueTokenKey(eventId));
+  window.sessionStorage.removeItem(queueExpiryKey(eventId));
+}
+
+function isQueueAccessError(error) {
+  const message = String(error?.message || "").toLowerCase();
+  return error?.statusCode === 403 || error?.statusCode === 409 || message.includes("queue access") || message.includes("waiting room");
 }

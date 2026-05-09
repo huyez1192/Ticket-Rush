@@ -184,3 +184,18 @@ export async function getAdminRoles(params = {}) {
   const response = await axiosClient.get("/admin/roles", { params });
   return unwrapData(response);
 }
+
+export async function getAdminEventQueue(eventId, params = {}) {
+  const response = await axiosClient.get(`/admin/events/${eventId}/queue`, { params });
+  return unwrapData(response);
+}
+
+export async function admitQueueBatch(eventId, payload = {}) {
+  const response = await axiosClient.post(`/admin/events/${eventId}/queue/admit-batch`, payload);
+  return unwrapData(response);
+}
+
+export async function updateEventQueueConfig(eventId, payload) {
+  const response = await axiosClient.patch(`/admin/events/${eventId}/queue/config`, payload);
+  return unwrapData(response);
+}

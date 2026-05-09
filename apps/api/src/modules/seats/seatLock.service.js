@@ -3,6 +3,7 @@ import { EVENT_STATUSES, SEAT_LOCK_STATUSES, SEAT_STATUSES } from "../../common/
 import { AppError } from "../../common/errors/AppError.js";
 import { runWithOptionalTransaction } from "../../common/utils/runWithOptionalTransaction.js";
 import { findEventById } from "../events/event.repository.js";
+import { validateQueueAccessForSeatLock } from "../waiting-queue/waitingQueue.service.js";
 import { findAllSeatsForEvent } from "./seat.repository.js";
 import { mapPagination, mapSeatLockToDto } from "./seatLock.mapper.js";
 import {
@@ -50,7 +51,8 @@ async function assertSellingEvent(eventId) {
 }
 
 export async function lockSeatsForUser(eventId, userId, payload) {
-  await assertSellingEvent(eventId);
+  const event = await assertSellingEvent(eventId);
+  await validateQueueAccessForSeatLock(event, userId, payload.queueToken);
   assertUniqueSeatIds(payload.seatIds);
 
   const lockedSeats = [];

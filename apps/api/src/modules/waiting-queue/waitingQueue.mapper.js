@@ -4,19 +4,29 @@ export function mapWaitingQueueEntryToDto(entry) {
   }
 
   const value = typeof entry.toObject === "function" ? entry.toObject() : entry;
-  const token = value.token || null;
+  const user = value.userId && typeof value.userId === "object" ? value.userId : null;
 
   return {
     id: value._id?.toString(),
     userId: value.userId?._id?.toString?.() || value.userId?.toString?.(),
     eventId: value.eventId?._id?.toString?.() || value.eventId?.toString?.(),
     position: value.position,
+    sequenceNumber: value.sequenceNumber || value.position,
     status: value.status,
-    admissionToken: token,
-    token,
+    user: user
+      ? {
+          id: user._id?.toString(),
+          username: user.username,
+          email: user.email,
+          fullName: user.fullName,
+          avatarUrl: user.avatarUrl
+        }
+      : undefined,
     admittedAt: value.admittedAt || null,
     expiredAt: value.expiredAt || null,
-    createdAt: value.createdAt
+    expiresAt: value.expiresAt || value.expiredAt || null,
+    createdAt: value.createdAt,
+    updatedAt: value.updatedAt
   };
 }
 

@@ -21,6 +21,10 @@ export function eventSeats(eventId) {
   return `/events/${eventId}/seats`;
 }
 
+export function eventWaitingRoom(eventId) {
+  return `/events/${eventId}/waiting-room`;
+}
+
 export function checkout(orderId) {
   return `/orders/${orderId}/checkout`;
 }

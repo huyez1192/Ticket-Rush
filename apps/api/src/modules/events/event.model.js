@@ -1,6 +1,8 @@
 import mongoose from "mongoose";
 import { EVENT_STATUS_VALUES } from "../../common/constants/index.js";
 
+const QUEUE_ADMISSION_MODES = Object.freeze(["Manual", "Auto"]);
+
 const eventSchema = new mongoose.Schema(
   {
     name: {
@@ -40,6 +42,32 @@ const eventSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       default: null
+    },
+    virtualQueueEnabled: {
+      type: Boolean,
+      default: false
+    },
+    queueBatchSize: {
+      type: Number,
+      default: 50,
+      min: 1,
+      max: 500
+    },
+    queueAccessTtlMinutes: {
+      type: Number,
+      default: 10,
+      min: 1,
+      max: 240
+    },
+    queueMaxActiveUsers: {
+      type: Number,
+      min: 1,
+      default: null
+    },
+    queueAdmissionMode: {
+      type: String,
+      enum: QUEUE_ADMISSION_MODES,
+      default: "Manual"
     }
   },
   {

@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import Button from "../common/Button";
 import StatusBadge from "../common/StatusBadge";
+import { eventSeats, eventWaitingRoom } from "../../constants/routes";
 import { formatDateRange } from "../../utils/formatDate";
 import { normalizeEvent } from "../../utils/eventMappers";
 import "./event.css";
@@ -24,8 +25,11 @@ export default function EventDetailsHeader({ event }) {
         <span>{normalized.location}</span>
       </div>
       {isSelling ? (
-        <Link className="btn btn--primary btn--lg" to={`/events/${normalized.id}/seats`}>
-          Select seats
+        <Link
+          className="btn btn--primary btn--lg"
+          to={normalized.virtualQueueEnabled ? eventWaitingRoom(normalized.id) : eventSeats(normalized.id)}
+        >
+          {normalized.virtualQueueEnabled ? "Join waiting room" : "Select seats"}
         </Link>
       ) : (
         <Button size="lg" variant="outline" disabled>

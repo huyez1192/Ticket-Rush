@@ -36,7 +36,8 @@ export const SEAT_LOCK_STATUSES = Object.freeze({
 export const QUEUE_STATUSES = Object.freeze({
   WAITING: "Waiting",
   ADMITTED: "Admitted",
-  EXPIRED: "Expired"
+  EXPIRED: "Expired",
+  CANCELLED: "Cancelled"
 });
 
 export const GENDER_VALUES = Object.freeze(Object.values(GENDERS));

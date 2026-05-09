@@ -67,6 +67,11 @@ export function normalizeEvent(event) {
     startTime: event?.startTime || event?.startsAt || event?.date,
     endTime: event?.endTime || event?.endsAt,
     images: Array.isArray(images) ? images : [],
+    virtualQueueEnabled: Boolean(event?.virtualQueueEnabled),
+    queueBatchSize: Number(event?.queueBatchSize || 50),
+    queueAccessTtlMinutes: Number(event?.queueAccessTtlMinutes || 10),
+    queueMaxActiveUsers: event?.queueMaxActiveUsers ?? null,
+    queueAdmissionMode: event?.queueAdmissionMode || "Manual",
   };
 }
 

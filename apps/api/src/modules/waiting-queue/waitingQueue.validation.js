@@ -30,6 +30,11 @@ export const eventQueueParamsSchema = {
     .strict()
 };
 
+export const joinEventQueueSchema = {
+  params: eventQueueParamsSchema.params,
+  body: z.object({}).strict().optional()
+};
+
 export const adminListQueueSchema = {
   params: eventQueueParamsSchema.params,
   query: z
@@ -45,7 +50,21 @@ export const admitQueueBatchSchema = {
   params: eventQueueParamsSchema.params,
   body: z
     .object({
-      batchSize: z.coerce.number().int().min(1).max(500)
+      batchSize: z.coerce.number().int().min(1).max(500).optional(),
+      limit: z.coerce.number().int().min(1).max(500).optional()
+    })
+    .strict()
+};
+
+export const updateEventQueueConfigSchema = {
+  params: eventQueueParamsSchema.params,
+  body: z
+    .object({
+      virtualQueueEnabled: z.boolean(),
+      queueBatchSize: z.coerce.number().int().min(1).max(500),
+      queueAccessTtlMinutes: z.coerce.number().int().min(1).max(240),
+      queueMaxActiveUsers: z.coerce.number().int().min(1).max(100000).nullable().optional(),
+      queueAdmissionMode: z.enum(["Manual", "Auto"]).default("Manual")
     })
     .strict()
 };

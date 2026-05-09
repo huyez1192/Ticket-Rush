@@ -10,6 +10,7 @@
     "lint": "node -e \"console.log('No API lint configured yet.')\"",
     "test": "node -e \"console.log('No API tests configured yet.')\"",
     "seed": "node src/database/seed.js",
+    "fix:queue-indexes": "node src/database/fix-waiting-queue-indexes.js",
     "smoke:seat-lock-race": "node src/database/concurrency-seat-lock-smoke.js"
   },
   "dependencies": {

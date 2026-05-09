@@ -42,7 +42,8 @@ function normalizeEventPayload(payload) {
   return {
     ...payload,
     startTime: payload.startTime ? new Date(payload.startTime) : undefined,
-    endTime: payload.endTime ? new Date(payload.endTime) : undefined
+    endTime: payload.endTime ? new Date(payload.endTime) : undefined,
+    queueMaxActiveUsers: payload.queueMaxActiveUsers ?? undefined
   };
 }
 
@@ -184,6 +185,24 @@ export async function updateAdminEvent(eventId, payload) {
   assertValidEventTimes(event, update);
 
   const updatedEvent = await updateEventById(eventId, update);
+
+  return mapEventToDto(updatedEvent);
+}
+
+export async function updateAdminEventQueueConfig(eventId, payload) {
+  const event = await findEventById(eventId);
+
+  if (!event) {
+    throw new AppError("Event not found.", 404);
+  }
+
+  const updatedEvent = await updateEventById(eventId, {
+    virtualQueueEnabled: payload.virtualQueueEnabled,
+    queueBatchSize: payload.queueBatchSize,
+    queueAccessTtlMinutes: payload.queueAccessTtlMinutes,
+    queueMaxActiveUsers: payload.queueMaxActiveUsers ?? null,
+    queueAdmissionMode: payload.queueAdmissionMode || "Manual"
+  });
 
   return mapEventToDto(updatedEvent);
 }

@@ -18,10 +18,13 @@ const waitingQueueSchema = new mongoose.Schema(
       required: true,
       min: 1
     },
-    token: {
+    sequenceNumber: {
+      type: Number,
+      required: true,
+      min: 1
+    },
+    queueTokenHash: {
       type: String,
-      unique: true,
-      sparse: true,
       trim: true
     },
     status: {
@@ -35,21 +38,36 @@ const waitingQueueSchema = new mongoose.Schema(
     },
     expiredAt: {
       type: Date
+    },
+    expiresAt: {
+      type: Date
     }
   },
   {
     collection: "waiting_queue",
-    timestamps: {
-      createdAt: true,
-      updatedAt: false
-    }
+    timestamps: true
   }
 );
 
 waitingQueueSchema.index({ eventId: 1 }, { name: "idx_waiting_queue_event_id" });
 waitingQueueSchema.index({ status: 1 }, { name: "idx_waiting_queue_status" });
-waitingQueueSchema.index({ eventId: 1, status: 1, position: 1 }, { name: "idx_waiting_queue_event_status_position" });
-waitingQueueSchema.index({ userId: 1, eventId: 1 }, { unique: true, name: "uq_waiting_queue_user_event" });
+waitingQueueSchema.index({ eventId: 1, status: 1, sequenceNumber: 1 }, { name: "idx_waiting_queue_event_status_sequence" });
+waitingQueueSchema.index(
+  { queueTokenHash: 1 },
+  {
+    unique: true,
+    partialFilterExpression: { queueTokenHash: { $type: "string" } },
+    name: "uq_waiting_queue_token_hash"
+  }
+);
+waitingQueueSchema.index(
+  { eventId: 1, userId: 1 },
+  {
+    unique: true,
+    partialFilterExpression: { status: { $in: [QUEUE_STATUSES.WAITING, QUEUE_STATUSES.ADMITTED] } },
+    name: "uq_waiting_queue_active_user_event"
+  }
+);
 
 export const WaitingQueueEntry =
   mongoose.models.WaitingQueueEntry || mongoose.model("WaitingQueueEntry", waitingQueueSchema);

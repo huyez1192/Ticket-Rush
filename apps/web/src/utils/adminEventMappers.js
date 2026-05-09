@@ -30,6 +30,11 @@ export function normalizeAdminEvent(event) {
     createdAt: event?.createdAt || "",
     updatedAt: event?.updatedAt || "",
     images,
+    virtualQueueEnabled: Boolean(event?.virtualQueueEnabled),
+    queueBatchSize: Number(event?.queueBatchSize || 50),
+    queueAccessTtlMinutes: Number(event?.queueAccessTtlMinutes || 10),
+    queueMaxActiveUsers: event?.queueMaxActiveUsers ?? null,
+    queueAdmissionMode: event?.queueAdmissionMode || "Manual",
   };
 }
 
