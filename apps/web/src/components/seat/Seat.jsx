@@ -4,10 +4,11 @@ import "./seat.css";
 
 export default function Seat({ seat, selected = false, lockedByMe = false, disabled = false, onToggle }) {
   const statusMeta = getSeatStatusMeta(seat.status);
+  const isLockedByMe = lockedByMe && seat.status === "Locked";
   const canSelect = !disabled && isSeatSelectable(seat.status);
-  const stateClass = selected ? "seat--selected" : lockedByMe ? "seat--mine" : statusMeta.className;
+  const stateClass = selected ? "seat--selected" : isLockedByMe ? "seat--mine" : statusMeta.className;
   const label = `${seat.sectionName}, ${getSeatDisplayName(seat)}. ${
-    selected ? "Selected" : lockedByMe ? "Locked by you" : statusMeta.label
+    selected ? "Selected" : isLockedByMe ? "Locked by you" : statusMeta.label
   }`;
 
   return (

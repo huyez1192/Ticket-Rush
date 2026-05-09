@@ -6,8 +6,8 @@ import "./seat.css";
 export default function SeatMap({
   section,
   seats = [],
-  selectedSeatIds,
-  lockedSeatIds,
+  selectedSeatIds = new Set(),
+  lockedByMeSeatIds = new Set(),
   disabled = false,
   onToggleSeat,
 }) {
@@ -44,7 +44,7 @@ export default function SeatMap({
                     key={seat.id}
                     seat={seat}
                     selected={selectedSeatIds.has(seat.id)}
-                    lockedByMe={lockedSeatIds.has(seat.id)}
+                    lockedByMe={lockedByMeSeatIds.has(seat.id)}
                     disabled={disabled}
                     onToggle={onToggleSeat}
                   />

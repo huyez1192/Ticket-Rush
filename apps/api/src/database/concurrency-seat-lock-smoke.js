@@ -5,9 +5,10 @@ import { env } from "../config/env.js";
 import "../modules/admin/auditLog.model.js";
 import "../modules/bookings/order.model.js";
 import { Event } from "../modules/events/event.model.js";
-import { lockSeatsForUser } from "../modules/seats/seatLock.service.js";
+import { getMyActiveSeatLocks, lockSeatsForUser } from "../modules/seats/seatLock.service.js";
 import { SeatLock } from "../modules/seats/seatLock.model.js";
 import { Seat } from "../modules/seats/seat.model.js";
+import { getPublicSeatMap } from "../modules/seats/seat.service.js";
 import "../modules/seats/seatSection.model.js";
 import "../modules/tickets/ticket.model.js";
 import "../modules/users/role.model.js";
@@ -85,6 +86,16 @@ async function runSmoke() {
   const unexpectedFailures = results.filter((result) => !result.ok && !isExpectedConflict(result.error));
   const finalSeat = await Seat.findById(seat._id).lean();
   const activeLockCount = await SeatLock.countDocuments({ seatId: seat._id, status: SEAT_LOCK_STATUSES.ACTIVE });
+  const ownerUserId = successes[0]?.result?.lockedSeats?.[0]?.userId;
+  const nonOwnerUserId = users.map((userId) => userId.toString()).find((userId) => userId !== ownerUserId);
+  const ownerLocks = ownerUserId ? await getMyActiveSeatLocks(event._id.toString(), ownerUserId) : { items: [] };
+  const nonOwnerLocks = nonOwnerUserId ? await getMyActiveSeatLocks(event._id.toString(), nonOwnerUserId) : { items: [] };
+  const publicSeatMap = await getPublicSeatMap(event._id.toString());
+  const seatMapSeat = publicSeatMap.sections
+    .flatMap((section) => section.seats)
+    .find((mappedSeat) => mappedSeat.id === seat._id.toString());
+  const ownerSeesOwnLock = ownerLocks.items.some((lock) => lock.seatId === seat._id.toString());
+  const nonOwnerSeesNoLock = !nonOwnerLocks.items.some((lock) => lock.seatId === seat._id.toString());
 
   console.log("Seat lock race smoke result");
   console.log(`Event: ${event._id}`);
@@ -95,18 +106,24 @@ async function runSmoke() {
   console.log(`Unexpected failures: ${unexpectedFailures.length}`);
   console.log(`Final seat status: ${finalSeat?.status}`);
   console.log(`Active locks for seat: ${activeLockCount}`);
+  console.log(`Owner sees active lock: ${ownerSeesOwnLock}`);
+  console.log(`Non-owner sees active lock: ${!nonOwnerSeesNoLock}`);
+  console.log(`Seat-map seat status: ${seatMapSeat?.status}`);
 
   if (
     successes.length !== 1 ||
     expectedFailures.length !== ATTEMPT_COUNT - 1 ||
     unexpectedFailures.length !== 0 ||
     finalSeat?.status !== SEAT_STATUSES.LOCKED ||
-    activeLockCount !== 1
+    activeLockCount !== 1 ||
+    !ownerSeesOwnLock ||
+    !nonOwnerSeesNoLock ||
+    seatMapSeat?.status !== SEAT_STATUSES.LOCKED
   ) {
     throw new Error("Seat lock race smoke failed.");
   }
 
-  console.log("PASS: exactly one concurrent lock succeeded and one active lock remains.");
+  console.log("PASS: exactly one concurrent lock succeeded, ownership is scoped, and the public seat map remains Locked.");
 }
 
 runSmoke()

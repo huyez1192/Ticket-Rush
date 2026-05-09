@@ -17,7 +17,8 @@ export function findActiveSeatLocksForUserEvent(userId, eventSeatIds, session) {
   return SeatLock.find({
     userId,
     seatId: { $in: eventSeatIds },
-    status: SEAT_LOCK_STATUSES.ACTIVE
+    status: SEAT_LOCK_STATUSES.ACTIVE,
+    expiresAt: { $gt: new Date() }
   })
     .populate(SEAT_POPULATE)
     .sort({ lockedAt: 1, _id: 1 })
@@ -28,7 +29,8 @@ export function findActiveSeatLocksForUserSeats(userId, seatIds, session) {
   return SeatLock.find({
     userId,
     seatId: { $in: seatIds },
-    status: SEAT_LOCK_STATUSES.ACTIVE
+    status: SEAT_LOCK_STATUSES.ACTIVE,
+    expiresAt: { $gt: new Date() }
   })
     .populate(SEAT_POPULATE)
     .session(session || null);

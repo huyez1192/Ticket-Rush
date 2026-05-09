@@ -64,7 +64,10 @@ export default function SeatSelectionPage() {
   const allSeats = useMemo(() => seatMapSections.flatMap((entry) => entry.seats), [seatMapSections]);
   const allSeatsById = useMemo(() => new Map(allSeats.map((seat) => [seat.id, seat])), [allSeats]);
   const selectedSeatSet = useMemo(() => new Set(selectedSeatIds), [selectedSeatIds]);
-  const lockedSeatSet = useMemo(() => new Set(activeLocks.map((lock) => lock.seatId)), [activeLocks]);
+  const lockedByMeSeatSet = useMemo(
+    () => new Set(activeLocks.map((lock) => lock.seatId).filter(Boolean)),
+    [activeLocks],
+  );
   const selectedSeats = useMemo(
     () => sortSeats(selectedSeatIds.map((seatId) => allSeatsById.get(seatId)).filter(Boolean)),
     [allSeatsById, selectedSeatIds],
@@ -395,7 +398,7 @@ export default function SeatSelectionPage() {
                     layout={seatMapLayout}
                     sections={seatMapSections}
                     selectedSeatIds={selectedSeatSet}
-                    lockedSeatIds={lockedSeatSet}
+                    lockedByMeSeatIds={lockedByMeSeatSet}
                     disabled={!isSelling}
                     onToggleSeat={handleToggleSeat}
                   />
@@ -409,7 +412,7 @@ export default function SeatSelectionPage() {
                         section={activeUnplacedSection?.section}
                         seats={activeUnplacedSection?.seats || []}
                         selectedSeatIds={selectedSeatSet}
-                        lockedSeatIds={lockedSeatSet}
+                        lockedByMeSeatIds={lockedByMeSeatSet}
                         disabled={!isSelling}
                         onToggleSeat={handleToggleSeat}
                       />
@@ -421,7 +424,7 @@ export default function SeatSelectionPage() {
                   section={activeSection?.section}
                   seats={activeSection?.seats || []}
                   selectedSeatIds={selectedSeatSet}
-                  lockedSeatIds={lockedSeatSet}
+                  lockedByMeSeatIds={lockedByMeSeatSet}
                   disabled={!isSelling}
                   onToggleSeat={handleToggleSeat}
                 />

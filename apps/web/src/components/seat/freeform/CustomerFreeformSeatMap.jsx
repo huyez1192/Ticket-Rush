@@ -11,8 +11,8 @@ import "./customer-freeform-seat-map.css";
 export default function CustomerFreeformSeatMap({
   layout,
   sections = [],
-  selectedSeatIds,
-  lockedSeatIds,
+  selectedSeatIds = new Set(),
+  lockedByMeSeatIds = new Set(),
   disabled = false,
   onToggleSeat,
 }) {
@@ -38,7 +38,7 @@ export default function CustomerFreeformSeatMap({
         layout={layoutConfig}
         seats={placedSeats}
         selectedSeatIds={selectedSeatIds}
-        lockedSeatIds={lockedSeatIds}
+        lockedByMeSeatIds={lockedByMeSeatIds}
         disabled={disabled}
         onToggleSeat={onToggleSeat}
       />

@@ -6,8 +6,8 @@ import "./customer-freeform-seat-map.css";
 export default function CustomerSeatMapCanvas({
   layout,
   seats = [],
-  selectedSeatIds,
-  lockedSeatIds,
+  selectedSeatIds = new Set(),
+  lockedByMeSeatIds = new Set(),
   disabled = false,
   onToggleSeat,
 }) {
@@ -19,7 +19,7 @@ export default function CustomerSeatMapCanvas({
           key={seat.id}
           seat={seat}
           selected={selectedSeatIds.has(seat.id)}
-          lockedByMe={lockedSeatIds.has(seat.id)}
+          lockedByMe={lockedByMeSeatIds.has(seat.id)}
           disabled={disabled}
           onToggleSeat={onToggleSeat}
         />

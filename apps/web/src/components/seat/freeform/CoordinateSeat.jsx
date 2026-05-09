@@ -13,9 +13,10 @@ export default function CoordinateSeat({
 }) {
   const layout = getCoordinateSeatLayout(seat);
   const statusMeta = getSeatStatusMeta(seat.status);
-  const canSelect = !disabled && !lockedByMe && isSeatSelectable(seat.status);
-  const visualState = selected ? "selected" : lockedByMe ? "mine" : String(seat.status || "Released").toLowerCase();
-  const statusLabel = selected ? "Selected" : lockedByMe ? "Locked by you" : statusMeta.label;
+  const isLockedByMe = lockedByMe && seat.status === "Locked";
+  const canSelect = !disabled && !isLockedByMe && isSeatSelectable(seat.status);
+  const visualState = selected ? "selected" : isLockedByMe ? "mine" : String(seat.status || "Released").toLowerCase();
+  const statusLabel = selected ? "Selected" : isLockedByMe ? "Locked by you" : statusMeta.label;
   const displayLabel = layout.label || seat.code || seat.seatNumber;
   const ariaLabel = [
     seat.sectionName || "Section",
