@@ -5,12 +5,14 @@ import {
   getEventDemographics,
   getEventRevenue,
   getEventSeatOccupancy,
+  getAdminOrders,
 } from "../../api/adminApi";
 import AdminDashboardEventSelector from "../../components/admin/AdminDashboardEventSelector";
 import AdminDashboardOverview from "../../components/admin/AdminDashboardOverview";
 import {
   DemographicsPanel,
   OccupancyPanel,
+  OrderStatusPanel,
   RevenuePanel,
 } from "../../components/admin/AdminDashboardPanel";
 import AdminPageHeader from "../../components/admin/AdminPageHeader";
@@ -21,6 +23,7 @@ import LoadingState from "../../components/common/LoadingState";
 import {
   normalizeDashboardOverview,
   normalizeDemographicsStats,
+  normalizeOrderStatusCounts,
   normalizeRevenueStats,
   normalizeSeatOccupancyStats,
 } from "../../utils/dashboardMappers";
@@ -30,11 +33,12 @@ export default function AdminDashboardPage() {
   const [overview, setOverview] = useState(null);
   const [events, setEvents] = useState([]);
   const [selectedEventId, setSelectedEventId] = useState("");
-  const [analytics, setAnalytics] = useState({ revenue: null, occupancy: null, demographics: null });
+  const [revenueState, setRevenueState] = useState({ data: null, loading: false, error: "" });
+  const [occupancyState, setOccupancyState] = useState({ data: null, loading: false, error: "" });
+  const [demographicsState, setDemographicsState] = useState({ data: null, loading: false, error: "" });
+  const [orderStatusState, setOrderStatusState] = useState({ data: null, loading: false, error: "" });
   const [loading, setLoading] = useState(true);
-  const [analyticsLoading, setAnalyticsLoading] = useState(false);
   const [error, setError] = useState("");
-  const [analyticsError, setAnalyticsError] = useState("");
 
   const loadDashboard = useCallback(async () => {
     setLoading(true);
@@ -46,9 +50,10 @@ export default function AdminDashboardPage() {
         getAdminEvents({ page: 1, limit: 50 }),
       ]);
       const normalizedEvents = normalizeAdminEventsPayload(eventsPayload).items;
+      const defaultEvent = normalizedEvents.find((event) => event.status === "Selling") || normalizedEvents[0];
       setOverview(normalizeDashboardOverview(overviewPayload));
       setEvents(normalizedEvents);
-      setSelectedEventId((current) => current || normalizedEvents[0]?.id || "");
+      setSelectedEventId((current) => current || defaultEvent?.id || "");
     } catch (apiError) {
       setError(apiError.message);
     } finally {
@@ -60,50 +65,70 @@ export default function AdminDashboardPage() {
     loadDashboard();
   }, [loadDashboard]);
 
-  useEffect(() => {
-    if (!selectedEventId) {
-      setAnalytics({ revenue: null, occupancy: null, demographics: null });
+  const loadRevenue = useCallback(async (eventId) => {
+    if (!eventId) {
+      setRevenueState({ data: null, loading: false, error: "" });
       return;
     }
 
-    let cancelled = false;
+    setRevenueState((current) => ({ ...current, loading: true, error: "" }));
+    try {
+      const payload = await getEventRevenue(eventId);
+      setRevenueState({ data: normalizeRevenueStats(payload), loading: false, error: "" });
+    } catch (apiError) {
+      setRevenueState({ data: null, loading: false, error: apiError.message });
+    }
+  }, []);
 
-    async function loadAnalytics() {
-      setAnalyticsLoading(true);
-      setAnalyticsError("");
-
-      try {
-        const [revenuePayload, occupancyPayload, demographicsPayload] = await Promise.all([
-          getEventRevenue(selectedEventId),
-          getEventSeatOccupancy(selectedEventId),
-          getEventDemographics(selectedEventId),
-        ]);
-
-        if (!cancelled) {
-          setAnalytics({
-            revenue: normalizeRevenueStats(revenuePayload),
-            occupancy: normalizeSeatOccupancyStats(occupancyPayload),
-            demographics: normalizeDemographicsStats(demographicsPayload),
-          });
-        }
-      } catch (apiError) {
-        if (!cancelled) {
-          setAnalyticsError(apiError.message);
-          setAnalytics({ revenue: null, occupancy: null, demographics: null });
-        }
-      } finally {
-        if (!cancelled) {
-          setAnalyticsLoading(false);
-        }
-      }
+  const loadOccupancy = useCallback(async (eventId) => {
+    if (!eventId) {
+      setOccupancyState({ data: null, loading: false, error: "" });
+      return;
     }
 
-    loadAnalytics();
+    setOccupancyState((current) => ({ ...current, loading: true, error: "" }));
+    try {
+      const payload = await getEventSeatOccupancy(eventId);
+      setOccupancyState({ data: normalizeSeatOccupancyStats(payload), loading: false, error: "" });
+    } catch (apiError) {
+      setOccupancyState({ data: null, loading: false, error: apiError.message });
+    }
+  }, []);
 
-    return () => {
-      cancelled = true;
-    };
-  }, [selectedEventId]);
+  const loadDemographics = useCallback(async (eventId) => {
+    if (!eventId) {
+      setDemographicsState({ data: null, loading: false, error: "" });
+      return;
+    }
+
+    setDemographicsState((current) => ({ ...current, loading: true, error: "" }));
+    try {
+      const payload = await getEventDemographics(eventId);
+      setDemographicsState({ data: normalizeDemographicsStats(payload), loading: false, error: "" });
+    } catch (apiError) {
+      setDemographicsState({ data: null, loading: false, error: apiError.message });
+    }
+  }, []);
+
+  const loadOrderStatus = useCallback(async () => {
+    setOrderStatusState((current) => ({ ...current, loading: true, error: "" }));
+    try {
+      const payload = await getAdminOrders({ page: 1, limit: 100 });
+      setOrderStatusState({ data: normalizeOrderStatusCounts(payload), loading: false, error: "" });
+    } catch (apiError) {
+      setOrderStatusState({ data: null, loading: false, error: apiError.message });
+    }
+  }, []);
+
+  useEffect(() => {
+    loadOrderStatus();
+  }, [loadOrderStatus]);
+
+  useEffect(() => {
+    loadRevenue(selectedEventId);
+    loadOccupancy(selectedEventId);
+    loadDemographics(selectedEventId);
+  }, [loadDemographics, loadOccupancy, loadRevenue, selectedEventId]);
 
   if (loading) {
     return <LoadingState title="Loading dashboard" message="Fetching admin overview metrics." />;
@@ -136,10 +161,10 @@ export default function AdminDashboardPage() {
             events={events}
             value={selectedEventId}
             onChange={setSelectedEventId}
-            disabled={analyticsLoading}
+            disabled={revenueState.loading || occupancyState.loading || demographicsState.loading}
           />
           <p>
-            The dashboard uses backend aggregate endpoints. Live-user and time-series widgets from the source design are intentionally represented as aggregate panels until matching data exists.
+            Event-specific charts use backend dashboard aggregate endpoints. Time-series bars render only when the API returns buckets.
           </p>
         </div>
 
@@ -148,17 +173,32 @@ export default function AdminDashboardPage() {
         )}
       </section>
 
-      {analyticsError ? (
-        <ErrorState title="Event analytics unavailable" message={analyticsError} />
-      ) : analyticsLoading ? (
-        <LoadingState title="Loading event analytics" message="Fetching selected event metrics." />
-      ) : selectedEventId ? (
-        <section className="admin-dashboard-layout">
-          <RevenuePanel stats={analytics.revenue} />
-          <OccupancyPanel stats={analytics.occupancy} />
-          <DemographicsPanel stats={analytics.demographics} />
-        </section>
-      ) : null}
+      <section className="admin-dashboard-chart-grid">
+        <RevenuePanel
+          stats={revenueState.data}
+          loading={revenueState.loading}
+          error={revenueState.error}
+          onRetry={() => loadRevenue(selectedEventId)}
+        />
+        <OccupancyPanel
+          stats={occupancyState.data}
+          loading={occupancyState.loading}
+          error={occupancyState.error}
+          onRetry={() => loadOccupancy(selectedEventId)}
+        />
+        <DemographicsPanel
+          stats={demographicsState.data}
+          loading={demographicsState.loading}
+          error={demographicsState.error}
+          onRetry={() => loadDemographics(selectedEventId)}
+        />
+        <OrderStatusPanel
+          stats={orderStatusState.data}
+          loading={orderStatusState.loading}
+          error={orderStatusState.error}
+          onRetry={loadOrderStatus}
+        />
+      </section>
     </div>
   );
 }

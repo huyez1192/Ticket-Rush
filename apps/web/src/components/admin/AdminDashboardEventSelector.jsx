@@ -14,7 +14,7 @@ export default function AdminDashboardEventSelector({ events = [], value, onChan
       <option value="">Choose an event</option>
       {events.map((event) => (
         <option key={event.id} value={event.id}>
-          {event.name}
+          {event.name} - {event.status}
         </option>
       ))}
     </Select>

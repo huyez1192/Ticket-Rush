@@ -87,6 +87,13 @@
   align-items: start;
 }
 
+.admin-dashboard-chart-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-5);
+  align-items: start;
+}
+
 .admin-panel {
   display: grid;
   gap: var(--space-4);
@@ -341,7 +348,8 @@
   }
 
   .admin-dashboard-layout,
-  .admin-detail-layout {
+  .admin-detail-layout,
+  .admin-dashboard-chart-grid {
     grid-template-columns: 1fr;
   }
 }
