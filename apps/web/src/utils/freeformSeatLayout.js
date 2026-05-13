@@ -50,6 +50,7 @@ export function flattenSeatMapSections(sections = []) {
       ...seat,
       section: entry.section,
       sectionName: seat.sectionName || entry.section?.name || "Section",
+      seatShape: seat.seatShape || entry.section?.seatShape,
     })),
   );
 }

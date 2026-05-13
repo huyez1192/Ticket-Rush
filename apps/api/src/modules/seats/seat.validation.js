@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import { z } from "zod";
-import { SEAT_STATUS_VALUES } from "../../common/constants/index.js";
+import { SEAT_STATUS_VALUES, SECTION_SEAT_SHAPE_VALUES } from "../../common/constants/index.js";
 
 const objectIdSchema = z.string().refine((value) => mongoose.Types.ObjectId.isValid(value), {
   message: "Invalid resource identifier."
@@ -105,7 +105,8 @@ export const createSeatSectionSchema = {
       color: optionalTrimmedString(32),
       displayOrder: finiteNumber.optional(),
       defaultSeatWidth: positiveFiniteNumber.optional(),
-      defaultSeatHeight: positiveFiniteNumber.optional()
+      defaultSeatHeight: positiveFiniteNumber.optional(),
+      seatShape: z.enum(SECTION_SEAT_SHAPE_VALUES).optional()
     })
     .strict()
 };
@@ -120,7 +121,8 @@ export const updateSeatSectionSchema = {
       color: optionalTrimmedString(32),
       displayOrder: finiteNumber.optional(),
       defaultSeatWidth: positiveFiniteNumber.optional(),
-      defaultSeatHeight: positiveFiniteNumber.optional()
+      defaultSeatHeight: positiveFiniteNumber.optional(),
+      seatShape: z.enum(SECTION_SEAT_SHAPE_VALUES).optional()
     })
     .strict()
 };

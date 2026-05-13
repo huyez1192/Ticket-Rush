@@ -154,7 +154,8 @@ export async function createAdminSeatSection(eventId, payload) {
       color: payload.color,
       displayOrder: payload.displayOrder,
       defaultSeatWidth: payload.defaultSeatWidth,
-      defaultSeatHeight: payload.defaultSeatHeight
+      defaultSeatHeight: payload.defaultSeatHeight,
+      seatShape: payload.seatShape
     });
 
     return mapSeatSectionToDto(section);

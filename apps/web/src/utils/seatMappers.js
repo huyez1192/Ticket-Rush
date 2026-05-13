@@ -1,5 +1,6 @@
 import { getCollectionItems, getEntityId, normalizeEvent } from "./eventMappers";
 import { normalizeSeatStatus } from "./seatStatus";
+import { normalizeSeatShape } from "../constants/seatShapes";
 
 export function normalizeSection(section = {}) {
   const displayOrder = Number(section.displayOrder);
@@ -17,6 +18,7 @@ export function normalizeSection(section = {}) {
     displayOrder: Number.isFinite(displayOrder) ? displayOrder : null,
     defaultSeatWidth: Number.isFinite(defaultSeatWidth) && defaultSeatWidth > 0 ? defaultSeatWidth : 32,
     defaultSeatHeight: Number.isFinite(defaultSeatHeight) && defaultSeatHeight > 0 ? defaultSeatHeight : 32,
+    seatShape: normalizeSeatShape(section.seatShape),
   };
 }
 
@@ -39,8 +41,10 @@ export function normalizeSeat(seat = {}, section = null) {
     id: getEntityId(seat) || seat.seatId || "",
     sectionId,
     sectionName: normalizedSection?.name || seat.sectionName || "Section",
+    seatShape: normalizeSeatShape(normalizedSection?.seatShape || seat.seatShape),
     rowNumber: Number.isFinite(rowNumber) ? rowNumber : 0,
     seatNumber: Number.isFinite(seatNumber) ? seatNumber : 0,
+    rowLabel,
     label: code || `Row ${rowNumber}, Seat ${seatNumber}`,
     code,
     status: normalizeSeatStatus(seat.status),

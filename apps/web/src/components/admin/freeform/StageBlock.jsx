@@ -13,7 +13,7 @@ export default function StageBlock({ stage }) {
       aria-label={stage.label || "Stage"}
       role="img"
     >
-      {stage.label || "Stage"}
+      <span>{stage.label || "Stage"}</span>
     </div>
   );
 }

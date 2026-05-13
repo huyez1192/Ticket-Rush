@@ -35,7 +35,6 @@ export default function AdminFreeformSeatDesigner({
   eventId,
   event,
   seatMap,
-  selectedSectionId,
   selectedSeatId,
   onSelectSeat,
   onClearSeatSelection,
@@ -199,7 +198,7 @@ export default function AdminFreeformSeatDesigner({
           <h2>Freeform seating designer</h2>
           <p>{event?.name || "Event"} coordinate layout editor. Seat colors represent status only.</p>
         </div>
-        <FreeformSeatLegend />
+        <FreeformSeatLegend sections={seatMap.sections.map((entry) => entry.section)} />
       </header>
 
       {notice ? <div className="freeform-alert freeform-alert--success">{notice}</div> : null}
@@ -255,7 +254,6 @@ export default function AdminFreeformSeatDesigner({
               dirtySeatIds={dirtySeatIds}
               selectedSeatId={selectedSeatId}
               selectedSeatIds={selectedSeatIds}
-              selectedSectionId={selectedSectionId}
               showGrid={showGrid}
               snapToGrid={snapToGrid}
               fitToView={fitToView}

@@ -27,12 +27,18 @@
   font-weight: 800;
 }
 
-.customer-freeform-legend {
+.customer-freeform-legend-stack {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.customer-freeform-legend,
+.customer-freeform-shape-legend {
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;
   gap: var(--space-2);
-  max-width: 420px;
+  max-width: 620px;
 }
 
 .customer-freeform-legend__item {
@@ -172,23 +178,16 @@
   z-index: 2;
   display: grid;
   place-items: center;
-  border: var(--border-strong);
-  border-radius: var(--radius-input);
+  border: 0;
+  border-radius: 0;
   padding: 0;
-  color: var(--color-text-inverse);
+  background: transparent;
+  color: var(--seat-color, var(--color-text-inverse));
   font-size: 0.6875rem;
   font-weight: 900;
   line-height: 1;
   cursor: pointer;
   user-select: none;
-}
-
-.customer-coordinate-seat span {
-  max-width: 100%;
-  overflow: hidden;
-  padding: 0 2px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .customer-coordinate-seat:hover:not(:disabled) {
@@ -205,37 +204,42 @@
 }
 
 .customer-coordinate-seat--available {
-  background: var(--color-secondary);
+  --seat-fill: var(--color-secondary);
+  --seat-color: var(--color-text-inverse);
 }
 
 .customer-coordinate-seat--selected {
   z-index: 4;
-  background: var(--color-primary);
+  --seat-fill: var(--color-primary);
+  --seat-color: var(--color-text-inverse);
   color: var(--color-text-inverse);
   outline: 4px solid rgba(0, 88, 190, 0.3);
   outline-offset: 2px;
 }
 
 .customer-coordinate-seat--mine {
-  background: var(--color-warning);
+  --seat-fill: var(--color-warning);
+  --seat-color: var(--color-text-inverse);
   color: var(--color-text-inverse);
 }
 
 .customer-coordinate-seat--locked {
-  background:
-    linear-gradient(45deg, transparent 25%, rgba(20, 27, 43, 0.16) 25%, rgba(20, 27, 43, 0.16) 50%, transparent 50%, transparent 75%, rgba(20, 27, 43, 0.16) 75%),
-    var(--color-disabled-bg);
-  background-size: 10px 10px;
+  --seat-fill: var(--color-disabled-bg);
+  --seat-pattern: linear-gradient(45deg, transparent 25%, rgba(20, 27, 43, 0.16) 25%, rgba(20, 27, 43, 0.16) 50%, transparent 50%, transparent 75%, rgba(20, 27, 43, 0.16) 75%);
+  --seat-pattern-size: 10px 10px;
+  --seat-color: var(--color-text-secondary);
   color: var(--color-text-secondary);
 }
 
 .customer-coordinate-seat--sold {
-  background: var(--color-text-primary);
+  --seat-fill: var(--color-text-primary);
+  --seat-color: var(--color-text-inverse);
   color: var(--color-text-inverse);
 }
 
 .customer-coordinate-seat--released {
-  background: var(--color-background-alt);
+  --seat-fill: var(--color-background-alt);
+  --seat-color: var(--color-muted);
   color: var(--color-muted);
 }
 
@@ -251,6 +255,10 @@
   }
 
   .customer-freeform-legend {
+    justify-content: flex-start;
+  }
+
+  .customer-freeform-shape-legend {
     justify-content: flex-start;
   }
 

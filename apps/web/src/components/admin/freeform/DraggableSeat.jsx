@@ -1,5 +1,7 @@
 import { useRef } from "react";
+import { getSeatShapeClassName } from "../../../constants/seatShapes";
 import { getSeatStatusMeta } from "../../../utils/seatStatus";
+import "../../seat/seat-shapes.css";
 import "./freeform-seating.css";
 
 export default function DraggableSeat({
@@ -20,6 +22,7 @@ export default function DraggableSeat({
   const suppressClickRef = useRef(false);
   const statusMeta = getSeatStatusMeta(seat.status);
   const label = `${seat.sectionName}, ${seat.code || layout.label || seat.label}, ${statusMeta.label}`;
+  const displayLabel = getDisplayLabel(seat, layout);
 
   function handlePointerDown(event) {
     if (disabled) {
@@ -95,7 +98,9 @@ export default function DraggableSeat({
       type="button"
       className={[
         "freeform-seat",
+        "seat-shape-shell",
         `freeform-seat--${seat.status.toLowerCase()}`,
+        getSeatShapeClassName(seat.seatShape),
         selected ? "freeform-seat--selected" : "",
         dirty ? "freeform-seat--dirty" : "",
         className,
@@ -107,6 +112,7 @@ export default function DraggableSeat({
         top: `${layout.y}px`,
         width: `${layout.width}px`,
         height: `${layout.height}px`,
+        "--seat-visual-size": `${Math.min(Number(layout.width || 32), Number(layout.height || 32))}px`,
         transform: `rotate(${layout.rotation || 0}deg)`,
       }}
       aria-label={label}
@@ -119,9 +125,34 @@ export default function DraggableSeat({
       onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerUp}
     >
-      {layout.label || seat.seatNumber}
+      <span className="seat-shape-visual">
+        <span className="seat-shape-label">{displayLabel}</span>
+      </span>
+      {dirty ? <span className="seat-dirty-marker" aria-hidden="true" /> : null}
     </button>
   );
+}
+
+function getDisplayLabel(seat, layout) {
+  const rowLabel = String(layout.rowLabel || seat.rowLabel || "").trim();
+  const seatNumber = seat.seatNumber ? String(seat.seatNumber) : "";
+  const rowNumber = seat.rowNumber ? String(seat.rowNumber) : "";
+
+  if (rowLabel && rowLabel !== "-" && seatNumber) {
+    return `${rowLabel}${seatNumber}`;
+  }
+
+  if (rowNumber && seatNumber) {
+    return `R${rowNumber}-${seatNumber}`;
+  }
+
+  const value = String(layout.label || seat.label || seat.code || seat.id || "");
+
+  if (["Diamond", "Hexagon", "Circle"].includes(seat.seatShape) && value.length > 3) {
+    return String(seat.seatNumber || value.slice(-3));
+  }
+
+  return value;
 }
 
 function clamp(value, min, max) {

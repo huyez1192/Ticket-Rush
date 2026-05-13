@@ -1,7 +1,7 @@
 import { SeatSection } from "./seatSection.model.js";
 import { Seat } from "./seat.model.js";
 
-const SECTION_SELECT = "eventId name description price color displayOrder defaultSeatWidth defaultSeatHeight createdAt updatedAt";
+const SECTION_SELECT = "eventId name description price color displayOrder defaultSeatWidth defaultSeatHeight seatShape createdAt updatedAt";
 
 export function findSeatSectionsByEventId(eventId) {
   return SeatSection.find({ eventId }).sort({ displayOrder: 1, name: 1, _id: 1 }).lean();

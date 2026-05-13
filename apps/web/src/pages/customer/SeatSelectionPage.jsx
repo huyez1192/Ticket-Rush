@@ -12,7 +12,6 @@ import ErrorState from "../../components/common/ErrorState";
 import LoadingState from "../../components/common/LoadingState";
 import StatusBadge from "../../components/common/StatusBadge";
 import SeatLegend from "../../components/seat/SeatLegend";
-import SeatMap from "../../components/seat/SeatMap";
 import SeatSelectionToolbar from "../../components/seat/SeatSelectionToolbar";
 import SeatSummary from "../../components/seat/SeatSummary";
 import SectionSelector from "../../components/seat/SectionSelector";
@@ -21,12 +20,6 @@ import { checkout, eventWaitingRoom } from "../../constants/routes";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { formatDateRange } from "../../utils/formatDate";
 import { getCollectionItems, normalizeEvent } from "../../utils/eventMappers";
-import {
-  flattenCustomerSeatMap,
-  getUnplacedCustomerSeats,
-  groupCustomerSeatsBySection,
-  shouldUseCustomerCoordinateMap,
-} from "../../utils/customerSeatLayout";
 import {
   getActiveLockItems,
   normalizeSeat,
@@ -45,7 +38,6 @@ export default function SeatSelectionPage() {
   const [event, setEvent] = useState(null);
   const [seatMapLayout, setSeatMapLayout] = useState(null);
   const [seatMapSections, setSeatMapSections] = useState([]);
-  const [activeSectionId, setActiveSectionId] = useState("");
   const [selectedSeatIds, setSelectedSeatIds] = useState([]);
   const [activeLocks, setActiveLocks] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -58,10 +50,6 @@ export default function SeatSelectionPage() {
   const [notice, setNotice] = useState("");
 
   const sections = useMemo(() => seatMapSections.map((entry) => entry.section), [seatMapSections]);
-  const activeSection = useMemo(
-    () => seatMapSections.find((entry) => entry.section.id === activeSectionId) || seatMapSections[0] || null,
-    [activeSectionId, seatMapSections],
-  );
   const allSeats = useMemo(() => seatMapSections.flatMap((entry) => entry.seats), [seatMapSections]);
   const allSeatsById = useMemo(() => new Map(allSeats.map((seat) => [seat.id, seat])), [allSeats]);
   const selectedSeatSet = useMemo(() => new Set(selectedSeatIds), [selectedSeatIds]);
@@ -86,25 +74,6 @@ export default function SeatSelectionPage() {
   const sectionSeatCounts = useMemo(() => buildSectionSeatCounts(seatMapSections), [seatMapSections]);
   const lockExpiresAt = useMemo(() => getEarliestExpiry(activeLocks), [activeLocks]);
   const isSelling = event?.status === "Selling";
-  const useCoordinateMap = useMemo(
-    () => shouldUseCustomerCoordinateMap(seatMapLayout, allSeats),
-    [allSeats, seatMapLayout],
-  );
-  const unplacedSeatSections = useMemo(
-    () => groupCustomerSeatsBySection(getUnplacedCustomerSeats(flattenCustomerSeatMap(seatMapSections)), sections),
-    [seatMapSections, sections],
-  );
-  const unplacedSeatCount = useMemo(
-    () => getUnplacedCustomerSeats(flattenCustomerSeatMap(seatMapSections)).length,
-    [seatMapSections],
-  );
-  const activeUnplacedSection = useMemo(
-    () =>
-      unplacedSeatSections.find((entry) => entry.section.id === activeSectionId) ||
-      unplacedSeatSections[0] ||
-      null,
-    [activeSectionId, unplacedSeatSections],
-  );
 
   const refreshSeatData = useCallback(
     async ({ silent = false } = {}) => {
@@ -128,7 +97,7 @@ export default function SeatSelectionPage() {
         setSeatMapSections(normalizedMap.sections);
         setActiveLocks(locks);
         if (seatMapPayload.__fallbackSeatList && !silent) {
-          setActionError(`Seat-map layout could not be loaded. Showing matrix fallback. ${seatMapPayload.__seatMapError}`);
+          setActionError(`Saved seat-map layout could not be loaded. Showing generated seat map fallback. ${seatMapPayload.__seatMapError}`);
         } else if (!silent) {
           setActionError(null);
         }
@@ -201,14 +170,9 @@ export default function SeatSelectionPage() {
       setSeatMapLayout(normalizedMap.layout);
       setSeatMapSections(normalizedMap.sections);
       setActiveLocks(getActiveLockItems(locksPayload));
-      setActiveSectionId((current) =>
-        normalizedMap.sections.some((entry) => entry.section.id === current)
-          ? current
-          : normalizedMap.sections[0]?.section.id || "",
-      );
       setSelectedSeatIds([]);
       if (seatMapPayload.__fallbackSeatList) {
-        setActionError(`Seat-map layout could not be loaded. Showing matrix fallback. ${seatMapPayload.__seatMapError}`);
+        setActionError(`Saved seat-map layout could not be loaded. Showing generated seat map fallback. ${seatMapPayload.__seatMapError}`);
       }
     } catch (apiError) {
       setError(mapApiError(apiError));
@@ -416,9 +380,7 @@ export default function SeatSelectionPage() {
             <div className="seat-layout__main">
               <SectionSelector
                 sections={sections}
-                activeSectionId={activeSection?.section.id || activeSectionId}
                 seatCounts={sectionSeatCounts}
-                onChange={setActiveSectionId}
               />
               <SeatSelectionToolbar
                 selectedCount={selectedSeats.length}
@@ -428,43 +390,14 @@ export default function SeatSelectionPage() {
                 onLockSelected={handleLockSelected}
                 onClearSelected={() => setSelectedSeatIds([])}
               />
-              {useCoordinateMap ? (
-                <>
-                  <CustomerFreeformSeatMap
-                    layout={seatMapLayout}
-                    sections={seatMapSections}
-                    selectedSeatIds={selectedSeatSet}
-                    lockedByMeSeatIds={lockedByMeSeatSet}
-                    disabled={!isSelling}
-                    onToggleSeat={handleToggleSeat}
-                  />
-                  {unplacedSeatSections.length ? (
-                    <div className="customer-unplaced-seat-panel">
-                      <div className="seat-alert">
-                        {unplacedSeatCount} seat{unplacedSeatCount === 1 ? "" : "s"} do not have saved coordinates yet.
-                        They remain available below in matrix fallback.
-                      </div>
-                      <SeatMap
-                        section={activeUnplacedSection?.section}
-                        seats={activeUnplacedSection?.seats || []}
-                        selectedSeatIds={selectedSeatSet}
-                        lockedByMeSeatIds={lockedByMeSeatSet}
-                        disabled={!isSelling}
-                        onToggleSeat={handleToggleSeat}
-                      />
-                    </div>
-                  ) : null}
-                </>
-              ) : (
-                <SeatMap
-                  section={activeSection?.section}
-                  seats={activeSection?.seats || []}
-                  selectedSeatIds={selectedSeatSet}
-                  lockedByMeSeatIds={lockedByMeSeatSet}
-                  disabled={!isSelling}
-                  onToggleSeat={handleToggleSeat}
-                />
-              )}
+              <CustomerFreeformSeatMap
+                layout={seatMapLayout}
+                sections={seatMapSections}
+                selectedSeatIds={selectedSeatSet}
+                lockedByMeSeatIds={lockedByMeSeatSet}
+                disabled={!isSelling}
+                onToggleSeat={handleToggleSeat}
+              />
               <Button type="button" variant="outline" loading={isPolling} onClick={() => refreshSeatData()}>
                 Refresh seat availability
               </Button>

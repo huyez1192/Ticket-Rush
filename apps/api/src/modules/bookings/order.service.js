@@ -107,7 +107,7 @@ export async function createPendingOrder(userId, payload) {
       .find({ _id: { $in: payload.seatIds }, eventId: payload.eventId })
       .populate({
         path: "sectionId",
-        select: "eventId name description price color displayOrder defaultSeatWidth defaultSeatHeight createdAt updatedAt"
+        select: "eventId name description price color displayOrder defaultSeatWidth defaultSeatHeight seatShape createdAt updatedAt"
       })
       .session(session);
 

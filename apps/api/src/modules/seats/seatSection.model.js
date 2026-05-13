@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { SECTION_SEAT_SHAPES, SECTION_SEAT_SHAPE_VALUES } from "../../common/constants/index.js";
 
 const finiteNumberValidator = {
   validator(value) {
@@ -46,6 +47,11 @@ const seatSectionSchema = new mongoose.Schema(
       type: Number,
       min: 0.01,
       validate: finiteNumberValidator
+    },
+    seatShape: {
+      type: String,
+      enum: SECTION_SEAT_SHAPE_VALUES,
+      default: SECTION_SEAT_SHAPES.SQUARE
     }
   },
   {

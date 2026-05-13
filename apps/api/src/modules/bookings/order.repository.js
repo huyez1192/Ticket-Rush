@@ -6,7 +6,7 @@ const ITEM_POPULATE = {
   path: "seatId",
   populate: {
     path: "sectionId",
-    select: "eventId name description price color displayOrder defaultSeatWidth defaultSeatHeight createdAt updatedAt"
+    select: "eventId name description price color displayOrder defaultSeatWidth defaultSeatHeight seatShape createdAt updatedAt"
   }
 };
 

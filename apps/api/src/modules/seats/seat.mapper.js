@@ -27,6 +27,7 @@ export function mapSeatSectionToDto(section) {
     displayOrder: value.displayOrder,
     defaultSeatWidth: value.defaultSeatWidth,
     defaultSeatHeight: value.defaultSeatHeight,
+    seatShape: value.seatShape || "Square",
     createdAt: value.createdAt,
     updatedAt: value.updatedAt
   };
@@ -100,6 +101,8 @@ export function mapSeatToDto(seat) {
   return {
     id: value._id?.toString(),
     sectionId: sectionId?.toString(),
+    sectionName,
+    seatShape: section?.seatShape || "Square",
     rowNumber: value.rowNumber,
     seatNumber: value.seatNumber,
     code: `${sectionName}-R${value.rowNumber}-${value.seatNumber}`,

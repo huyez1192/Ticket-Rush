@@ -63,6 +63,7 @@ const demoEvents = [
         displayOrder: 1,
         defaultSeatWidth: 32,
         defaultSeatHeight: 32,
+        seatShape: "Circle",
         rows: 2,
         seatsPerRow: 5
       },
@@ -74,6 +75,7 @@ const demoEvents = [
         displayOrder: 2,
         defaultSeatWidth: 32,
         defaultSeatHeight: 32,
+        seatShape: "RoundedSquare",
         rows: 2,
         seatsPerRow: 5
       }
@@ -96,6 +98,7 @@ const demoEvents = [
         displayOrder: 1,
         defaultSeatWidth: 32,
         defaultSeatHeight: 32,
+        seatShape: "Diamond",
         rows: 1,
         seatsPerRow: 6
       }
@@ -210,7 +213,8 @@ async function seedEventSections(event, sections) {
           color: sectionData.color,
           displayOrder: sectionData.displayOrder,
           defaultSeatWidth: sectionData.defaultSeatWidth,
-          defaultSeatHeight: sectionData.defaultSeatHeight
+          defaultSeatHeight: sectionData.defaultSeatHeight,
+          seatShape: sectionData.seatShape || "Square"
         }
       },
       { new: true, upsert: true, runValidators: true }

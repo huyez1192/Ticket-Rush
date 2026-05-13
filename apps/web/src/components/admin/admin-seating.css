@@ -202,6 +202,29 @@
   padding: var(--space-5);
 }
 
+.admin-seating-form {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.admin-seating-form__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+
+.admin-section-shape-preview {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  border: 1px solid var(--color-border-muted);
+  background: var(--color-background-alt);
+  padding: var(--space-3);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-small);
+  font-weight: 800;
+}
+
 .admin-seating-grid-form {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -446,6 +469,7 @@
   }
 
   .admin-section-card__stats,
+  .admin-seating-form__grid,
   .admin-seating-grid-form,
   .admin-seat-status-details {
     grid-template-columns: 1fr;

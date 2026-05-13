@@ -1,8 +1,10 @@
+import { getSeatShapeClassName } from "../../constants/seatShapes";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { getSectionSeatStats } from "../../utils/adminSeatMappers";
 import Button from "../common/Button";
 import EmptyState from "../common/EmptyState";
 import StatusBadge from "../common/StatusBadge";
+import "../seat/seat-shapes.css";
 import "./admin-seating.css";
 
 export default function AdminSectionList({
@@ -33,17 +35,18 @@ export default function AdminSectionList({
             const seats = sectionSeatMap.get(section.id) || [];
             const stats = getSectionSeatStats(seats);
             const isSelected = section.id === selectedSectionId;
-
             return (
               <article
                 className={`admin-section-card ${isSelected ? "admin-section-card--active" : ""}`}
                 key={section.id}
               >
                 <button type="button" className="admin-section-card__main" onClick={() => onSelect?.(section.id)}>
-                  <span className="admin-section-card__swatch" aria-hidden="true" />
+                  <span className={`seat-shape-icon ${getSeatShapeClassName(section.seatShape)}`} aria-hidden="true">
+                    <span>{section.name?.slice(0, 2) || "S"}</span>
+                  </span>
                   <span>
                     <strong>{section.name}</strong>
-                    <small>{section.description || "No description provided."}</small>
+                    <small>{section.description || "No description."}</small>
                   </span>
                 </button>
                 <dl className="admin-section-card__stats">

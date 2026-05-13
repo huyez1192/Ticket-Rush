@@ -1,5 +1,6 @@
 import { getCollectionItems, getEntityId } from "./eventMappers";
 import { normalizeSeatStatus } from "./seatStatus";
+import { SEAT_SHAPES, normalizeSeatShape } from "../constants/seatShapes";
 
 export function normalizeAdminSection(section = {}) {
   const id = getEntityId(section) || section.sectionId || "";
@@ -19,6 +20,7 @@ export function normalizeAdminSection(section = {}) {
     displayOrder: Number.isFinite(displayOrder) ? displayOrder : null,
     defaultSeatWidth: Number.isFinite(defaultSeatWidth) ? defaultSeatWidth : 32,
     defaultSeatHeight: Number.isFinite(defaultSeatHeight) ? defaultSeatHeight : 32,
+    seatShape: normalizeSeatShape(section.seatShape),
     seatCount: Number.isFinite(seatCount) ? seatCount : 0,
     capacity: Number.isFinite(seatCount) ? seatCount : 0,
     createdAt: section.createdAt || "",
@@ -49,6 +51,7 @@ export function normalizeAdminSeat(seat = {}, section = null) {
     eventId: seat.eventId || "",
     sectionId,
     sectionName: normalizedSection?.name || seat.sectionName || "Section",
+    seatShape: normalizeSeatShape(normalizedSection?.seatShape || seat.seatShape),
     rowNumber: Number.isFinite(rowNumber) ? rowNumber : 0,
     seatNumber: Number.isFinite(seatNumber) ? seatNumber : 0,
     rowLabel: getRowLabel(rowNumber),
@@ -156,6 +159,11 @@ export function buildSectionPayload(values) {
     name: values.name?.trim(),
     price: Number(values.price),
     description: values.description?.trim() || undefined,
+    color: values.color?.trim() || undefined,
+    displayOrder: values.displayOrder === "" || values.displayOrder === null ? undefined : Number(values.displayOrder),
+    defaultSeatWidth: values.defaultSeatWidth === "" || values.defaultSeatWidth === null ? undefined : Number(values.defaultSeatWidth),
+    defaultSeatHeight: values.defaultSeatHeight === "" || values.defaultSeatHeight === null ? undefined : Number(values.defaultSeatHeight),
+    seatShape: normalizeSeatShape(values.seatShape || SEAT_SHAPES.SQUARE),
   };
 }
 

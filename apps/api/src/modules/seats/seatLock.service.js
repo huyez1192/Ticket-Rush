@@ -19,7 +19,7 @@ import {
 const LOCK_DURATION_MS = 10 * 60 * 1000;
 const SEAT_POPULATE = {
   path: "sectionId",
-  select: "eventId name description price color displayOrder defaultSeatWidth defaultSeatHeight createdAt updatedAt"
+  select: "eventId name description price color displayOrder defaultSeatWidth defaultSeatHeight seatShape createdAt updatedAt"
 };
 
 function buildSeatConflictError(seatIds) {

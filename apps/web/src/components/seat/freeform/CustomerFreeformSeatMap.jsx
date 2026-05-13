@@ -1,9 +1,5 @@
 import EmptyState from "../../common/EmptyState";
-import {
-  flattenCustomerSeatMap,
-  getCustomerLayoutConfig,
-  getPlacedCustomerSeats,
-} from "../../../utils/customerSeatLayout";
+import { buildCustomerCoordinateSeatMap } from "../../../utils/customerSeatLayout";
 import CustomerSeatMapCanvas from "./CustomerSeatMapCanvas";
 import CustomerSeatMapLegend from "./CustomerSeatMapLegend";
 import "./customer-freeform-seat-map.css";
@@ -16,12 +12,10 @@ export default function CustomerFreeformSeatMap({
   disabled = false,
   onToggleSeat,
 }) {
-  const allSeats = flattenCustomerSeatMap(sections);
-  const placedSeats = getPlacedCustomerSeats(allSeats);
-  const layoutConfig = getCustomerLayoutConfig(layout, placedSeats);
+  const { layout: layoutConfig, seats } = buildCustomerCoordinateSeatMap(layout, sections);
 
-  if (!layoutConfig || !placedSeats.length) {
-    return <EmptyState title="No coordinate seat map" message="This event does not have a saved coordinate layout yet." />;
+  if (!seats.length) {
+    return <EmptyState title="No seat map yet" message="Seat sections and generated seats are not available for this event." />;
   }
 
   return (
@@ -30,13 +24,13 @@ export default function CustomerFreeformSeatMap({
         <div>
           <p className="page-kicker">Seat map</p>
           <h2>Choose your seats</h2>
-          <p>All placed sections are visible together. Seat colors show availability and your selections.</p>
+          <p>All sections are visible together. Seat colors show availability and your selections.</p>
         </div>
-        <CustomerSeatMapLegend />
+        <CustomerSeatMapLegend sections={sections.map((entry) => entry.section || entry)} />
       </header>
       <CustomerSeatMapCanvas
         layout={layoutConfig}
-        seats={placedSeats}
+        seats={seats}
         selectedSeatIds={selectedSeatIds}
         lockedByMeSeatIds={lockedByMeSeatIds}
         disabled={disabled}

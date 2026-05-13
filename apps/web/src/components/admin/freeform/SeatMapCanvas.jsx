@@ -12,7 +12,6 @@ export default function SeatMapCanvas({
   dirtySeatIds = [],
   selectedSeatId,
   selectedSeatIds = [],
-  selectedSectionId,
   showGrid,
   snapToGrid,
   fitToView,
@@ -155,8 +154,6 @@ export default function SeatMapCanvas({
             ) : null}
             {seats.map((seat) => {
               const seatLayout = getSeatLayout(seat, draftLayouts);
-              const isDimmed = selectedSectionId && seat.sectionId !== selectedSectionId;
-
               return (
                 <DraggableSeat
                   key={seat.id}
@@ -171,7 +168,6 @@ export default function SeatMapCanvas({
                   onSelect={onSelectSeat}
                   onMove={onMoveSeat}
                   onMoveGroup={onMoveSelectedSeats}
-                  className={isDimmed ? "freeform-seat--dimmed" : ""}
                 />
               );
             })}

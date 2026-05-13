@@ -1,30 +1,28 @@
 import { formatCurrency } from "../../utils/formatCurrency";
 import "./seat.css";
 
-export default function SectionSelector({ sections = [], activeSectionId, seatCounts = {}, onChange }) {
+export default function SectionSelector({ sections = [], seatCounts = {} }) {
   if (!sections.length) {
     return null;
   }
 
   return (
-    <section className="section-selector" aria-label="Seat sections">
+    <section className="section-selector" aria-label="Seat section pricing and availability">
       {sections.map((section) => {
-        const isActive = section.id === activeSectionId;
         const counts = seatCounts[section.id] || {};
 
         return (
-          <button
+          <article
             key={section.id}
-            type="button"
-            className={`section-option ${isActive ? "section-option--active" : ""}`.trim()}
-            onClick={() => onChange(section.id)}
+            className="section-option"
           >
             <span>{section.name}</span>
             <strong>{formatCurrency(section.price)}</strong>
             <small>
               {counts.available || 0} available / {counts.total || 0} total
             </small>
-          </button>
+            {section.description ? <p>{section.description}</p> : null}
+          </article>
         );
       })}
     </section>
