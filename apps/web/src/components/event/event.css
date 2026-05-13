@@ -1,10 +1,16 @@
 .event-hero {
+  position: relative;
+  overflow: hidden;
   border-bottom: var(--border-strong);
-  background: var(--color-primary);
+  background:
+    linear-gradient(rgba(20, 27, 43, 0.58), rgba(20, 27, 43, 0.62)),
+    url("../../assets/events-hero-bg.png") center / cover no-repeat;
   color: var(--color-text-inverse);
 }
 
 .event-hero__inner {
+  position: relative;
+  z-index: 1;
   width: min(100%, var(--layout-customer-max));
   margin: 0 auto;
   display: grid;
@@ -29,8 +35,12 @@
   align-self: end;
   width: 100%;
   min-width: 0;
-  border: var(--border-strong);
-  background: var(--color-surface);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.66);
+  backdrop-filter: blur(14px) saturate(120%);
+  -webkit-backdrop-filter: blur(14px) saturate(120%);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.18);
   padding: var(--space-5);
   color: var(--color-text-primary);
 }
@@ -45,6 +55,14 @@
 .event-filters .field,
 .event-filters .field__control {
   min-width: 0;
+}
+
+.event-hero__search .field__control {
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.event-hero__search .field__label {
+  color: var(--color-text-primary);
 }
 
 .event-filters__search,

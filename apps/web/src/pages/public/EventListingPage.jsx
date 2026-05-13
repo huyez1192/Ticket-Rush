@@ -88,10 +88,9 @@ export default function EventListingPage() {
       <section className="event-hero">
         <div className="event-hero__inner">
           <div>
-            <p className="page-kicker">Ticket Rush events</p>
-            <h1>Find your next seat before the rush starts.</h1>
+            <h1>Your gateway to unforgettable shows</h1>
             <p>
-              Browse public Ticket Rush events, search by keyword, and filter by supported event status and date range.
+              Explore a curated world of entertainment and find the events that speak to your soul.
             </p>
           </div>
           <div className="event-hero__search">
