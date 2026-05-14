@@ -1,17 +1,25 @@
 .public-layout,
 .customer-layout {
   min-height: 100vh;
-  background: var(--color-background);
+  background:
+    radial-gradient(circle at 80% 0%, rgba(214, 168, 90, 0.14), transparent 34rem),
+    var(--color-background);
 }
 
 .customer-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
   min-height: var(--layout-header-height);
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-4);
-  border-bottom: var(--border-strong);
-  background: var(--color-surface);
+  border-bottom: 1px solid rgba(183, 121, 31, 0.18);
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(16px) saturate(130%);
+  -webkit-backdrop-filter: blur(16px) saturate(130%);
+  box-shadow: 0 10px 28px rgba(11, 18, 32, 0.06);
   padding: 0 var(--space-10);
 }
 
@@ -21,6 +29,10 @@
   color: var(--color-text-primary);
   font-size: 1.25rem;
   font-weight: 900;
+}
+
+.brand-link:hover {
+  color: var(--color-text-primary);
 }
 
 .customer-nav,
@@ -34,16 +46,24 @@
   min-height: 40px;
   display: inline-flex;
   align-items: center;
-  border: 2px solid transparent;
-  border-radius: var(--radius-default);
+  border: 1px solid transparent;
+  border-radius: var(--radius-button-premium);
   padding: 0 var(--space-3);
   color: var(--color-text-primary);
   font-weight: 700;
+  transition: background 160ms ease, border-color 160ms ease, color 160ms ease, transform 160ms ease;
 }
 
 .customer-nav a.active {
-  color: var(--color-primary);
-  border-bottom-color: var(--color-primary);
+  border-color: rgba(183, 121, 31, 0.32);
+  background: rgba(243, 210, 139, 0.22);
+  color: var(--color-bronze-dark);
+}
+
+.customer-nav a:hover,
+.admin-nav a:hover {
+  background: rgba(183, 121, 31, 0.1);
+  color: var(--color-bronze-dark);
 }
 
 .customer-actions {
@@ -56,6 +76,9 @@
   min-height: 100vh;
   display: grid;
   grid-template-columns: var(--layout-admin-sidebar) minmax(0, 1fr);
+  background:
+    radial-gradient(circle at 100% 0%, rgba(214, 168, 90, 0.12), transparent 32rem),
+    var(--color-background);
 }
 
 .admin-sidebar {
@@ -64,12 +87,15 @@
   height: 100vh;
   display: flex;
   flex-direction: column;
-  border-right: var(--border-strong);
-  background: var(--color-surface);
+  border-right: 1px solid rgba(243, 210, 139, 0.18);
+  background:
+    linear-gradient(180deg, #111827, #0b1220 58%, #090e18);
+  color: var(--color-text-inverse);
+  box-shadow: 18px 0 46px rgba(11, 18, 32, 0.18);
 }
 
 .admin-sidebar__brand {
-  border-bottom: var(--border-strong);
+  border-bottom: 1px solid rgba(243, 210, 139, 0.18);
   padding: var(--space-6);
 }
 
@@ -86,7 +112,7 @@
 
 .admin-sidebar__brand span {
   display: block;
-  color: var(--color-primary);
+  color: var(--color-gold-soft);
   font-size: var(--font-size-caption);
   font-weight: 800;
   letter-spacing: 0.04em;
@@ -96,6 +122,7 @@
 .admin-sidebar__brand strong {
   display: block;
   margin-bottom: var(--space-1);
+  color: var(--color-text-inverse);
   font-size: 1.35rem;
   font-weight: 900;
 }
@@ -109,23 +136,40 @@
 .admin-nav a {
   justify-content: flex-start;
   min-height: 48px;
+  color: rgba(255, 255, 255, 0.78);
 }
 
 .admin-nav a.active {
-  border-color: var(--color-border-strong);
-  background: var(--color-primary);
+  border-color: rgba(243, 210, 139, 0.42);
+  background:
+    linear-gradient(135deg, rgba(243, 210, 139, 0.2), rgba(183, 121, 31, 0.18));
   color: var(--color-text-inverse);
+  box-shadow: inset 3px 0 0 var(--color-gold);
 }
 
 .admin-sidebar__footer {
   display: grid;
   gap: var(--space-3);
-  border-top: var(--border-strong);
+  border-top: 1px solid rgba(243, 210, 139, 0.18);
   padding: var(--space-4);
 }
 
 .admin-profile-chip {
   width: 100%;
+  border: 1px solid rgba(243, 210, 139, 0.16);
+  border-radius: var(--radius-card-premium);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--color-text-inverse);
+  padding: var(--space-2);
+}
+
+.admin-profile-chip small {
+  color: rgba(255, 255, 255, 0.68);
+}
+
+.admin-profile-chip:hover {
+  background: rgba(243, 210, 139, 0.12);
+  color: var(--color-text-inverse);
 }
 
 .admin-main {

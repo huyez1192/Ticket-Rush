@@ -10,7 +10,7 @@
   align-items: flex-end;
   justify-content: space-between;
   gap: var(--space-5);
-  border-bottom: var(--border-strong);
+  border-bottom: 1px solid rgba(183, 121, 31, 0.22);
   padding-bottom: var(--space-5);
 }
 
@@ -55,7 +55,7 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--space-4);
-  border-top: 1px solid var(--color-border-muted);
+  border-top: 1px solid rgba(139, 111, 77, 0.16);
   padding: var(--space-4) 0;
 }
 
@@ -84,8 +84,10 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: var(--space-4);
-  border-bottom: var(--border-strong);
-  background: var(--color-primary);
+  border-bottom: 1px solid rgba(243, 210, 139, 0.22);
+  background:
+    linear-gradient(135deg, rgba(243, 210, 139, 0.18), rgba(183, 121, 31, 0.12)),
+    linear-gradient(135deg, var(--color-premium-navy-soft), var(--color-premium-navy));
   color: var(--color-text-inverse);
   padding: var(--space-5);
 }
@@ -106,7 +108,7 @@
   display: flex;
   justify-content: space-between;
   gap: var(--space-4);
-  border-bottom: 1px solid var(--color-border-muted);
+  border-bottom: 1px solid rgba(139, 111, 77, 0.16);
   padding-bottom: var(--space-3);
 }
 
@@ -121,7 +123,7 @@
 }
 
 .checkout-summary__total {
-  color: var(--color-primary);
+  color: var(--color-bronze-dark);
   font-size: var(--font-size-h2);
   line-height: 1;
 }
@@ -129,9 +131,9 @@
 .payment-method {
   display: flex;
   gap: var(--space-4);
-  border: var(--border-strong);
-  border-radius: var(--radius-default);
-  background: var(--color-background-alt);
+  border: 1px solid rgba(183, 121, 31, 0.28);
+  border-radius: var(--radius-card-premium);
+  background: linear-gradient(135deg, rgba(243, 210, 139, 0.16), rgba(255, 255, 255, 0.78));
   padding: var(--space-4);
 }
 
@@ -140,8 +142,9 @@
   min-width: 58px;
   height: 40px;
   place-items: center;
-  border: var(--border-strong);
-  background: var(--color-primary);
+  border: 1px solid rgba(243, 210, 139, 0.34);
+  border-radius: var(--radius-input);
+  background: var(--color-premium-navy);
   color: var(--color-text-inverse);
   font-size: var(--font-size-caption);
   font-weight: 900;
@@ -168,9 +171,10 @@
 .checkout-result {
   display: grid;
   gap: var(--space-5);
-  border: var(--border-strong);
-  border-radius: var(--radius-card);
+  border: 1px solid rgba(139, 111, 77, 0.22);
+  border-radius: var(--radius-card-premium);
   background: var(--color-surface);
+  box-shadow: var(--shadow-premium-md);
   padding: var(--space-8);
 }
 

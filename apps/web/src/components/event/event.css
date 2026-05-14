@@ -1,7 +1,7 @@
 .event-hero {
   position: relative;
   overflow: hidden;
-  border-bottom: var(--border-strong);
+  border-bottom: 1px solid rgba(243, 210, 139, 0.24);
   background:
     linear-gradient(rgba(20, 27, 43, 0.58), rgba(20, 27, 43, 0.62)),
     url("../../assets/events-hero-bg.png") center / cover no-repeat;
@@ -257,19 +257,32 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
   gap: var(--space-6);
+  align-items: stretch;
 }
 
 .event-card {
   display: grid;
   overflow: hidden;
   padding: 0;
+  border: 1px solid rgba(139, 111, 77, 0.18);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-premium-sm);
+  transition: box-shadow 180ms ease, transform 180ms ease, border-color 180ms ease;
+}
+
+.event-card:hover {
+  border-color: rgba(183, 121, 31, 0.26);
+  box-shadow: var(--shadow-premium-md);
+  transform: translateY(-3px);
 }
 
 .event-card__media {
   position: relative;
   min-height: 210px;
-  border-bottom: var(--border-strong);
-  background: var(--color-surface-tinted);
+  border-bottom: 1px solid rgba(183, 121, 31, 0.18);
+  background:
+    linear-gradient(135deg, rgba(243, 210, 139, 0.2), rgba(11, 18, 32, 0.08)),
+    var(--color-surface-tinted);
 }
 
 .event-card__media img,
@@ -284,9 +297,9 @@
   display: grid;
   place-items: center;
   background:
-    linear-gradient(135deg, rgba(0, 88, 190, 0.14), rgba(0, 113, 77, 0.12)),
+    linear-gradient(135deg, rgba(183, 121, 31, 0.18), rgba(11, 18, 32, 0.12)),
     var(--color-surface-tinted);
-  color: var(--color-primary);
+  color: var(--color-bronze-dark);
   font-size: 3rem;
   font-weight: 900;
   font-style: italic;
@@ -320,12 +333,12 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--space-3);
-  border-top: 1px solid var(--color-border-muted);
+  border-top: 1px solid rgba(183, 121, 31, 0.16);
   padding-top: var(--space-4);
 }
 
 .event-price {
-  color: var(--color-secondary);
+  color: var(--color-bronze-dark);
   font-weight: 900;
 }
 
@@ -345,8 +358,10 @@
 .event-detail-header {
   display: grid;
   gap: var(--space-5);
-  border: var(--border-strong);
+  border: 1px solid rgba(139, 111, 77, 0.22);
+  border-radius: var(--radius-card-premium);
   background: var(--color-surface);
+  box-shadow: var(--shadow-premium-sm);
   padding: var(--space-8);
 }
 
@@ -369,8 +384,10 @@
 .event-gallery__main {
   min-height: 360px;
   overflow: hidden;
-  border: var(--border-strong);
+  border: 1px solid rgba(139, 111, 77, 0.2);
+  border-radius: var(--radius-card-premium);
   background: var(--color-surface-tinted);
+  box-shadow: var(--shadow-premium-sm);
 }
 
 .event-gallery__thumbs {
@@ -381,7 +398,8 @@
 
 .event-gallery__thumb {
   min-height: 84px;
-  border: var(--border-strong);
+  border: 1px solid rgba(139, 111, 77, 0.2);
+  border-radius: var(--radius-input);
   background: var(--color-surface-tinted);
   overflow: hidden;
 }
@@ -398,7 +416,7 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: var(--space-4);
-  border-bottom: 1px solid var(--color-border-muted);
+  border-bottom: 1px solid rgba(139, 111, 77, 0.16);
   padding-bottom: var(--space-3);
 }
 

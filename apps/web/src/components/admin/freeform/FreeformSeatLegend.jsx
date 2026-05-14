@@ -7,7 +7,7 @@ const ITEMS = [
   ["Locked", "locked"],
   ["Sold", "sold"],
   ["Released", "released"],
-  ["Selected", "selected"],
+  ["Selected for edit", "selected-edit"],
 ];
 
 export default function FreeformSeatLegend({ sections = [] }) {

@@ -4,7 +4,9 @@
   display: grid;
   grid-template-columns: minmax(320px, 1.15fr) minmax(360px, 0.85fr);
   overflow: hidden;
-  background: var(--color-background);
+  background:
+    radial-gradient(circle at 8% 12%, rgba(243, 210, 139, 0.18), transparent 34rem),
+    var(--color-background);
 }
 
 .auth-page--register {
@@ -21,8 +23,10 @@
   justify-content: space-between;
   gap: var(--space-8);
   overflow: hidden;
-  border-right: var(--border-strong);
-  background: var(--color-primary);
+  border-right: 1px solid rgba(243, 210, 139, 0.2);
+  background:
+    linear-gradient(rgba(11, 18, 32, 0.8), rgba(11, 18, 32, 0.76)),
+    url("../../assets/events-hero-bg.png") center / cover no-repeat;
   color: var(--color-text-inverse);
   padding: var(--space-12);
 }
@@ -38,7 +42,7 @@
   content: "";
   position: absolute;
   pointer-events: none;
-  opacity: 0.12;
+  opacity: 0.14;
 }
 
 .auth-brand-panel::before {
@@ -46,7 +50,7 @@
   height: 520px;
   top: -160px;
   left: -160px;
-  border: 56px solid var(--color-text-inverse);
+  border: 56px solid var(--color-gold-soft);
   border-radius: 50%;
 }
 
@@ -55,7 +59,7 @@
   height: 360px;
   right: -120px;
   bottom: -80px;
-  border: 42px solid var(--color-text-inverse);
+  border: 42px solid var(--color-gold);
   transform: rotate(28deg);
 }
 
@@ -63,6 +67,10 @@
   position: relative;
   z-index: 1;
   max-width: 620px;
+}
+
+.auth-brand-panel .page-kicker {
+  color: var(--color-gold-soft);
 }
 
 .auth-logo {
@@ -94,10 +102,13 @@
 
 .auth-brand-title {
   margin: 0;
-  color: var(--color-text-inverse);
+  color: #fff8e8;
   font-size: clamp(2.25rem, 5vw, 3.5rem);
   font-weight: 900;
   line-height: 1.02;
+  text-shadow:
+    0 3px 18px rgba(0, 0, 0, 0.48),
+    0 0 28px rgba(216, 161, 76, 0.22);
 }
 
 .auth-brand-copy,
@@ -111,8 +122,11 @@
   display: flex;
   align-items: center;
   gap: var(--space-4);
-  border: 1px solid rgba(255, 255, 255, 0.45);
-  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(243, 210, 139, 0.35);
+  border-radius: var(--radius-card-premium);
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(14px) saturate(130%);
+  -webkit-backdrop-filter: blur(14px) saturate(130%);
   padding: var(--space-5);
 }
 
@@ -122,9 +136,11 @@
   height: 64px;
   flex: 0 0 auto;
   place-items: center;
-  border: var(--border-strong);
-  background: var(--color-surface);
-  color: var(--color-primary);
+  border: 1px solid rgba(243, 210, 139, 0.5);
+  border-radius: var(--radius-card-premium);
+  background:
+    linear-gradient(135deg, var(--color-gold-soft), var(--color-gold), var(--color-bronze));
+  color: #171007;
   font-size: 2rem;
   font-weight: 900;
 }
@@ -164,16 +180,20 @@
   flex-wrap: wrap;
   justify-content: space-between;
   gap: var(--space-3);
-  border-top: 1px solid var(--color-border-muted);
+  border-top: 1px solid rgba(183, 121, 31, 0.18);
   margin-top: var(--space-6);
   padding-top: var(--space-5);
 }
 
 .auth-link {
-  color: var(--color-primary);
+  color: var(--color-bronze-dark);
   font-weight: 800;
   text-decoration: underline;
   text-underline-offset: 3px;
+}
+
+.auth-link:hover {
+  color: var(--color-bronze);
 }
 
 .auth-form-grid {
@@ -205,7 +225,7 @@
   .auth-brand-panel {
     min-height: 340px;
     border-right: 0;
-    border-bottom: var(--border-strong);
+    border-bottom: 1px solid rgba(243, 210, 139, 0.24);
   }
 }
 

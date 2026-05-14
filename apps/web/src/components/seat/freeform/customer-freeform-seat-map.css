@@ -1,9 +1,10 @@
 .customer-freeform-map {
   min-width: 0;
   overflow: hidden;
-  border: var(--border-strong);
-  border-radius: var(--radius-card);
+  border: 1px solid rgba(139, 111, 77, 0.22);
+  border-radius: var(--radius-card-premium);
   background: var(--color-surface);
+  box-shadow: var(--shadow-premium-sm);
 }
 
 .customer-freeform-map__header {
@@ -11,8 +12,8 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: var(--space-4);
-  border-bottom: var(--border-strong);
-  background: var(--color-surface-tinted);
+  border-bottom: 1px solid rgba(183, 121, 31, 0.18);
+  background: linear-gradient(135deg, rgba(243, 210, 139, 0.18), rgba(247, 244, 238, 0.9));
   padding: var(--space-5) var(--space-6);
 }
 
@@ -53,35 +54,41 @@
 .customer-freeform-legend__swatch {
   width: 18px;
   height: 18px;
-  border: var(--border-strong);
+  border: 1px solid rgba(11, 18, 32, 0.24);
   border-radius: var(--radius-input);
 }
 
 .customer-freeform-legend__swatch--available {
-  background: var(--color-secondary);
+  border-color: var(--seat-border-available);
+  background: var(--seat-color-available);
 }
 
 .customer-freeform-legend__swatch--selected {
-  background: var(--color-primary);
+  border-color: var(--seat-border-selected);
+  background: var(--seat-color-selected);
 }
 
 .customer-freeform-legend__swatch--mine {
-  background: var(--color-warning);
+  border-color: var(--seat-border-locked-by-you);
+  background: var(--seat-color-locked-by-you);
 }
 
 .customer-freeform-legend__swatch--locked {
   background:
     linear-gradient(45deg, transparent 25%, rgba(20, 27, 43, 0.16) 25%, rgba(20, 27, 43, 0.16) 50%, transparent 50%, transparent 75%, rgba(20, 27, 43, 0.16) 75%),
-    var(--color-disabled-bg);
+    var(--seat-color-locked);
   background-size: 10px 10px;
+  border-color: var(--seat-border-locked);
 }
 
 .customer-freeform-legend__swatch--sold {
-  background: var(--color-text-primary);
+  border-color: var(--seat-border-sold);
+  background: var(--seat-color-sold);
 }
 
 .customer-freeform-legend__swatch--released {
-  background: var(--color-background-alt);
+  border-color: var(--seat-border-released);
+  background: var(--seat-color-released);
 }
 
 .customer-freeform-viewport {
@@ -94,7 +101,7 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--space-3);
-  border-bottom: var(--border-strong);
+  border-bottom: 1px solid rgba(183, 121, 31, 0.18);
   background: var(--color-surface);
   padding: var(--space-3) var(--space-4);
   color: var(--color-text-secondary);
@@ -104,9 +111,9 @@
 }
 
 .customer-freeform-viewport__bar button {
-  border: var(--border-strong);
-  border-radius: var(--radius-input);
-  background: var(--color-surface);
+  border: 1px solid rgba(183, 121, 31, 0.34);
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.78);
   color: var(--color-text-primary);
   padding: var(--space-1) var(--space-3);
   font: inherit;
@@ -146,7 +153,7 @@
   z-index: 1;
   display: grid;
   place-items: center;
-  border-bottom: var(--border-muted);
+  border-bottom: 1px solid rgba(139, 111, 77, 0.22);
   background: var(--color-background);
   color: var(--color-text-secondary);
   font-size: var(--font-size-caption);
@@ -163,9 +170,9 @@
   right: 14%;
   bottom: 14px;
   height: 14px;
-  border-bottom: 4px solid var(--color-primary);
+  border-bottom: 4px solid var(--color-gold);
   border-radius: 50%;
-  opacity: 0.28;
+  opacity: 0.44;
 }
 
 .customer-freeform-stage span {
@@ -191,11 +198,11 @@
 }
 
 .customer-coordinate-seat:hover:not(:disabled) {
-  outline: 3px solid rgba(0, 88, 190, 0.24);
+  outline: 3px solid rgba(14, 165, 233, 0.28);
 }
 
 .customer-coordinate-seat:focus-visible {
-  outline: 3px solid var(--color-primary);
+  outline: 3px solid var(--seat-color-selected-hover);
   outline-offset: 2px;
 }
 
@@ -204,27 +211,31 @@
 }
 
 .customer-coordinate-seat--available {
-  --seat-fill: var(--color-secondary);
+  --seat-fill: var(--seat-color-available);
+  --seat-border: var(--seat-border-available);
   --seat-color: var(--color-text-inverse);
 }
 
 .customer-coordinate-seat--selected {
   z-index: 4;
-  --seat-fill: var(--color-primary);
+  --seat-fill: var(--seat-color-selected);
+  --seat-border: var(--seat-border-selected);
   --seat-color: var(--color-text-inverse);
   color: var(--color-text-inverse);
-  outline: 4px solid rgba(0, 88, 190, 0.3);
+  outline: 4px solid rgba(14, 165, 233, 0.28);
   outline-offset: 2px;
 }
 
 .customer-coordinate-seat--mine {
-  --seat-fill: var(--color-warning);
+  --seat-fill: var(--seat-color-locked-by-you);
+  --seat-border: var(--seat-border-locked-by-you);
   --seat-color: var(--color-text-inverse);
   color: var(--color-text-inverse);
 }
 
 .customer-coordinate-seat--locked {
-  --seat-fill: var(--color-disabled-bg);
+  --seat-fill: var(--seat-color-locked);
+  --seat-border: var(--seat-border-locked);
   --seat-pattern: linear-gradient(45deg, transparent 25%, rgba(20, 27, 43, 0.16) 25%, rgba(20, 27, 43, 0.16) 50%, transparent 50%, transparent 75%, rgba(20, 27, 43, 0.16) 75%);
   --seat-pattern-size: 10px 10px;
   --seat-color: var(--color-text-secondary);
@@ -232,13 +243,15 @@
 }
 
 .customer-coordinate-seat--sold {
-  --seat-fill: var(--color-text-primary);
+  --seat-fill: var(--seat-color-sold);
+  --seat-border: var(--seat-border-sold);
   --seat-color: var(--color-text-inverse);
   color: var(--color-text-inverse);
 }
 
 .customer-coordinate-seat--released {
-  --seat-fill: var(--color-background-alt);
+  --seat-fill: var(--seat-color-released);
+  --seat-border: var(--seat-border-released);
   --seat-color: var(--color-muted);
   color: var(--color-muted);
 }

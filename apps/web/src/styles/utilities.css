@@ -14,14 +14,16 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: var(--space-4);
+  border-bottom: 1px solid rgba(183, 121, 31, 0.22);
+  padding-bottom: var(--space-5);
 }
 
 .page-kicker {
   margin: 0 0 var(--space-2);
-  color: var(--color-primary);
+  color: var(--color-bronze);
   font-size: var(--font-size-caption);
   font-weight: 800;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 

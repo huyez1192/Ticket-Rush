@@ -1,28 +1,57 @@
 :root {
-  --color-primary: #0058be;
-  --color-primary-hover: #004da5;
-  --color-secondary: #006c49;
+  --color-premium-navy: #0b1220;
+  --color-premium-navy-soft: #111827;
+  --color-bronze: #b7791f;
+  --color-bronze-dark: #8a5a1f;
+  --color-gold: #d6a85a;
+  --color-gold-soft: #f3d28b;
+  --color-champagne: #fff4d7;
+  --seat-color-available: #047857;
+  --seat-border-available: #065f46;
+  --seat-color-selected: #0284c7;
+  --seat-color-selected-hover: #0ea5e9;
+  --seat-border-selected: #0369a1;
+  --seat-color-locked-by-you: #b7791f;
+  --seat-border-locked-by-you: #8a5a1f;
+  --seat-color-locked: #e7e1d6;
+  --seat-border-locked: #b7b0a5;
+  --seat-color-sold: #0b1220;
+  --seat-border-sold: #111827;
+  --seat-color-released: #f3f4f6;
+  --seat-border-released: #d1d5db;
+  --seat-selection-ring-admin: #d6a85a;
+  --seat-selection-ring-admin-shadow: rgba(214, 168, 90, 0.36);
+  --color-seat-selected: var(--seat-color-selected);
+  --color-seat-selected-hover: var(--seat-color-selected-hover);
+  --color-seat-selected-border: var(--seat-border-selected);
+  --color-seat-sold: var(--seat-color-sold);
+  --color-seat-sold-border: var(--seat-border-sold);
+
+  --color-primary: var(--color-premium-navy-soft);
+  --color-primary-hover: var(--color-premium-navy);
+  --color-secondary: #00714d;
   --color-secondary-hover: #005236;
   --color-warning: #a36700;
   --color-danger: #ba1a1a;
   --color-danger-hover: #93000a;
   --color-success: #00714d;
 
-  --color-background: #f9f9ff;
-  --color-background-alt: #f1f3ff;
+  --color-background: #f8f6f1;
+  --color-background-alt: #f1ede4;
   --color-surface: #ffffff;
-  --color-surface-tinted: #e9edff;
-  --color-border-strong: #141b2b;
-  --color-border-muted: #c2c6d6;
-  --color-text-primary: #141b2b;
-  --color-text-secondary: #424754;
+  --color-surface-warm: rgba(255, 255, 255, 0.92);
+  --color-surface-tinted: #f7f4ee;
+  --color-border-strong: #1f2937;
+  --color-border-muted: #d8d0c3;
+  --color-text-primary: #111827;
+  --color-text-secondary: #4b5563;
   --color-text-inverse: #ffffff;
-  --color-muted: #727785;
-  --color-disabled-bg: #dce2f7;
+  --color-muted: #7b817c;
+  --color-disabled-bg: #e7e1d6;
   --color-error-bg: #fff1f0;
   --color-success-bg: #e8f6ef;
   --color-warning-bg: #fff3d8;
-  --color-primary-bg: #e9edff;
+  --color-primary-bg: #eee7da;
 
   --font-family-base: Outfit, Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-size-display: 3.5rem;
@@ -51,15 +80,21 @@
   --space-20: 5rem;
   --space-24: 6rem;
 
-  --radius-input: 4px;
-  --radius-default: 6px;
+  --radius-input: 8px;
+  --radius-default: 8px;
   --radius-card: 8px;
+  --radius-card-premium: 8px;
+  --radius-button-premium: 999px;
   --radius-pill: 999px;
 
-  --border-width: 2px;
+  --border-width: 1px;
   --border-strong: var(--border-width) solid var(--color-border-strong);
   --border-muted: var(--border-width) solid var(--color-border-muted);
-  --shadow-minimal: 0 2px 0 rgba(20, 27, 43, 0.08);
+  --shadow-minimal: 0 1px 2px rgba(11, 18, 32, 0.08);
+  --shadow-premium-sm: 0 8px 20px rgba(11, 18, 32, 0.08);
+  --shadow-premium-md: 0 16px 36px rgba(11, 18, 32, 0.12);
+  --shadow-premium-lg: 0 28px 64px rgba(11, 18, 32, 0.18);
+  --focus-ring-premium: 0 0 0 3px rgba(214, 168, 90, 0.34);
 
   --layout-admin-sidebar: 280px;
   --layout-customer-max: 1280px;

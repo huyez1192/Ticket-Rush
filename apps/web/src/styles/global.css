@@ -11,7 +11,9 @@
 
 html {
   min-width: 320px;
-  background: var(--color-background);
+  background:
+    radial-gradient(circle at 20% 0%, rgba(243, 210, 139, 0.18), transparent 32rem),
+    var(--color-background);
   color: var(--color-text-primary);
   font-family: var(--font-family-base);
 }
@@ -20,7 +22,9 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  background: var(--color-background);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.38), rgba(248, 246, 241, 0) 18rem),
+    var(--color-background);
   color: var(--color-text-primary);
   font-family: var(--font-family-base);
   font-size: var(--font-size-body);
@@ -51,7 +55,7 @@ a {
 }
 
 a:hover {
-  color: var(--color-primary);
+  color: var(--color-bronze);
 }
 
 img,
@@ -118,7 +122,7 @@ p {
 }
 
 :focus-visible {
-  outline: 3px solid rgba(0, 88, 190, 0.35);
+  outline: 3px solid rgba(214, 168, 90, 0.5);
   outline-offset: 2px;
 }
 

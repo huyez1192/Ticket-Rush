@@ -34,9 +34,10 @@
 .admin-order-detail__block,
 .admin-verify-result,
 .admin-sold-ticket {
-  border: var(--border-strong);
-  border-radius: var(--radius-card);
+  border: 1px solid rgba(139, 111, 77, 0.22);
+  border-radius: var(--radius-card-premium);
   background: var(--color-surface);
+  box-shadow: var(--shadow-premium-sm);
   padding: var(--space-4);
 }
 
@@ -127,9 +128,11 @@
 .admin-ticket-verify-form {
   display: grid;
   gap: var(--space-4);
-  border: var(--border-strong);
-  border-radius: var(--radius-card);
-  background: var(--color-surface-tinted);
+  border: 1px solid rgba(139, 111, 77, 0.22);
+  border-radius: var(--radius-card-premium);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(247, 244, 238, 0.9));
+  box-shadow: var(--shadow-premium-sm);
   padding: var(--space-5);
 }
 

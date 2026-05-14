@@ -8,7 +8,7 @@
   width: 100%;
   height: 100%;
   place-items: center;
-  border: var(--border-strong);
+  border: 1px solid var(--seat-border, rgba(11, 18, 32, 0.24));
   background: var(--seat-fill, var(--color-surface-tinted));
   background-image: var(--seat-pattern, none);
   background-size: var(--seat-pattern-size, auto);
@@ -95,7 +95,7 @@
   height: 24px;
   flex: 0 0 auto;
   place-items: center;
-  border: var(--border-strong);
+  border: 1px solid rgba(11, 18, 32, 0.24);
   background: var(--color-surface-tinted);
   color: var(--color-text-primary);
 }

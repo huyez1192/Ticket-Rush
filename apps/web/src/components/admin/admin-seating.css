@@ -3,9 +3,10 @@
   align-items: flex-end;
   justify-content: space-between;
   gap: var(--space-5);
-  border: var(--border-strong);
-  border-radius: var(--radius-card);
+  border: 1px solid rgba(139, 111, 77, 0.22);
+  border-radius: var(--radius-card-premium);
   background: var(--color-surface);
+  box-shadow: var(--shadow-premium-sm);
   padding: var(--space-6);
 }
 
@@ -61,9 +62,10 @@
   display: grid;
   gap: var(--space-4);
   overflow: hidden;
-  border: var(--border-strong);
-  border-radius: var(--radius-card);
+  border: 1px solid rgba(139, 111, 77, 0.22);
+  border-radius: var(--radius-card-premium);
   background: var(--color-surface);
+  box-shadow: var(--shadow-premium-sm);
 }
 
 .admin-seating-panel__header {
@@ -71,8 +73,8 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: var(--space-4);
-  border-bottom: var(--border-strong);
-  background: var(--color-surface-tinted);
+  border-bottom: 1px solid rgba(183, 121, 31, 0.18);
+  background: linear-gradient(135deg, rgba(243, 210, 139, 0.18), rgba(247, 244, 238, 0.9));
   padding: var(--space-4) var(--space-5);
 }
 
@@ -97,16 +99,17 @@
 .admin-section-card {
   display: grid;
   gap: var(--space-3);
-  border: 1px solid var(--color-border-muted);
-  border-radius: var(--radius-default);
+  border: 1px solid rgba(139, 111, 77, 0.22);
+  border-radius: var(--radius-card-premium);
   background: var(--color-surface);
+  box-shadow: var(--shadow-premium-sm);
   padding: var(--space-4);
 }
 
 .admin-section-card--active {
-  border: var(--border-strong);
-  border-left: 8px solid var(--color-primary);
-  background: var(--color-background-alt);
+  border-color: rgba(183, 121, 31, 0.42);
+  border-left: 6px solid var(--color-gold);
+  background: #fffaf0;
 }
 
 .admin-section-card__main {
@@ -141,7 +144,7 @@
   width: 24px;
   height: 24px;
   flex: 0 0 auto;
-  border: var(--border-strong);
+  border: 1px solid rgba(11, 18, 32, 0.24);
   border-radius: var(--radius-input);
   background: var(--color-surface-tinted);
 }
@@ -156,7 +159,8 @@
 .admin-section-card__stats div {
   min-width: 0;
   overflow: hidden;
-  border: 1px solid var(--color-border-muted);
+  border: 1px solid rgba(139, 111, 77, 0.18);
+  border-radius: var(--radius-input);
   background: var(--color-surface);
   padding: var(--space-2);
 }
@@ -217,7 +221,8 @@
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  border: 1px solid var(--color-border-muted);
+  border: 1px solid rgba(139, 111, 77, 0.22);
+  border-radius: var(--radius-input);
   background: var(--color-background-alt);
   padding: var(--space-3);
   color: var(--color-text-secondary);
@@ -244,8 +249,9 @@
 .admin-seat-stage {
   width: min(100% - var(--space-10), 680px);
   margin: var(--space-5) auto 0;
-  border: var(--border-strong);
-  background: var(--color-text-primary);
+  border: 1px solid rgba(243, 210, 139, 0.28);
+  border-radius: var(--radius-card-premium);
+  background: var(--color-premium-navy);
   color: var(--color-text-inverse);
   padding: var(--space-3);
   text-align: center;
@@ -279,15 +285,16 @@
   display: grid;
   gap: var(--space-3);
   justify-items: center;
-  border: var(--border-strong);
-  border-radius: var(--radius-card);
+  border: 1px solid rgba(139, 111, 77, 0.22);
+  border-radius: var(--radius-card-premium);
   background: var(--color-surface);
+  box-shadow: var(--shadow-premium-sm);
   padding: var(--space-4);
 }
 
 .admin-seat-map-section--active {
-  border-color: var(--color-primary);
-  outline: 4px solid rgba(0, 88, 190, 0.18);
+  border-color: var(--color-bronze);
+  outline: 4px solid rgba(214, 168, 90, 0.22);
 }
 
 .admin-seat-map-section header {
@@ -343,7 +350,7 @@
   height: 32px;
   display: grid;
   place-items: center;
-  border: var(--border-strong);
+  border: 1px solid rgba(11, 18, 32, 0.22);
   border-radius: var(--radius-input);
   padding: 0;
   color: var(--color-text-inverse);
@@ -353,33 +360,41 @@
 }
 
 .admin-seat:hover {
-  outline: 3px solid rgba(0, 88, 190, 0.18);
-}
-
-.admin-seat--selected {
-  outline: 3px solid var(--color-primary);
-  transform: translateY(-1px);
+  outline: 3px solid rgba(214, 168, 90, 0.26);
 }
 
 .admin-seat--available {
-  background: var(--color-secondary);
+  border-color: var(--seat-border-available);
+  background: var(--seat-color-available);
+  color: var(--color-text-inverse);
 }
 
 .admin-seat--locked {
   background:
     linear-gradient(45deg, transparent 25%, rgba(20, 27, 43, 0.16) 25%, rgba(20, 27, 43, 0.16) 50%, transparent 50%, transparent 75%, rgba(20, 27, 43, 0.16) 75%),
-    var(--color-disabled-bg);
+    var(--seat-color-locked);
   background-size: 10px 10px;
+  border-color: var(--seat-border-locked);
   color: var(--color-text-secondary);
 }
 
 .admin-seat--sold {
-  background: var(--color-text-primary);
+  border-color: var(--seat-border-sold);
+  background: var(--seat-color-sold);
+  color: var(--color-text-inverse);
 }
 
 .admin-seat--released {
-  background: var(--color-background-alt);
+  border-color: var(--seat-border-released);
+  background: var(--seat-color-released);
   color: var(--color-muted);
+}
+
+.admin-seat--selected {
+  outline: 3px solid var(--seat-selection-ring-admin);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 6px var(--seat-selection-ring-admin-shadow);
+  transform: translateY(-1px);
 }
 
 .admin-seat-legend {
@@ -405,6 +420,18 @@
   pointer-events: none;
 }
 
+.admin-seat-legend__edit-swatch {
+  width: 20px;
+  height: 20px;
+  border: 1px solid var(--seat-border-released);
+  border-radius: var(--radius-input);
+  background: var(--seat-color-released);
+  outline: 3px solid var(--seat-selection-ring-admin);
+  outline-offset: 1px;
+  box-shadow: 0 0 0 5px var(--seat-selection-ring-admin-shadow);
+  pointer-events: none;
+}
+
 .admin-seat-status-empty {
   margin: 0;
   padding: var(--space-5);
@@ -425,21 +452,22 @@
 }
 
 .admin-seat-status-details div {
-  border: 1px solid var(--color-border-muted);
+  border: 1px solid rgba(139, 111, 77, 0.22);
+  border-radius: var(--radius-input);
   background: var(--color-surface-tinted);
   padding: var(--space-3);
 }
 
 .admin-seating-fallback-preview {
   min-width: 0;
-  border: var(--border-strong);
-  border-radius: var(--radius-card);
+  border: 1px solid rgba(139, 111, 77, 0.22);
+  border-radius: var(--radius-card-premium);
   background: var(--color-surface);
 }
 
 .admin-seating-fallback-preview summary {
   cursor: pointer;
-  border-bottom: var(--border-strong);
+  border-bottom: 1px solid rgba(183, 121, 31, 0.18);
   background: var(--color-surface-tinted);
   padding: var(--space-4) var(--space-5);
   font-weight: 900;

@@ -10,6 +10,10 @@ export default function AdminSeatLegend() {
           {status}
         </span>
       ))}
+      <span className="admin-seat-legend__item">
+        <span className="admin-seat-legend__edit-swatch" aria-hidden="true" />
+        Selected for edit
+      </span>
     </section>
   );
 }

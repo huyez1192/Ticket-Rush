@@ -11,7 +11,7 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--space-4);
-  border-bottom: var(--border-strong);
+  border-bottom: 1px solid rgba(183, 121, 31, 0.18);
   padding: var(--space-4) var(--space-5);
 }
 
@@ -34,7 +34,7 @@
   grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 0;
   margin: 0;
-  border-bottom: var(--border-strong);
+  border-bottom: 1px solid rgba(183, 121, 31, 0.18);
 }
 
 .freeform-status-bar div {
@@ -72,7 +72,7 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--space-3);
-  border-bottom: var(--border-strong);
+  border-bottom: 1px solid rgba(183, 121, 31, 0.18);
   padding: var(--space-4) var(--space-5);
   font-weight: 800;
 }
@@ -100,8 +100,9 @@
 
 .freeform-warning {
   margin: 0 var(--space-4);
-  border: var(--border-muted);
+  border: 1px solid rgba(163, 103, 0, 0.34);
   border-left: 6px solid var(--color-warning);
+  border-radius: var(--radius-input);
   padding: var(--space-3);
   color: var(--color-text-primary);
   font-size: var(--font-size-small);
@@ -132,9 +133,10 @@
 .freeform-canvas-shell {
   min-width: 0;
   display: grid;
-  border: var(--border-strong);
-  border-radius: var(--radius-card);
+  border: 1px solid rgba(139, 111, 77, 0.22);
+  border-radius: var(--radius-card-premium);
   background: var(--color-surface);
+  box-shadow: var(--shadow-premium-sm);
 }
 
 .freeform-canvas-shell__bar {
@@ -142,8 +144,8 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--space-3);
-  border-bottom: var(--border-strong);
-  background: var(--color-surface-tinted);
+  border-bottom: 1px solid rgba(183, 121, 31, 0.18);
+  background: linear-gradient(135deg, rgba(243, 210, 139, 0.18), rgba(247, 244, 238, 0.9));
   padding: var(--space-3) var(--space-4);
   color: var(--color-text-secondary);
   font-size: var(--font-size-caption);
@@ -152,9 +154,9 @@
 }
 
 .freeform-canvas-shell__bar button {
-  border: var(--border-strong);
-  border-radius: var(--radius-input);
-  background: var(--color-surface);
+  border: 1px solid rgba(183, 121, 31, 0.34);
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.78);
   color: var(--color-text-primary);
   padding: var(--space-1) var(--space-3);
   font: inherit;
@@ -197,7 +199,7 @@
   display: grid;
   place-items: center;
   border: 0;
-  border-bottom: var(--border-muted);
+  border-bottom: 1px solid rgba(139, 111, 77, 0.22);
   background: var(--color-background);
   color: var(--color-text-secondary);
   font-size: var(--font-size-caption);
@@ -214,9 +216,9 @@
   right: 14%;
   bottom: 14px;
   height: 14px;
-  border-bottom: 4px solid var(--color-primary);
+  border-bottom: 4px solid var(--color-gold);
   border-radius: 50%;
-  opacity: 0.28;
+  opacity: 0.44;
 }
 
 .freeform-stage span {
@@ -247,28 +249,25 @@
 }
 
 .freeform-seat:focus-visible {
-  outline: 3px solid var(--color-primary);
+  outline: 3px solid var(--seat-selection-ring-admin);
   outline-offset: 2px;
 }
 
 .freeform-seat:hover {
-  outline: 3px solid rgba(0, 88, 190, 0.18);
+  outline: 3px solid rgba(214, 168, 90, 0.28);
 }
 
 .freeform-seat--selected {
   z-index: 4;
-  outline: 4px solid var(--color-primary);
+  outline: 4px solid var(--seat-selection-ring-admin);
   outline-offset: 2px;
-  --seat-fill: var(--color-primary);
-  --seat-color: var(--color-text-inverse);
-  color: var(--color-text-inverse);
 }
 
 .freeform-marquee {
   position: absolute;
   z-index: 3;
-  border: 2px dashed var(--color-primary);
-  background: rgba(0, 88, 190, 0.16);
+  border: 2px dashed var(--color-bronze);
+  background: rgba(214, 168, 90, 0.18);
   pointer-events: none;
 }
 
@@ -277,12 +276,14 @@
 }
 
 .freeform-seat--available {
-  --seat-fill: var(--color-secondary);
+  --seat-fill: var(--seat-color-available);
+  --seat-border: var(--seat-border-available);
   --seat-color: var(--color-text-inverse);
 }
 
 .freeform-seat--locked {
-  --seat-fill: var(--color-disabled-bg);
+  --seat-fill: var(--seat-color-locked);
+  --seat-border: var(--seat-border-locked);
   --seat-pattern: linear-gradient(45deg, transparent 25%, rgba(20, 27, 43, 0.16) 25%, rgba(20, 27, 43, 0.16) 50%, transparent 50%, transparent 75%, rgba(20, 27, 43, 0.16) 75%);
   --seat-pattern-size: 10px 10px;
   --seat-color: var(--color-text-secondary);
@@ -290,14 +291,22 @@
 }
 
 .freeform-seat--sold {
-  --seat-fill: var(--color-text-primary);
+  --seat-fill: var(--seat-color-sold);
+  --seat-border: var(--seat-border-sold);
   --seat-color: var(--color-text-inverse);
 }
 
 .freeform-seat--released {
-  --seat-fill: var(--color-background-alt);
+  --seat-fill: var(--seat-color-released);
+  --seat-border: var(--seat-border-released);
   --seat-color: var(--color-muted);
   color: var(--color-muted);
+}
+
+.freeform-seat.freeform-seat--selected {
+  outline: 4px solid var(--seat-selection-ring-admin);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 7px var(--seat-selection-ring-admin-shadow);
 }
 
 .freeform-legend-stack {
@@ -326,28 +335,39 @@
 .freeform-seat-legend__swatch {
   width: 18px;
   height: 18px;
-  border: var(--border-strong);
+  border: 1px solid rgba(11, 18, 32, 0.24);
   border-radius: var(--radius-input);
 }
 
 .freeform-seat-legend__swatch--available {
-  background: var(--color-secondary);
+  border-color: var(--seat-border-available);
+  background: var(--seat-color-available);
 }
 
 .freeform-seat-legend__swatch--locked {
-  background: var(--color-disabled-bg);
+  border-color: var(--seat-border-locked);
+  background:
+    linear-gradient(45deg, transparent 25%, rgba(20, 27, 43, 0.16) 25%, rgba(20, 27, 43, 0.16) 50%, transparent 50%, transparent 75%, rgba(20, 27, 43, 0.16) 75%),
+    var(--seat-color-locked);
+  background-size: 10px 10px;
 }
 
 .freeform-seat-legend__swatch--sold {
-  background: var(--color-text-primary);
+  border-color: var(--seat-border-sold);
+  background: var(--seat-color-sold);
 }
 
 .freeform-seat-legend__swatch--released {
-  background: var(--color-background-alt);
+  border-color: var(--seat-border-released);
+  background: var(--seat-color-released);
 }
 
-.freeform-seat-legend__swatch--selected {
-  background: var(--color-primary);
+.freeform-seat-legend__swatch--selected-edit {
+  border-color: var(--seat-border-released);
+  background: var(--seat-color-released);
+  outline: 3px solid var(--seat-selection-ring-admin);
+  outline-offset: 1px;
+  box-shadow: 0 0 0 5px var(--seat-selection-ring-admin-shadow);
 }
 
 .freeform-side-panel {
@@ -355,9 +375,10 @@
   display: grid;
   gap: var(--space-4);
   overflow: hidden;
-  border: var(--border-strong);
-  border-radius: var(--radius-card);
+  border: 1px solid rgba(139, 111, 77, 0.22);
+  border-radius: var(--radius-card-premium);
   background: var(--color-surface);
+  box-shadow: var(--shadow-premium-sm);
 }
 
 .freeform-side-panel__header {
@@ -365,8 +386,8 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: var(--space-3);
-  border-bottom: var(--border-strong);
-  background: var(--color-surface-tinted);
+  border-bottom: 1px solid rgba(183, 121, 31, 0.18);
+  background: linear-gradient(135deg, rgba(243, 210, 139, 0.18), rgba(247, 244, 238, 0.9));
   padding: var(--space-4);
 }
 
@@ -397,7 +418,8 @@
 
 .freeform-inspector-details div {
   min-width: 0;
-  border: 1px solid var(--color-border-muted);
+  border: 1px solid rgba(139, 111, 77, 0.22);
+  border-radius: var(--radius-input);
   background: var(--color-surface-tinted);
   padding: var(--space-3);
 }
@@ -432,8 +454,8 @@
 }
 
 .freeform-unplaced-chip {
-  border: 1px solid var(--color-border-muted);
-  border-radius: var(--radius-input);
+  border: 1px solid rgba(139, 111, 77, 0.22);
+  border-radius: var(--radius-pill);
   background: var(--color-background-alt);
   padding: var(--space-1) var(--space-2);
   font-size: var(--font-size-caption);

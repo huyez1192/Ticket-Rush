@@ -9,9 +9,9 @@
   margin: 0 auto;
   padding: var(--space-6);
   background: var(--color-surface);
-  border: 2px solid var(--color-border-strong);
-  border-radius: var(--radius-card);
-  box-shadow: var(--shadow-minimal);
+  border: 1px solid rgba(139, 111, 77, 0.22);
+  border-radius: var(--radius-card-premium);
+  box-shadow: var(--shadow-premium-md);
 }
 
 .waiting-room-card__header {
@@ -29,8 +29,10 @@
   display: grid;
   gap: var(--space-2);
   padding: var(--space-5);
-  background: var(--color-warning-bg);
-  border: 2px solid var(--color-warning);
+  background:
+    linear-gradient(135deg, rgba(243, 210, 139, 0.46), rgba(255, 243, 216, 0.92));
+  border: 1px solid rgba(163, 103, 0, 0.42);
+  border-radius: var(--radius-card-premium);
 }
 
 .waiting-room-position__label {
@@ -41,7 +43,7 @@
 }
 
 .waiting-room-position strong {
-  color: var(--color-text-primary);
+  color: var(--color-bronze-dark);
   font-size: clamp(3rem, 18vw, 7rem);
   line-height: 0.9;
 }
@@ -55,7 +57,9 @@
 
 .waiting-room-details div {
   padding: var(--space-3);
-  border: 2px solid var(--color-border);
+  border: 1px solid rgba(139, 111, 77, 0.22);
+  border-radius: var(--radius-input);
+  background: var(--color-surface-tinted);
 }
 
 .waiting-room-details dt {
