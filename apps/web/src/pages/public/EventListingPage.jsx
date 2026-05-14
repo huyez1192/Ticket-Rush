@@ -87,9 +87,9 @@ export default function EventListingPage() {
     <>
       <section className="event-hero">
         <div className="event-hero__inner">
-          <div>
-            <h1>Your gateway to unforgettable shows</h1>
-            <p>
+          <div className="event-hero__copy">
+            <h1>Your gateway to <span className="event-hero__headline-accent">unforgettable</span> shows</h1>
+            <p className="event-hero__lede">
               Explore a curated world of entertainment and find the events that speak to your soul.
             </p>
           </div>

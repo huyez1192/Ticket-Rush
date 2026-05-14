@@ -1,27 +1,19 @@
 import { Link } from "react-router-dom";
-import logoFull from "../../assets/logo-full.png";
-import Card from "../../components/common/Card";
 
 export default function HomePage() {
   return (
     <>
-      <section className="event-hero">
-        <div className="event-hero__inner">
-          <div>
-            <img className="brand-logo brand-logo-full home-logo" src={logoFull} alt="Ticket Rush" />
-            <p className="page-kicker">Ticket Rush</p>
-            <h1>Book event seats with clear status and fast checkout.</h1>
-            <p>
-              Browse public events, inspect details and pricing, then continue to protected seat selection when tickets are selling.
+      <section className="event-hero home-hero">
+        <div className="event-hero__inner home-hero__inner">
+          <div className="event-hero__copy home-hero__copy">
+            <h1>Your gateway to <span className="event-hero__headline-accent">unforgettable</span> shows</h1>
+            <p className="event-hero__lede">
+              Explore a curated world of entertainment and find the events that speak to your soul.
             </p>
-          </div>
-          <Card>
-            <h3>Start with the event catalog</h3>
-            <p>Phase 10 connects the public browsing flow to the live backend event APIs.</p>
-            <Link className="btn btn--primary" to="/events">
+            <Link className="btn btn--primary home-hero__cta" to="/events">
               Browse events
             </Link>
-          </Card>
+          </div>
         </div>
       </section>
     </>
