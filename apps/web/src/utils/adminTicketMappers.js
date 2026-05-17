@@ -22,6 +22,11 @@ export function normalizeAdminTicket(ticket = {}) {
     status: firstDefined(ticket.status, "Issued"),
     issuedAt: ticket.issuedAt || ticket.createdAt || "",
     issuedAtLabel: formatDate(ticket.issuedAt || ticket.createdAt, { dateStyle: "medium", timeStyle: "short" }) || "Unknown",
+    checkedInAt: ticket.checkedInAt || ticket.verifiedAt || "",
+    checkedInAtLabel: formatDate(ticket.checkedInAt || ticket.verifiedAt, { dateStyle: "medium", timeStyle: "short" }) || "Not used",
+    verifiedAt: ticket.verifiedAt || ticket.checkedInAt || "",
+    customer: ticket.customer || null,
+    order: ticket.order || null,
   };
 }
 
@@ -36,6 +41,12 @@ export function normalizeTicketVerificationResponse(payload = {}) {
     valid,
     message,
     ticket,
+    reason: payload.reason || "",
+    checkedInAt: payload.checkedInAt || payload.verifiedAt || ticket?.checkedInAt || "",
+    checkedInAtLabel:
+      formatDate(payload.checkedInAt || payload.verifiedAt || ticket?.checkedInAt, { dateStyle: "medium", timeStyle: "short" }) ||
+      ticket?.checkedInAtLabel ||
+      "Not used",
     rawStatus: payload.status || "",
     raw: payload,
   };

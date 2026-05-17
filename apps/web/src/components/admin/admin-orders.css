@@ -160,6 +160,11 @@
   background: var(--color-error-bg);
 }
 
+.admin-verify-result--used {
+  border-color: var(--color-warning);
+  background: var(--color-warning-bg);
+}
+
 .admin-verify-result--idle {
   background: var(--color-surface);
 }

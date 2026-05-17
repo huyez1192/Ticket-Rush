@@ -29,6 +29,9 @@ export default function TicketCard({ ticket }) {
           <span>{ticket.seat?.sectionName || "Section"}</span>
           <span>{ticket.seat ? getSeatDisplayName(ticket.seat) : "Seat details unavailable"}</span>
           <span>Issued {formatDate(ticket.issuedAt, { dateStyle: "medium", timeStyle: "short" }) || "recently"}</span>
+          {ticket.checkedInAt ? (
+            <span>Used {formatDate(ticket.checkedInAt, { dateStyle: "medium", timeStyle: "short" })}</span>
+          ) : null}
         </div>
         <footer>
           <span>Ticket #{String(ticket.id).slice(-8).toUpperCase()}</span>

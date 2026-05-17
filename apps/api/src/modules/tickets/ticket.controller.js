@@ -30,7 +30,7 @@ export async function getTicketQr(req, res, next) {
 
 export async function verifyTicket(req, res, next) {
   try {
-    const data = await verifyTicketByQrCode(req.body.qrCode);
+    const data = await verifyTicketByQrCode(req.body.qrCode, req.user.id);
     sendSuccess(res, 200, "Ticket verification completed successfully.", data);
   } catch (error) {
     next(error);

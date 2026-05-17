@@ -16,10 +16,15 @@ export default function TicketDetailPanel({ ticket }) {
         <StatusBadge status={ticket.status} />
       </header>
       <div className="ticket-detail-panel__grid">
+        <TicketFact label="Status" value={getTicketStatusLabel(ticket)} />
         <TicketFact label="Date" value={formatDateRange(ticket.event?.startTime, ticket.event?.endTime)} />
         <TicketFact label="Issued" value={formatDate(ticket.issuedAt, { dateStyle: "medium", timeStyle: "short" })} />
+        {ticket.checkedInAt ? (
+          <TicketFact label="Checked in" value={formatDate(ticket.checkedInAt, { dateStyle: "medium", timeStyle: "short" })} />
+        ) : null}
         <TicketFact label="Section" value={ticket.seat?.sectionName || "Section"} />
         <TicketFact label="Seat" value={ticket.seat ? getSeatDisplayName(ticket.seat) : "Seat details unavailable"} />
+        {ticket.order?.status ? <TicketFact label="Order" value={ticket.order.status} /> : null}
       </div>
       <footer className="ticket-detail-panel__footer">
         <span>Ticket ID</span>
@@ -27,6 +32,18 @@ export default function TicketDetailPanel({ ticket }) {
       </footer>
     </Card>
   );
+}
+
+function getTicketStatusLabel(ticket) {
+  if (["Used", "CheckedIn"].includes(ticket?.status)) {
+    return "Already used";
+  }
+
+  if (["Issued", "Valid"].includes(ticket?.status)) {
+    return "Ready for entry";
+  }
+
+  return ticket?.status || "Issued";
 }
 
 function TicketFact({ label, value }) {

@@ -48,6 +48,15 @@ export const SEAT_LOCK_STATUSES = Object.freeze({
   EXPIRED: "Expired"
 });
 
+export const TICKET_STATUSES = Object.freeze({
+  ISSUED: "Issued",
+  VALID: "Valid",
+  USED: "Used",
+  CHECKED_IN: "CheckedIn",
+  CANCELLED: "Cancelled",
+  REVOKED: "Revoked"
+});
+
 export const GENDER_VALUES = Object.freeze(Object.values(GENDERS));
 export const EVENT_STATUS_VALUES = Object.freeze(Object.values(EVENT_STATUSES));
 export const SEAT_STATUS_VALUES = Object.freeze(Object.values(SEAT_STATUSES));
@@ -55,3 +64,4 @@ export const SECTION_SEAT_SHAPE_VALUES = Object.freeze(Object.values(SECTION_SEA
 export const ORDER_STATUS_VALUES = Object.freeze(Object.values(ORDER_STATUSES));
 export const QUEUE_STATUS_VALUES = Object.freeze(Object.values(QUEUE_STATUSES));
 export const SEAT_LOCK_STATUS_VALUES = Object.freeze(Object.values(SEAT_LOCK_STATUSES));
+export const TICKET_STATUS_VALUES = Object.freeze(Object.values(TICKET_STATUSES));

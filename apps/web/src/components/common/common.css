@@ -228,7 +228,9 @@
 .badge--success,
 .status-badge--selling,
 .status-badge--available,
-.status-badge--paid {
+.status-badge--paid,
+.status-badge--issued,
+.status-badge--valid {
   border-color: var(--color-success);
   background: var(--color-success-bg);
   color: var(--color-success);
@@ -237,7 +239,9 @@
 .badge--warning,
 .status-badge--locked,
 .status-badge--pending,
-.status-badge--waiting {
+.status-badge--waiting,
+.status-badge--used,
+.status-badge--checkedin {
   border-color: var(--color-warning);
   background: var(--color-warning-bg);
   color: var(--color-warning);
@@ -245,7 +249,8 @@
 
 .badge--danger,
 .status-badge--cancelled,
-.status-badge--sold {
+.status-badge--sold,
+.status-badge--revoked {
   border-color: var(--color-danger);
   background: var(--color-error-bg);
   color: var(--color-danger);

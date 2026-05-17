@@ -1,7 +1,10 @@
 import { Ticket } from "./ticket.model.js";
+import { TICKET_STATUSES } from "../../common/constants/index.js";
 
 const TICKET_POPULATE = [
   { path: "eventId" },
+  { path: "userId", select: "username email fullName avatarUrl" },
+  { path: "orderId", select: "status totalAmount createdAt updatedAt" },
   {
     path: "seatId",
     populate: {
@@ -38,6 +41,30 @@ export function findTicketByIdForUser(ticketId, userId) {
 
 export function findTicketByQrCode(qrCode) {
   return Ticket.findOne({ qrCode }).populate(TICKET_POPULATE).lean();
+}
+
+export function markTicketUsedByQrCode(qrCode, adminUserId, checkedInAt = new Date()) {
+  return Ticket.findOneAndUpdate(
+    {
+      qrCode,
+      $or: [
+        { status: { $in: [TICKET_STATUSES.ISSUED, TICKET_STATUSES.VALID] } },
+        { status: null },
+        { status: { $exists: false } }
+      ]
+    },
+    {
+      $set: {
+        status: TICKET_STATUSES.USED,
+        verifiedAt: checkedInAt,
+        checkedInAt,
+        verifiedByAdminId: adminUserId
+      }
+    },
+    { new: true, runValidators: true }
+  )
+    .populate(TICKET_POPULATE)
+    .lean();
 }
 
 export function findTicketByOrderItemId(orderItemId, session) {

@@ -86,7 +86,7 @@ export default function TicketDetailPage() {
         </div>
         <section className="ticket-detail-layout">
           <TicketDetailPanel ticket={ticket} />
-          <TicketQrCard qr={qr} />
+          <TicketQrCard qr={qr} ticket={ticket} />
         </section>
       </div>
     </main>
