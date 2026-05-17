@@ -3,13 +3,13 @@ import Card from "../common/Card";
 import StatusBadge from "../common/StatusBadge";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { formatDateRange } from "../../utils/formatDate";
-import { getImageUrl, getMinimumSectionPrice, normalizeEvent } from "../../utils/eventMappers";
+import { getImageUrl, getMinimumEventPrice, normalizeEvent } from "../../utils/eventMappers";
 import "./event.css";
 
 export default function EventCard({ event, sections = [] }) {
   const normalized = normalizeEvent(event);
   const imageUrl = getImageUrl(normalized.images?.[0]);
-  const minimumPrice = getMinimumSectionPrice(sections);
+  const minimumPrice = getMinimumEventPrice(normalized, sections);
 
   return (
     <Card className="event-card">

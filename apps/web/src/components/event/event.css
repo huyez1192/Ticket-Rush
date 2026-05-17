@@ -260,6 +260,14 @@
   align-items: stretch;
 }
 
+.event-list-header {
+  align-items: center;
+}
+
+.event-list-header .page-kicker {
+  margin: 0;
+}
+
 .event-card {
   display: grid;
   overflow: hidden;

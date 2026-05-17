@@ -28,6 +28,9 @@ export function mapEventToDto(event, options = {}) {
     return null;
   }
 
+  const minTicketPrice = Number(options.minTicketPrice);
+  const hasMinTicketPrice = options.minTicketPrice !== null && options.minTicketPrice !== undefined && Number.isFinite(minTicketPrice);
+
   return {
     id: value._id?.toString(),
     name: value.name,
@@ -44,6 +47,8 @@ export function mapEventToDto(event, options = {}) {
     createdBy: value.createdBy?._id?.toString?.() || value.createdBy?.toString?.(),
     createdAt: value.createdAt,
     updatedAt: value.updatedAt,
+    minTicketPrice: hasMinTicketPrice ? minTicketPrice : null,
+    startingPrice: hasMinTicketPrice ? minTicketPrice : null,
     images: Array.isArray(options.images) ? options.images.map((image) => mapEventImageToDto(image)).filter(Boolean) : undefined
   };
 }

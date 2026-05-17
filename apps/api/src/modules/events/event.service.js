@@ -10,6 +10,7 @@ import { countTicketsByEventId } from "../tickets/ticket.repository.js";
 import {
   deleteSeatSectionsByEventId,
   deleteSeatsByEventId,
+  findMinimumSeatSectionPricesByEventIds,
   findSeatIdsByEventId
 } from "../seats/seat.repository.js";
 import {
@@ -101,14 +102,25 @@ export async function getEvents(query, user) {
     ? await findEvents(query, pagination, { publicOnly: false })
     : await findPublicEvents(query, pagination);
   const imagesByEventId = new Map();
-  const imageGroups = await Promise.all(items.map((event) => findEventImages(event._id)));
+  const eventIds = items.map((event) => event._id);
+  const [imageGroups, minPricesByEventId] = await Promise.all([
+    Promise.all(items.map((event) => findEventImages(event._id))),
+    findMinimumSeatSectionPricesByEventIds(eventIds)
+  ]);
 
   items.forEach((event, index) => {
     imagesByEventId.set(event._id.toString(), imageGroups[index]);
   });
 
   return {
-    items: items.map((event) => mapEventToDto(event, { images: imagesByEventId.get(event._id.toString()) || [] })),
+    items: items.map((event) => {
+      const eventId = event._id.toString();
+
+      return mapEventToDto(event, {
+        images: imagesByEventId.get(eventId) || [],
+        minTicketPrice: minPricesByEventId.get(eventId) ?? null
+      });
+    }),
     pagination: mapPagination({ ...pagination, total })
   };
 }
@@ -124,9 +136,12 @@ export async function getEventDetail(eventId, user) {
     throw new AppError("Event not found.", 404);
   }
 
-  const images = await findEventImages(eventId);
+  const [images, minPricesByEventId] = await Promise.all([
+    findEventImages(eventId),
+    findMinimumSeatSectionPricesByEventIds([event._id])
+  ]);
 
-  return mapEventToDto(event, { images });
+  return mapEventToDto(event, { images, minTicketPrice: minPricesByEventId.get(event._id.toString()) ?? null });
 }
 
 export async function getPublicEventImages(eventId) {

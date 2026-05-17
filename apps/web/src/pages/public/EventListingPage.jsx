@@ -107,11 +107,8 @@ export default function EventListingPage() {
 
       <main className="page-shell">
         <div className="page-stack">
-          <header className="page-header">
-            <div>
-              <p className="page-kicker">Public catalog</p>
-              <h2 className="page-title">Available events</h2>
-            </div>
+          <header className="page-header event-list-header">
+            <p className="page-kicker">Public catalog</p>
             <p className="phase-note">
               {pagination.total ? `${pagination.total} event${pagination.total === 1 ? "" : "s"} found` : "Showing public events"}
             </p>

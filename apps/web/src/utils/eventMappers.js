@@ -56,6 +56,7 @@ export function getPagination(payload) {
 
 export function normalizeEvent(event) {
   const images = getCollectionItems(event?.images).length ? getCollectionItems(event.images) : event?.images || [];
+  const sections = getCollectionItems(event?.sections);
 
   return {
     ...event,
@@ -72,6 +73,9 @@ export function normalizeEvent(event) {
     queueAccessTtlMinutes: Number(event?.queueAccessTtlMinutes || 10),
     queueMaxActiveUsers: event?.queueMaxActiveUsers ?? null,
     queueAdmissionMode: event?.queueAdmissionMode || "Manual",
+    minTicketPrice: normalizePrice(event?.minTicketPrice),
+    startingPrice: normalizePrice(event?.startingPrice),
+    sections,
   };
 }
 
@@ -93,4 +97,31 @@ export function getMinimumSectionPrice(sections = []) {
   }
 
   return Math.min(...prices);
+}
+
+export function getMinimumEventPrice(event, sections = []) {
+  const eventLevelPrice = firstNumericPrice(event?.minTicketPrice, event?.startingPrice);
+
+  if (eventLevelPrice !== null) {
+    return eventLevelPrice;
+  }
+
+  return getMinimumSectionPrice(sections.length ? sections : event?.sections);
+}
+
+function normalizePrice(value) {
+  const numeric = Number(value);
+  return Number.isFinite(numeric) && numeric >= 0 ? numeric : null;
+}
+
+function firstNumericPrice(...values) {
+  for (const value of values) {
+    const normalized = normalizePrice(value);
+
+    if (normalized !== null) {
+      return normalized;
+    }
+  }
+
+  return null;
 }

@@ -7,6 +7,31 @@ export function findSeatSectionsByEventId(eventId) {
   return SeatSection.find({ eventId }).sort({ displayOrder: 1, name: 1, _id: 1 }).lean();
 }
 
+export async function findMinimumSeatSectionPricesByEventIds(eventIds = []) {
+  const ids = eventIds.filter(Boolean);
+
+  if (!ids.length) {
+    return new Map();
+  }
+
+  const rows = await SeatSection.aggregate([
+    {
+      $match: {
+        eventId: { $in: ids },
+        price: { $type: "number", $gte: 0 }
+      }
+    },
+    {
+      $group: {
+        _id: "$eventId",
+        minTicketPrice: { $min: "$price" }
+      }
+    }
+  ]);
+
+  return new Map(rows.map((row) => [row._id.toString(), row.minTicketPrice]));
+}
+
 export function findSeatSectionByIdForEvent(eventId, sectionId) {
   return SeatSection.findOne({ _id: sectionId, eventId }).lean();
 }
