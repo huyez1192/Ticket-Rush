@@ -28,6 +28,8 @@ import Modal from "../../components/common/Modal";
 import Select from "../../components/common/Select";
 import StatusBadge from "../../components/common/StatusBadge";
 import { adminEventSeating, adminEvents } from "../../constants/routes";
+import { useAuth } from "../../features/auth/useAuth";
+import { subscribeToAdminQueue } from "../../realtime/socketClient";
 import {
   normalizeAdminEvent,
   normalizeEventImagesPayload,
@@ -43,6 +45,7 @@ const STATUS_ACTIONS = {
 
 export default function AdminEventDetailPage() {
   const { eventId } = useParams();
+  const { token } = useAuth();
   const [event, setEvent] = useState(null);
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -61,6 +64,8 @@ export default function AdminEventDetailPage() {
   const [queueLoading, setQueueLoading] = useState(false);
   const [queueSaving, setQueueSaving] = useState(false);
   const [queueAdmitting, setQueueAdmitting] = useState(false);
+  const [queueSocketStatus, setQueueSocketStatus] = useState("connecting");
+  const queueEnabled = Boolean(event?.virtualQueueEnabled);
 
   const loadDetail = useCallback(async () => {
     setLoading(true);
@@ -89,7 +94,7 @@ export default function AdminEventDetailPage() {
     try {
       const payload = await getAdminEventQueue(eventId, { page: 1, limit: 20 });
       setQueueEntries(Array.isArray(payload?.items) ? payload.items : []);
-      setQueueSummary({ ...getEmptyQueueSummary(), ...(payload?.summary || {}) });
+      setQueueSummary(normalizeQueueSummary(payload?.summary));
     } catch (apiError) {
       setQueueError(apiError.message);
     } finally {
@@ -104,6 +109,34 @@ export default function AdminEventDetailPage() {
   useEffect(() => {
     loadQueue();
   }, [loadQueue]);
+
+  useEffect(() => {
+    if (!token) {
+      return undefined;
+    }
+
+    setQueueSocketStatus("connecting");
+    const unsubscribe = subscribeToAdminQueue(eventId, token, {
+      onConnect: () => {
+        setQueueSocketStatus("connected");
+        setQueueError("");
+      },
+      onDisconnect: () => setQueueSocketStatus("reconnecting"),
+      onConnectError: () => setQueueSocketStatus("reconnecting"),
+      onSummary: (payload) => setQueueSummary(normalizeQueueSummary(payload)),
+      onUpdate: (payload) => {
+        if (typeof payload?.queueRequired === "boolean") {
+          setEvent((current) => (current ? { ...current, virtualQueueEnabled: payload.queueRequired } : current));
+          setQueueConfig((current) => ({ ...current, virtualQueueEnabled: payload.queueRequired }));
+        }
+        setQueueSummary(normalizeQueueSummary(payload?.summary));
+        setQueueEntries(Array.isArray(payload?.entries) ? payload.entries : []);
+      },
+      onError: (payload) => setQueueError(payload?.message || "Realtime queue update failed."),
+    });
+
+    return unsubscribe;
+  }, [eventId, token]);
 
   async function handleStatusAction(currentEvent, actionKey) {
     const action = STATUS_ACTIONS[actionKey];
@@ -162,6 +195,12 @@ export default function AdminEventDetailPage() {
       const normalized = normalizeAdminEvent(updated);
       setEvent(normalized);
       setQueueConfig(getQueueConfigInitialValues(normalized));
+      if (normalized.virtualQueueEnabled) {
+        await loadQueue();
+      } else {
+        setQueueEntries([]);
+        setQueueSummary(getEmptyQueueSummary());
+      }
       setNotice("Virtual queue configuration saved.");
     } catch (apiError) {
       setQueueError(apiError.message);
@@ -354,13 +393,27 @@ export default function AdminEventDetailPage() {
               <Button type="submit" loading={queueSaving} disabled={queueSaving}>
                 Save config
               </Button>
-              <Button type="button" variant="outline" loading={queueAdmitting} disabled={queueAdmitting} onClick={handleAdmitBatch}>
-                Admit next batch
+              <Button
+                type="button"
+                variant="outline"
+                loading={queueAdmitting}
+                disabled={queueAdmitting || !queueEnabled}
+                onClick={handleAdmitBatch}
+              >
+                {queueConfig.queueAdmissionMode === "Auto" ? "Admit next batch now" : "Admit next batch"}
               </Button>
             </div>
           </form>
 
           <div className="admin-queue-summary">
+            <div className="admin-queue-summary__item">
+              <span>Mode</span>
+              <strong>{queueConfig.queueAdmissionMode}</strong>
+            </div>
+            <div className="admin-queue-summary__item">
+              <span>Socket</span>
+              <strong>{queueSocketStatus === "connected" ? "Live" : "Reconnecting"}</strong>
+            </div>
             {Object.entries(queueSummary).map(([status, count]) => (
               <div key={status} className="admin-queue-summary__item">
                 <span>{status}</span>
@@ -374,6 +427,9 @@ export default function AdminEventDetailPage() {
         {queueLoading ? <LoadingState title="Loading queue" message="Fetching waiting room entries." /> : null}
 
         {!queueLoading ? (
+          !queueEnabled ? (
+            <p>Virtual queue is disabled. Queue entries will appear after the queue is enabled and customers join.</p>
+          ) :
           queueEntries.length ? (
             <div className="table-wrap">
               <table className="table admin-queue-table">
@@ -396,7 +452,7 @@ export default function AdminEventDetailPage() {
                       <td>
                         <StatusBadge status={entry.status} />
                       </td>
-                      <td>{entry.position || "--"}</td>
+                      <td>{formatQueuePosition(entry)}</td>
                       <td>{formatQueueDate(entry.admittedAt)}</td>
                       <td>{formatQueueDate(entry.expiresAt)}</td>
                     </tr>
@@ -405,7 +461,7 @@ export default function AdminEventDetailPage() {
               </table>
             </div>
           ) : (
-            <p>No queue entries yet.</p>
+            <p>No active queue entries yet.</p>
           )
         ) : null}
       </Card>
@@ -461,6 +517,15 @@ function getEmptyQueueSummary() {
   };
 }
 
+function normalizeQueueSummary(summary = {}) {
+  return {
+    Waiting: Number(summary.Waiting ?? summary.waiting ?? 0),
+    Admitted: Number(summary.Admitted ?? summary.admitted ?? 0),
+    Expired: Number(summary.Expired ?? summary.expired ?? 0),
+    Cancelled: Number(summary.Cancelled ?? summary.cancelled ?? 0),
+  };
+}
+
 function getQueueConfigInitialValues(event = {}) {
   return {
     virtualQueueEnabled: Boolean(event.virtualQueueEnabled),
@@ -485,4 +550,13 @@ function buildQueueConfigPayload(values) {
 
 function formatQueueDate(value) {
   return value ? formatDate(value, { dateStyle: "medium", timeStyle: "short" }) : "--";
+}
+
+function formatQueuePosition(entry) {
+  if (entry?.status !== "Waiting") {
+    return "--";
+  }
+
+  const position = Number(entry.position);
+  return Number.isFinite(position) && position > 0 ? position : "--";
 }

@@ -35,6 +35,26 @@
   border-radius: var(--radius-card-premium);
 }
 
+.waiting-room-socket {
+  width: fit-content;
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid rgba(139, 111, 77, 0.22);
+  border-radius: var(--radius-pill);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-small);
+  font-weight: 800;
+}
+
+.waiting-room-socket--connected {
+  border-color: rgba(31, 122, 88, 0.28);
+  color: var(--color-success);
+}
+
+.waiting-room-socket--reconnecting {
+  border-color: rgba(163, 103, 0, 0.3);
+  color: var(--color-bronze-dark);
+}
+
 .waiting-room-position__label {
   color: var(--color-text-secondary);
   font-size: var(--font-size-small);

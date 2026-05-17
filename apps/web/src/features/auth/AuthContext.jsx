@@ -1,6 +1,7 @@
 import { createContext, useCallback, useEffect, useMemo, useReducer } from "react";
 import * as authApi from "../../api/authApi";
 import { ROLES } from "../../constants/roles";
+import { disconnectSocket } from "../../realtime/socketClient";
 import { getRoleNames } from "../../utils/getRoleNames";
 import {
   clearAuthStorage,
@@ -59,6 +60,7 @@ export function AuthProvider({ children }) {
   }, []);
 
   const clearAuth = useCallback(() => {
+    disconnectSocket();
     clearAuthStorage();
     dispatch({ type: "AUTH_CLEAR" });
   }, []);

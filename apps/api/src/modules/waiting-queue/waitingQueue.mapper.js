@@ -5,12 +5,13 @@ export function mapWaitingQueueEntryToDto(entry) {
 
   const value = typeof entry.toObject === "function" ? entry.toObject() : entry;
   const user = value.userId && typeof value.userId === "object" ? value.userId : null;
+  const isWaiting = value.status === "Waiting";
 
   return {
     id: value._id?.toString(),
     userId: value.userId?._id?.toString?.() || value.userId?.toString?.(),
     eventId: value.eventId?._id?.toString?.() || value.eventId?.toString?.(),
-    position: value.position,
+    position: isWaiting ? value.position : null,
     sequenceNumber: value.sequenceNumber || value.position,
     status: value.status,
     user: user

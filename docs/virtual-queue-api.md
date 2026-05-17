@@ -159,10 +159,14 @@ The seat selection page checks local expiry before loading and asks the backend 
 13. Let token access expire and confirm seat locking requires rejoining.
 14. Disable virtual queue and confirm normal seat selection works.
 
+## Realtime Extension
+
+Manual and Auto queue updates are also delivered through Socket.IO. See `docs/virtual-queue-websocket.md` for socket auth, rooms, events, and frontend fallback behavior.
+
 ## Limitations
 
 - No real database load detection.
-- Admission is manual/admin batch based.
-- No Redis, WebSocket, or SSE.
+- Auto admission is trigger/maintenance based, not a distributed background worker.
+- No Redis Socket.IO adapter for multi-instance realtime scaling.
 - No infrastructure-level traffic shaping.
 - Queue tokens are stored client-side in session storage and validated server-side by hash.

@@ -7,16 +7,22 @@ import ErrorState from "../../components/common/ErrorState";
 import LoadingState from "../../components/common/LoadingState";
 import WaitingRoomCard from "../../components/queue/WaitingRoomCard";
 import { eventDetail, eventSeats } from "../../constants/routes";
+import { useAuth } from "../../features/auth/useAuth";
+import { subscribeToQueue } from "../../realtime/socketClient";
 import { normalizeEvent } from "../../utils/eventMappers";
 import { mapApiError } from "../../utils/mapApiError";
 
-const POLL_INTERVAL_MS = 7000;
+const FALLBACK_POLL_INTERVAL_MS = 45000;
 
 export default function WaitingRoomPage() {
   const { eventId } = useParams();
   const navigate = useNavigate();
+  const { token } = useAuth();
   const [event, setEvent] = useState(null);
   const [queueState, setQueueState] = useState(null);
+  const [queueSummary, setQueueSummary] = useState(null);
+  const [socketReady, setSocketReady] = useState(false);
+  const [socketStatus, setSocketStatus] = useState("connecting");
   const [loading, setLoading] = useState(true);
   const [checking, setChecking] = useState(false);
   const [leaving, setLeaving] = useState(false);
@@ -24,16 +30,17 @@ export default function WaitingRoomPage() {
 
   const handleQueueState = useCallback(
     (payload) => {
-      setQueueState(payload);
+      const normalizedPayload = normalizeQueueState(eventId, payload);
+      setQueueState(normalizedPayload);
 
-      if (payload?.queueRequired === false) {
+      if (normalizedPayload?.queueRequired === false) {
         clearStoredQueueAccess(eventId);
         navigate(eventSeats(eventId), { replace: true });
         return;
       }
 
-      if (payload?.accessGranted && payload?.queueToken) {
-        storeQueueAccess(eventId, payload.queueToken, payload.expiresAt);
+      if (normalizedPayload?.accessGranted && normalizedPayload?.queueToken) {
+        storeQueueAccess(eventId, normalizedPayload.queueToken, normalizedPayload.expiresAt);
         navigate(eventSeats(eventId), { replace: true });
       }
     },
@@ -66,6 +73,8 @@ export default function WaitingRoomPage() {
   const loadWaitingRoom = useCallback(async () => {
     setLoading(true);
     setError("");
+    setSocketReady(false);
+    setQueueSummary(null);
 
     try {
       const [eventResult, queuePayload] = await Promise.allSettled([getEventById(eventId), joinEventQueue(eventId)]);
@@ -79,6 +88,7 @@ export default function WaitingRoomPage() {
       }
 
       handleQueueState(queuePayload.value);
+      setSocketReady(true);
     } catch (apiError) {
       setError(mapApiError(apiError).message);
     } finally {
@@ -91,16 +101,42 @@ export default function WaitingRoomPage() {
   }, [loadWaitingRoom]);
 
   useEffect(() => {
-    if (loading || error) {
+    if (!socketReady || !token) {
+      return undefined;
+    }
+
+    setSocketStatus("connecting");
+    const unsubscribe = subscribeToQueue(eventId, token, {
+      onConnect: () => {
+        setSocketStatus("connected");
+        setError("");
+      },
+      onDisconnect: () => setSocketStatus("reconnecting"),
+      onConnectError: () => setSocketStatus("reconnecting"),
+      onState: handleQueueState,
+      onSummary: (payload) => setQueueSummary(payload),
+      onPositionUpdated: (payload) => {
+        setQueueState((current) => mergePositionUpdate(eventId, current, payload));
+      },
+      onError: (payload) => {
+        setError(payload?.message || "Realtime queue update failed.");
+      },
+    });
+
+    return unsubscribe;
+  }, [eventId, handleQueueState, socketReady, token]);
+
+  useEffect(() => {
+    if (loading || error || socketStatus === "connected") {
       return undefined;
     }
 
     const intervalId = window.setInterval(() => {
       checkStatus({ silent: true });
-    }, POLL_INTERVAL_MS);
+    }, FALLBACK_POLL_INTERVAL_MS);
 
     return () => window.clearInterval(intervalId);
-  }, [checkStatus, error, loading]);
+  }, [checkStatus, error, loading, socketStatus]);
 
   async function handleLeaveQueue() {
     setLeaving(true);
@@ -138,6 +174,8 @@ export default function WaitingRoomPage() {
       <WaitingRoomCard
         event={event}
         queueState={queueState}
+        queueSummary={queueSummary}
+        socketStatus={socketStatus}
         loading={loading}
         checking={checking}
         leaving={leaving}
@@ -168,4 +206,46 @@ function storeQueueAccess(eventId, queueToken, expiresAt) {
 function clearStoredQueueAccess(eventId) {
   window.sessionStorage.removeItem(queueTokenKey(eventId));
   window.sessionStorage.removeItem(queueExpiryKey(eventId));
+}
+
+function normalizeQueueState(eventId, payload = {}) {
+  const queue =
+    payload.queue ||
+    (payload.status && payload.status !== "None"
+      ? {
+          eventId,
+          status: payload.status,
+          position: payload.position,
+          expiresAt: payload.expiresAt,
+        }
+      : null);
+
+  return {
+    ...payload,
+    eventId: payload.eventId || eventId,
+    queueRequired: payload.queueRequired !== false,
+    accessGranted: Boolean(payload.accessGranted),
+    expiresAt: payload.expiresAt || queue?.expiresAt || null,
+    queue,
+  };
+}
+
+function mergePositionUpdate(eventId, current, payload = {}) {
+  if (!current) {
+    return normalizeQueueState(eventId, payload);
+  }
+
+  const queue = {
+    ...(current.queue || {}),
+    eventId,
+    status: payload.status || current.queue?.status || current.status,
+    position: payload.position ?? current.queue?.position ?? current.position,
+  };
+
+  return {
+    ...current,
+    status: queue.status,
+    position: queue.position,
+    queue,
+  };
 }

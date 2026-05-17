@@ -67,6 +67,12 @@ export function findEventById(eventId) {
   return Event.findById(eventId).lean();
 }
 
+export function findQueueEnabledEvents() {
+  return Event.find({ virtualQueueEnabled: true })
+    .select("_id virtualQueueEnabled queueAdmissionMode queueBatchSize queueAccessTtlMinutes queueMaxActiveUsers")
+    .lean();
+}
+
 export async function createEvent(eventData) {
   const event = await Event.create(eventData);
   return event.toObject();

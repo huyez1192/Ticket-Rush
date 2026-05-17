@@ -1,6 +1,8 @@
 import app from "./app.js";
 import { env } from "./config/env.js";
 import { connectMongo } from "./database/connectMongo.js";
+import { startQueueMaintenanceInterval } from "./modules/waiting-queue/waitingQueue.service.js";
+import { initializeSocketServer } from "./realtime/socketServer.js";
 
 let server;
 
@@ -26,6 +28,8 @@ async function startServer() {
   server = app.listen(env.PORT, () => {
     console.log(`Ticket Rush API listening at http://localhost:${env.PORT}`);
   });
+  initializeSocketServer(server);
+  startQueueMaintenanceInterval();
 }
 
 startServer().catch((error) => {

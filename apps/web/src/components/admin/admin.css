@@ -326,6 +326,7 @@
 }
 
 .admin-queue-summary__item {
+  min-width: 0;
   display: grid;
   gap: var(--space-1);
   padding: var(--space-3);
@@ -335,6 +336,7 @@
 }
 
 .admin-queue-summary__item span {
+  min-width: 0;
   color: var(--color-text-secondary);
   font-size: var(--font-size-caption);
   font-weight: 800;
@@ -342,8 +344,12 @@
 }
 
 .admin-queue-summary__item strong {
-  font-size: 2rem;
-  line-height: 1;
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  color: var(--color-premium-navy);
+  font-size: clamp(1.05rem, 2.1vw, 1.75rem);
+  line-height: 1.08;
 }
 
 .admin-queue-table {

@@ -6,6 +6,8 @@ import "./queue.css";
 export default function WaitingRoomCard({
   event,
   queueState,
+  queueSummary,
+  socketStatus,
   loading,
   checking,
   leaving,
@@ -14,8 +16,11 @@ export default function WaitingRoomCard({
   onLeave,
 }) {
   const queue = queueState?.queue;
-  const status = queue?.status || (queueState?.accessGranted ? "Admitted" : "Waiting");
-  const position = Number(queue?.position || 0);
+  const status = queue?.status || queueState?.status || (queueState?.accessGranted ? "Admitted" : "Waiting");
+  const position = Number(queue?.position || queueState?.position || 0);
+  const isAutoMode = event?.queueAdmissionMode === "Auto";
+  const connectionLabel =
+    socketStatus === "connected" ? "Realtime connected" : socketStatus === "connecting" ? "Connecting realtime" : "Reconnecting";
 
   return (
     <section className="waiting-room-card">
@@ -23,9 +28,17 @@ export default function WaitingRoomCard({
         <div>
           <p className="page-kicker">Virtual waiting room</p>
           <h1>{event?.name || "Event waiting room"}</h1>
-          <p>Please do not refresh. We will let you in when it is your turn.</p>
+          <p>
+            {isAutoMode
+              ? "You will be admitted automatically when capacity is available."
+              : "You will be admitted when the organizer opens the next batch."}
+          </p>
         </div>
         <StatusBadge status={status} />
+      </div>
+
+      <div className={`waiting-room-socket waiting-room-socket--${socketStatus === "connected" ? "connected" : "reconnecting"}`}>
+        <span>{connectionLabel}</span>
       </div>
 
       <div className="waiting-room-position" aria-live="polite">
@@ -46,6 +59,12 @@ export default function WaitingRoomCard({
           <div>
             <dt>Access expires</dt>
             <dd>{formatDate(queueState.expiresAt, { dateStyle: "medium", timeStyle: "short" })}</dd>
+          </div>
+        ) : null}
+        {queueSummary ? (
+          <div>
+            <dt>Waiting</dt>
+            <dd>{queueSummary.waiting ?? 0}</dd>
           </div>
         ) : null}
       </dl>
