@@ -10,8 +10,6 @@ const adminLinks = [
   { to: "/admin/events", label: "Events" },
   { to: "/admin/orders", label: "Orders" },
   { to: "/admin/users", label: "Users" },
-  { to: "/admin/roles", label: "Roles" },
-  { to: "/admin/audit-logs", label: "Audit Logs" },
   { to: "/admin/tickets/verify", label: "Verify Ticket" },
   { to: "/admin/profile", label: "Profile" },
 ];

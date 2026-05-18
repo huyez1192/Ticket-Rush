@@ -6,7 +6,6 @@ import { ROLES } from "../constants/roles";
 import AdminLayout from "../layouts/AdminLayout";
 import CustomerLayout from "../layouts/CustomerLayout";
 import PublicLayout from "../layouts/PublicLayout";
-import AdminAuditLogsPage from "../pages/admin/AdminAuditLogsPage";
 import AdminDashboardPage from "../pages/admin/AdminDashboardPage";
 import AdminEventDetailPage from "../pages/admin/AdminEventDetailPage";
 import AdminEventsPage from "../pages/admin/AdminEventsPage";
@@ -14,7 +13,6 @@ import AdminEventSeatingPage from "../pages/admin/AdminEventSeatingPage";
 import AdminLoginPage from "../pages/admin/AdminLoginPage";
 import AdminOrdersPage from "../pages/admin/AdminOrdersPage";
 import AdminProfilePage from "../pages/admin/AdminProfilePage";
-import AdminRolesPage from "../pages/admin/AdminRolesPage";
 import AdminTicketVerifyPage from "../pages/admin/AdminTicketVerifyPage";
 import AdminUsersPage from "../pages/admin/AdminUsersPage";
 import CheckoutFailurePage from "../pages/customer/CheckoutFailurePage";
@@ -86,8 +84,8 @@ export const router = createBrowserRouter([
           { path: "/admin/orders", element: <AdminOrdersPage /> },
           { path: "/admin/users", element: <AdminUsersPage /> },
           { path: "/admin/profile", element: <AdminProfilePage /> },
-          { path: "/admin/roles", element: <AdminRolesPage /> },
-          { path: "/admin/audit-logs", element: <AdminAuditLogsPage /> },
+          { path: "/admin/roles", element: <Navigate to="/admin/users" replace /> },
+          { path: "/admin/audit-logs", element: <Navigate to="/admin/dashboard" replace /> },
           { path: "/admin/tickets/verify", element: <AdminTicketVerifyPage /> },
         ],
       },
