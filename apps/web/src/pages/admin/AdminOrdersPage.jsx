@@ -14,7 +14,6 @@ import { buildAdminOrderQuery, normalizeAdminOrder, normalizeAdminOrdersPayload 
 function getFiltersFromParams(searchParams) {
   return {
     status: searchParams.get("status") || "",
-    eventId: searchParams.get("eventId") || "",
     page: Number(searchParams.get("page") || 1),
     limit: Number(searchParams.get("limit") || 20),
   };
@@ -61,9 +60,6 @@ export default function AdminOrdersPage() {
     if (nextValues.status) {
       nextParams.set("status", nextValues.status);
     }
-    if (nextValues.eventId) {
-      nextParams.set("eventId", nextValues.eventId);
-    }
     if (nextValues.page && nextValues.page > 1) {
       nextParams.set("page", String(nextValues.page));
     }
@@ -84,7 +80,7 @@ export default function AdminOrdersPage() {
   }
 
   function handleResetFilters() {
-    setFormFilters({ status: "", eventId: "", page: 1, limit: 20 });
+    setFormFilters({ status: "", page: 1, limit: 20 });
     setSearchParams(new URLSearchParams());
   }
 

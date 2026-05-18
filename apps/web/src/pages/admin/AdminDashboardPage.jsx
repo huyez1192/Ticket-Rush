@@ -163,9 +163,6 @@ export default function AdminDashboardPage() {
             onChange={setSelectedEventId}
             disabled={revenueState.loading || occupancyState.loading || demographicsState.loading}
           />
-          <p>
-            Event-specific charts use backend dashboard aggregate endpoints. Time-series bars render only when the API returns buckets.
-          </p>
         </div>
 
         {events.length ? null : (

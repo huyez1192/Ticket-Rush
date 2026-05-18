@@ -1,6 +1,5 @@
 import { ORDER_STATUSES } from "../../constants/statuses";
 import Button from "../common/Button";
-import Input from "../common/Input";
 import Select from "../common/Select";
 import "./admin-orders.css";
 
@@ -15,14 +14,6 @@ export default function AdminOrderFilters({ values, onChange, onSubmit, onReset,
           </option>
         ))}
       </Select>
-      <Input
-        label="Event ID"
-        name="eventId"
-        value={values.eventId}
-        onChange={onChange}
-        placeholder="MongoDB event id"
-        helper="Backend supports exact eventId filtering."
-      />
       <Select label="Rows" name="limit" value={String(values.limit)} onChange={onChange}>
         <option value="10">10 rows</option>
         <option value="20">20 rows</option>
