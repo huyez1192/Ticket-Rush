@@ -15,7 +15,6 @@ export default function AdminSectionList({
   onCreate,
   onEdit,
   onDelete,
-  onGenerate,
 }) {
   return (
     <section className="admin-seating-panel">
@@ -73,9 +72,6 @@ export default function AdminSectionList({
                   <StatusBadge status="Released" /> <span>{stats.Released}</span>
                 </div>
                 <div className="admin-section-card__actions">
-                  <Button size="sm" variant="outline" onClick={() => onGenerate?.(section)}>
-                    Generate
-                  </Button>
                   <Button size="sm" variant="outline" onClick={() => onEdit?.(section)}>
                     Edit
                   </Button>

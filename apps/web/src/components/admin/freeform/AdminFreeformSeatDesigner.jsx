@@ -28,7 +28,6 @@ import SeatInspectorPanel from "./SeatInspectorPanel";
 import SeatLayoutToolbar from "./SeatLayoutToolbar";
 import SeatMapCanvas from "./SeatMapCanvas";
 import StageLayoutForm from "./StageLayoutForm";
-import UnplacedSeatsPanel from "./UnplacedSeatsPanel";
 import "./freeform-seating.css";
 
 export default function AdminFreeformSeatDesigner({
@@ -278,7 +277,6 @@ export default function AdminFreeformSeatDesigner({
                 onDraftChange={handleInspectorChange}
               />
             )}
-            <UnplacedSeatsPanel seats={unplacedSeats} onAutoArrange={handleAutoArrange} />
             <StageLayoutForm layout={layoutConfig} onSubmit={handleSaveStage} loading={stageSaving} error={stageError} />
           </aside>
         </div>

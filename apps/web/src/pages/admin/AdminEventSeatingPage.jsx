@@ -252,10 +252,6 @@ export default function AdminEventSeatingPage() {
               setDeleteTarget(section);
               setDeleteError("");
             }}
-            onGenerate={(section) => {
-              setSelectedSectionId(section.id);
-              setGenerateError("");
-            }}
           />
           <AdminSeatMatrixGenerator
             section={selectedSection}
