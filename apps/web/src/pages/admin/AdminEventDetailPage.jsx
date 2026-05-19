@@ -299,7 +299,7 @@ export default function AdminEventDetailPage() {
       {error ? <ErrorState title="Event action failed" message={error} /> : null}
 
       <section className="admin-detail-layout">
-        <Card title="Event information">
+        <Card title="Event information" className="admin-event-information-card">
           <dl className="admin-detail-list">
             <div className="admin-detail-row">
               <dt>Status</dt>
@@ -324,6 +324,25 @@ export default function AdminEventDetailPage() {
               <dd>{event.description || "No description provided."}</dd>
             </div>
           </dl>
+          <section className="admin-detail-images" aria-labelledby="admin-event-images-heading">
+            <div className="admin-detail-images__header">
+              <h4 id="admin-event-images-heading">Images</h4>
+            </div>
+            {images.length ? (
+              <div className="admin-image-gallery admin-image-gallery--detail" aria-label="Event image previews">
+                {images.map((image) => (
+                  <AdminEventImagePreview
+                    key={image.id || image.imageUrl}
+                    image={image}
+                    alt={`${event.name} preview`}
+                    variant="card"
+                  />
+                ))}
+              </div>
+            ) : (
+              <p className="admin-detail-images__empty">No event images yet.</p>
+            )}
+          </section>
         </Card>
 
         <Card title="Lifecycle actions">
@@ -408,16 +427,25 @@ export default function AdminEventDetailPage() {
           <div className="admin-queue-summary">
             <div className="admin-queue-summary__item">
               <span>Mode</span>
-              <strong>{queueConfig.queueAdmissionMode}</strong>
+              <strong className="admin-queue-stat-value" title={queueConfig.queueAdmissionMode}>
+                {queueConfig.queueAdmissionMode}
+              </strong>
             </div>
             <div className="admin-queue-summary__item">
               <span>Socket</span>
-              <strong>{queueSocketStatus === "connected" ? "Live" : "Reconnecting"}</strong>
+              <strong
+                className="admin-queue-stat-value"
+                title={queueSocketStatus === "connected" ? "Live" : "Reconnecting"}
+              >
+                {queueSocketStatus === "connected" ? "Live" : "Reconnecting"}
+              </strong>
             </div>
             {Object.entries(queueSummary).map(([status, count]) => (
               <div key={status} className="admin-queue-summary__item">
                 <span>{status}</span>
-                <strong>{count}</strong>
+                <strong className="admin-queue-stat-value" title={String(count)}>
+                  {count}
+                </strong>
               </div>
             ))}
           </div>
@@ -464,18 +492,6 @@ export default function AdminEventDetailPage() {
             <p>No active queue entries yet.</p>
           )
         ) : null}
-      </Card>
-
-      <Card title="Event images">
-        {images.length ? (
-          <div className="admin-image-gallery" aria-label="Event image previews">
-            {images.map((image) => (
-              <AdminEventImagePreview key={image.id || image.imageUrl} image={image} alt={`${event.name} preview`} />
-            ))}
-          </div>
-        ) : (
-          <p>No images have been added for this event.</p>
-        )}
       </Card>
 
       <div className="admin-row-actions">
