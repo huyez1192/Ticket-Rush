@@ -14,8 +14,6 @@ export default function AdminSectionForm({ section, onSubmit, onCancel, loading,
       name: section?.name || "",
       price: section?.price ?? "",
       description: section?.description || "",
-      color: section?.color || "",
-      displayOrder: section?.displayOrder ?? "",
       defaultSeatWidth: section?.defaultSeatWidth ?? 32,
       defaultSeatHeight: section?.defaultSeatHeight ?? 32,
       seatShape: normalizeSeatShape(section?.seatShape),
@@ -83,15 +81,6 @@ export default function AdminSectionForm({ section, onSubmit, onCancel, loading,
         <span>{SEAT_SHAPE_OPTIONS.find((shape) => shape.value === values.seatShape)?.description}</span>
       </div>
       <div className="admin-seating-form__grid">
-        <Input label="Section color" name="color" type="text" value={values.color} onChange={handleChange} />
-        <Input
-          label="Display order"
-          name="displayOrder"
-          type="number"
-          step="1"
-          value={values.displayOrder}
-          onChange={handleChange}
-        />
         <Input
           label="Default seat width"
           name="defaultSeatWidth"

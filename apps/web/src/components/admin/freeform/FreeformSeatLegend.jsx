@@ -1,4 +1,4 @@
-import { getSeatShapeClassName, getSeatShapeMeta } from "../../../constants/seatShapes";
+import { getSeatShapeClassName } from "../../../constants/seatShapes";
 import "../../seat/seat-shapes.css";
 import "./freeform-seating.css";
 
@@ -30,7 +30,7 @@ export default function FreeformSeatLegend({ sections = [] }) {
               <span className={`seat-shape-icon ${getSeatShapeClassName(section.seatShape)}`} aria-hidden="true">
                 <span>{section.name?.slice(0, 2) || "S"}</span>
               </span>
-              {section.name} ({getSeatShapeMeta(section.seatShape).label})
+              {section.name}
             </span>
           ))}
         </div>

@@ -458,26 +458,6 @@
   padding: var(--space-3);
 }
 
-.admin-seating-fallback-preview {
-  min-width: 0;
-  border: 1px solid rgba(139, 111, 77, 0.22);
-  border-radius: var(--radius-card-premium);
-  background: var(--color-surface);
-}
-
-.admin-seating-fallback-preview summary {
-  cursor: pointer;
-  border-bottom: 1px solid rgba(183, 121, 31, 0.18);
-  background: var(--color-surface-tinted);
-  padding: var(--space-4) var(--space-5);
-  font-weight: 900;
-}
-
-.admin-seating-fallback-preview .admin-seat-map-panel {
-  border: 0;
-  border-radius: 0;
-}
-
 @media (max-width: 1180px) {
   .admin-seating-layout__sidebar {
     grid-template-columns: 1fr;

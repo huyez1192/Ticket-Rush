@@ -33,7 +33,6 @@ import "./freeform-seating.css";
 
 export default function AdminFreeformSeatDesigner({
   eventId,
-  event,
   seatMap,
   selectedSeatId,
   onSelectSeat,
@@ -195,8 +194,7 @@ export default function AdminFreeformSeatDesigner({
     <section className="admin-seating-panel freeform-designer">
       <header className="admin-seating-panel__header freeform-designer__header">
         <div>
-          <h2>Freeform seating designer</h2>
-          <p>{event?.name || "Event"} coordinate layout editor. Seat colors represent status only.</p>
+          <h2>Configure the seating map</h2>
         </div>
         <FreeformSeatLegend sections={seatMap.sections.map((entry) => entry.section)} />
       </header>

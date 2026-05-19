@@ -159,8 +159,6 @@ export function buildSectionPayload(values) {
     name: values.name?.trim(),
     price: Number(values.price),
     description: values.description?.trim() || undefined,
-    color: values.color?.trim() || undefined,
-    displayOrder: values.displayOrder === "" || values.displayOrder === null ? undefined : Number(values.displayOrder),
     defaultSeatWidth: values.defaultSeatWidth === "" || values.defaultSeatWidth === null ? undefined : Number(values.defaultSeatWidth),
     defaultSeatHeight: values.defaultSeatHeight === "" || values.defaultSeatHeight === null ? undefined : Number(values.defaultSeatHeight),
     seatShape: normalizeSeatShape(values.seatShape || SEAT_SHAPES.SQUARE),

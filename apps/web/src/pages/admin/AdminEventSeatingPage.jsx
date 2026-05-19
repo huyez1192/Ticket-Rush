@@ -12,7 +12,6 @@ import {
 } from "../../api/adminApi";
 import AdminConfirmDialog from "../../components/admin/AdminConfirmDialog";
 import AdminFreeformSeatDesigner from "../../components/admin/freeform/AdminFreeformSeatDesigner";
-import AdminSeatMapPreview from "../../components/admin/AdminSeatMapPreview";
 import AdminSeatMatrixGenerator from "../../components/admin/AdminSeatMatrixGenerator";
 import AdminSeatStatusControls from "../../components/admin/AdminSeatStatusControls";
 import AdminSectionForm from "../../components/admin/AdminSectionForm";
@@ -275,7 +274,6 @@ export default function AdminEventSeatingPage() {
         <main className="admin-seating-layout__main">
           <AdminFreeformSeatDesigner
             eventId={eventId}
-            event={event}
             seatMap={seatMap}
             selectedSectionId={selectedSectionId}
             selectedSeatId={selectedSeatId}
@@ -290,19 +288,6 @@ export default function AdminEventSeatingPage() {
             }}
             onRefresh={refreshSeating}
           />
-
-          <details className="admin-seating-fallback-preview">
-            <summary>Matrix fallback preview</summary>
-            <AdminSeatMapPreview
-            sections={seatMap.sections}
-            selectedSectionId={selectedSectionId}
-            selectedSeatId={selectedSeatId}
-            onSelectSeat={(seat) => {
-              setSelectedSeatId(seat.id);
-              setSeatPatchError("");
-            }}
-            />
-          </details>
         </main>
       </div>
 
