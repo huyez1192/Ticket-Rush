@@ -272,12 +272,20 @@ export default function SeatSelectionPage() {
 
   const handleTimerExpired = useCallback(() => {
     setNotice("A seat lock expired. Refreshing seat availability.");
+    setActiveLocks([]);
     refreshSeatData({ silent: true });
   }, [refreshSeatData]);
 
   async function handleCreateOrder() {
     if (!activeLocks.length) {
       setActionError("Lock seats before creating an order.");
+      return;
+    }
+
+    if (isLockExpired(lockExpiresAt)) {
+      setActiveLocks([]);
+      setActionError("Seat locks expired. Refreshing availability.");
+      await refreshSeatData({ silent: true });
       return;
     }
 
@@ -420,7 +428,12 @@ export default function SeatSelectionPage() {
                       {lockedSeats.length} locked seat{lockedSeats.length === 1 ? "" : "s"} are ready for the checkout
                       phase.
                     </p>
-                    <Button type="button" loading={isCreatingOrder} disabled={isCreatingOrder} onClick={handleCreateOrder}>
+                    <Button
+                      type="button"
+                      loading={isCreatingOrder}
+                      disabled={isCreatingOrder || isLockExpired(lockExpiresAt)}
+                      onClick={handleCreateOrder}
+                    >
                       Create order and continue
                     </Button>
                   </>
@@ -461,6 +474,15 @@ function getEarliestExpiry(locks) {
   }
 
   return new Date(Math.min(...expiryTimes)).toISOString();
+}
+
+function isLockExpired(expiresAt) {
+  if (!expiresAt) {
+    return false;
+  }
+
+  const expiresAtTime = new Date(expiresAt).getTime();
+  return Number.isFinite(expiresAtTime) && expiresAtTime <= Date.now();
 }
 
 function getStartingPrice(sections) {

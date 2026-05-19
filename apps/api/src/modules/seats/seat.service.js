@@ -28,6 +28,7 @@ import {
   updateSeatLayout as updateSeatLayoutRepository,
   updateSeatSectionByIdForEvent
 } from "./seat.repository.js";
+import { releaseExpiredSeatLocks } from "./seatLock.service.js";
 import { findSeatMapLayoutByEventId, upsertSeatMapLayout } from "./seatMapLayout.repository.js";
 
 async function assertPublicEvent(eventId) {
@@ -75,6 +76,7 @@ export async function getPublicSeatSectionDetail(eventId, sectionId) {
 
 export async function getPublicSeats(eventId, query) {
   await assertPublicEvent(eventId);
+  await releaseExpiredSeatLocks(eventId);
 
   if (query.sectionId) {
     const section = await findSeatSectionByIdForEvent(eventId, query.sectionId);
@@ -98,6 +100,7 @@ export async function getPublicSeats(eventId, query) {
 
 export async function getPublicSeatDetail(eventId, seatId) {
   await assertPublicEvent(eventId);
+  await releaseExpiredSeatLocks(eventId);
 
   const seat = await findSeatByIdForEvent(eventId, seatId);
 
@@ -110,6 +113,8 @@ export async function getPublicSeatDetail(eventId, seatId) {
 
 export async function getPublicSeatMap(eventId) {
   const event = await assertPublicEvent(eventId);
+  await releaseExpiredSeatLocks(eventId);
+
   const [sections, seats, layout] = await Promise.all([
     findSeatSectionsByEventId(eventId),
     findAllSeatsForEvent(eventId),
@@ -132,6 +137,7 @@ export async function getPublicSeatMap(eventId) {
 
 export async function getPublicSeatMapChanges(eventId, query) {
   await assertPublicEvent(eventId);
+  await releaseExpiredSeatLocks(eventId);
 
   const changes = await findSeatChanges(eventId, query.since);
 

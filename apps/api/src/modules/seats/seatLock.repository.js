@@ -49,8 +49,17 @@ export function findOwnActiveLockForSeat(userId, seatId, session) {
   return SeatLock.findOne({ userId, seatId, status: SEAT_LOCK_STATUSES.ACTIVE }).session(session || null);
 }
 
-export async function findExpiredActiveLocks(now, session) {
-  return SeatLock.find({ status: SEAT_LOCK_STATUSES.ACTIVE, expiresAt: { $lte: now } }).session(session || null);
+export async function findExpiredActiveLocks(now, session, seatIds = []) {
+  const query = {
+    status: SEAT_LOCK_STATUSES.ACTIVE,
+    expiresAt: { $lte: now }
+  };
+
+  if (seatIds.length) {
+    query.seatId = { $in: seatIds };
+  }
+
+  return SeatLock.find(query).session(session || null);
 }
 
 export function updateLocksByIds(lockIds, update, session) {

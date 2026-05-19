@@ -9,6 +9,7 @@ import {
 import { AppError } from "../../common/errors/AppError.js";
 import { runWithOptionalTransaction } from "../../common/utils/runWithOptionalTransaction.js";
 import { findEventById } from "../events/event.repository.js";
+import { releaseExpiredSeatLocks } from "../seats/seatLock.service.js";
 import { findActiveSeatLocksForUserSeats, updateLocksByIds } from "../seats/seatLock.repository.js";
 import { createTicket } from "../tickets/ticket.repository.js";
 import { mapOrderToDto, mapPagination } from "./order.mapper.js";
@@ -96,6 +97,7 @@ export async function getMyOrder(orderId, userId) {
 export async function createPendingOrder(userId, payload) {
   await assertSellingEvent(payload.eventId);
   assertUniqueSeatIds(payload.seatIds);
+  await releaseExpiredSeatLocks(payload.eventId);
 
   let createdOrderId;
 
@@ -211,6 +213,18 @@ export async function checkoutMyOrder(orderId, userId, payload) {
   if (!payload.confirm) {
     throw new AppError("Checkout confirmation is required.", 400);
   }
+
+  const existingOrder = await findOrderByIdForUser(orderId, userId);
+
+  if (!existingOrder) {
+    throw new AppError("Order not found.", 404);
+  }
+
+  if (existingOrder.status !== ORDER_STATUSES.PENDING) {
+    throw new AppError("Only pending orders can be checked out.", 400);
+  }
+
+  await releaseExpiredSeatLocks(existingOrder.eventId);
 
   let paidOrderId;
 

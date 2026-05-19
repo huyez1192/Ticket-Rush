@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import { EVENT_STATUSES, SEAT_LOCK_STATUSES, SEAT_STATUSES } from "../../common/constants/index.js";
 import { AppError } from "../../common/errors/AppError.js";
 import { runWithOptionalTransaction } from "../../common/utils/runWithOptionalTransaction.js";
+import { findBlockingOrderItemsForSeats } from "../bookings/order.repository.js";
 import { findEventById } from "../events/event.repository.js";
 import { validateQueueAccessForSeatLock } from "../waiting-queue/waitingQueue.service.js";
 import { findAllSeatsForEvent } from "./seat.repository.js";
@@ -54,6 +55,7 @@ export async function lockSeatsForUser(eventId, userId, payload) {
   const event = await assertSellingEvent(eventId);
   await validateQueueAccessForSeatLock(event, userId, payload.queueToken);
   assertUniqueSeatIds(payload.seatIds);
+  await releaseExpiredSeatLocks(eventId);
 
   const lockedSeats = [];
   const now = new Date();
@@ -153,6 +155,8 @@ export async function getMyActiveSeatLocks(eventId, userId) {
     throw new AppError("Event not found.", 404);
   }
 
+  await releaseExpiredSeatLocks(eventId);
+
   const seats = await findAllSeatsForEvent(eventId);
   const locks = await findActiveSeatLocksForUserEvent(
     userId,
@@ -186,33 +190,53 @@ export async function releaseMySeatLock(eventId, seatId, userId) {
   });
 }
 
-export async function releaseExpiredSeatLocks() {
+export async function releaseExpiredSeatLocks(eventId = null) {
   const now = new Date();
+  let expiredLockIds = [];
   let releasedSeatIds = [];
 
   await runWithOptionalTransaction(async (session) => {
-    const locks = await findExpiredActiveLocks(now, session);
-    releasedSeatIds = locks.map((lock) => lock.seatId.toString());
+    const eventSeatIds = eventId
+      ? (await mongoose.model("Seat").find({ eventId }).select("_id").session(session || null)).map((seat) => seat._id)
+      : [];
+
+    if (eventId && eventSeatIds.length === 0) {
+      return;
+    }
+
+    const locks = await findExpiredActiveLocks(now, session, eventSeatIds);
+    expiredLockIds = locks.map((lock) => lock._id);
 
     if (locks.length === 0) {
       return;
     }
 
+    const lockedSeatIds = locks.map((lock) => lock.seatId);
+
     await updateActiveLocksByIds(
-      locks.map((lock) => lock._id),
+      expiredLockIds,
       { status: SEAT_LOCK_STATUSES.EXPIRED },
       session
     );
-    await mongoose
-      .model("Seat")
-      .updateMany(
-        { _id: { $in: locks.map((lock) => lock.seatId) }, status: SEAT_STATUSES.LOCKED },
-        { status: SEAT_STATUSES.AVAILABLE },
-        { session }
-      );
+
+    const blockingOrderItems = await findBlockingOrderItemsForSeats(lockedSeatIds, session);
+    const blockedSeatIds = new Set(blockingOrderItems.map((item) => item.seatId.toString()));
+    const releasableSeatIds = lockedSeatIds.filter((seatId) => !blockedSeatIds.has(seatId.toString()));
+    releasedSeatIds = releasableSeatIds.map((seatId) => seatId.toString());
+
+    if (releasableSeatIds.length) {
+      await mongoose
+        .model("Seat")
+        .updateMany(
+          { _id: { $in: releasableSeatIds }, status: SEAT_STATUSES.LOCKED },
+          { status: SEAT_STATUSES.AVAILABLE },
+          { session }
+        );
+    }
   });
 
   return {
+    expiredCount: expiredLockIds.length,
     releasedCount: releasedSeatIds.length,
     releasedSeatIds,
     ranAt: now
