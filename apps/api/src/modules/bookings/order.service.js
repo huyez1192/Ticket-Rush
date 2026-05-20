@@ -29,6 +29,8 @@ import {
   updateOrderItemsByOrderId
 } from "./order.repository.js";
 
+const RESERVATION_EXPIRED_MESSAGE = "Your seat reservation has expired. Please select seats again.";
+
 function assertUniqueSeatIds(seatIds) {
   const uniqueSeatIds = new Set(seatIds.map((seatId) => seatId.toString()));
 
@@ -43,6 +45,27 @@ function isDuplicateKeyError(error) {
 
 function buildOrderSeatConflictError() {
   return new AppError("One or more selected seats already belong to an existing pending or paid order.", 409);
+}
+
+function toObjectIdValue(value) {
+  return value?._id || value;
+}
+
+function getEarliestLockExpiresAt(locks = []) {
+  const expiryTimes = locks
+    .map((lock) => (lock.expiresAt ? new Date(lock.expiresAt).getTime() : null))
+    .filter((time) => Number.isFinite(time));
+
+  if (!expiryTimes.length) {
+    return null;
+  }
+
+  return new Date(Math.min(...expiryTimes));
+}
+
+function isExpiredAt(expiresAt, now = new Date()) {
+  const expiresAtTime = expiresAt ? new Date(expiresAt).getTime() : null;
+  return Number.isFinite(expiresAtTime) && expiresAtTime <= now.getTime();
 }
 
 async function assertSellingEvent(eventId) {
@@ -63,6 +86,7 @@ async function mapOrderWithItems(order) {
   const items = await findOrderItemsByOrderId(order._id);
   const tickets = await mongoose.model("Ticket").find({ orderId: order._id }).lean();
   const ticketsByOrderItemId = new Map(tickets.map((ticket) => [ticket.orderItemId.toString(), ticket]));
+  const orderValue = typeof order.toObject === "function" ? order.toObject() : order;
 
   const mappedItems = items.map((item) => {
     const value = typeof item.toObject === "function" ? item.toObject() : item;
@@ -70,7 +94,21 @@ async function mapOrderWithItems(order) {
     return value;
   });
 
-  return mapOrderToDto(order, mappedItems);
+  const dto = mapOrderToDto(order, mappedItems);
+
+  if (!dto.lockExpiresAt && dto.status === ORDER_STATUSES.PENDING) {
+    const seatIds = items.map((item) => toObjectIdValue(item.seatId)).filter(Boolean);
+    const userId = toObjectIdValue(orderValue.userId);
+    const activeLocks = seatIds.length ? await findActiveSeatLocksForUserSeats(userId, seatIds) : [];
+    const lockExpiresAt = getEarliestLockExpiresAt(activeLocks);
+
+    dto.lockExpiresAt = lockExpiresAt;
+    dto.expiresAt = lockExpiresAt;
+  }
+
+  dto.serverNow = new Date().toISOString();
+
+  return dto;
 }
 
 export async function listMyOrders(userId, query) {
@@ -85,11 +123,14 @@ export async function listMyOrders(userId, query) {
 }
 
 export async function getMyOrder(orderId, userId) {
-  const order = await findOrderByIdForUser(orderId, userId);
+  let order = await findOrderByIdForUser(orderId, userId);
 
   if (!order) {
     throw new AppError("Order not found.", 404);
   }
+
+  await releaseExpiredSeatLocks(order.eventId, userId);
+  order = await findOrderByIdForUser(orderId, userId);
 
   return mapOrderWithItems(order);
 }
@@ -126,7 +167,7 @@ export async function createPendingOrder(userId, payload) {
     const validLocks = locks.filter((lock) => lock.expiresAt > now);
 
     if (validLocks.length !== payload.seatIds.length) {
-      throw new AppError("All selected seats must be actively locked by the current customer.", 409);
+      throw new AppError(RESERVATION_EXPIRED_MESSAGE, 409);
     }
 
     const blockingOrderItems = await findBlockingOrderItemsForSeats(payload.seatIds, session);
@@ -136,12 +177,19 @@ export async function createPendingOrder(userId, payload) {
     }
 
     const totalAmount = seats.reduce((sum, seat) => sum + Number(seat.sectionId?.price || 0), 0);
+    const lockExpiresAt = getEarliestLockExpiresAt(validLocks);
+
+    if (!lockExpiresAt || isExpiredAt(lockExpiresAt, now)) {
+      throw new AppError(RESERVATION_EXPIRED_MESSAGE, 409);
+    }
+
     try {
       const order = await createOrder(
         {
           userId,
           eventId: payload.eventId,
           totalAmount,
+          lockExpiresAt,
           status: ORDER_STATUSES.PENDING
         },
         session
@@ -214,17 +262,22 @@ export async function checkoutMyOrder(orderId, userId, payload) {
     throw new AppError("Checkout confirmation is required.", 400);
   }
 
-  const existingOrder = await findOrderByIdForUser(orderId, userId);
+  let existingOrder = await findOrderByIdForUser(orderId, userId);
 
   if (!existingOrder) {
     throw new AppError("Order not found.", 404);
   }
 
+  await releaseExpiredSeatLocks(existingOrder.eventId);
+  existingOrder = await findOrderByIdForUser(orderId, userId);
+
+  if (existingOrder.status === ORDER_STATUSES.EXPIRED || isExpiredAt(existingOrder.lockExpiresAt)) {
+    throw new AppError(RESERVATION_EXPIRED_MESSAGE, 409);
+  }
+
   if (existingOrder.status !== ORDER_STATUSES.PENDING) {
     throw new AppError("Only pending orders can be checked out.", 400);
   }
-
-  await releaseExpiredSeatLocks(existingOrder.eventId);
 
   let paidOrderId;
 
@@ -244,9 +297,15 @@ export async function checkoutMyOrder(orderId, userId, payload) {
     assertUniqueSeatIds(seatIds);
     const locks = await findActiveSeatLocksForUserSeats(userId, seatIds, session);
     const now = new Date();
+    const lockExpiresAt = order.lockExpiresAt || getEarliestLockExpiresAt(locks);
 
-    if (locks.length !== seatIds.length || locks.some((lock) => lock.expiresAt <= now)) {
-      throw new AppError("Selected seat locks are missing or expired.", 409);
+    if (
+      !lockExpiresAt ||
+      isExpiredAt(lockExpiresAt, now) ||
+      locks.length !== seatIds.length ||
+      locks.some((lock) => lock.expiresAt <= now)
+    ) {
+      throw new AppError(RESERVATION_EXPIRED_MESSAGE, 409);
     }
 
     const lockSeatIds = new Set(locks.map((lock) => (lock.seatId?._id || lock.seatId).toString()));

@@ -19,6 +19,8 @@ export function normalizeOrderItem(item = {}) {
 export function normalizeOrder(order = {}) {
   const items = getCollectionItems(order.items).map(normalizeOrderItem);
 
+  const serverNow = order.serverNow || null;
+
   return {
     ...order,
     id: getEntityId(order),
@@ -30,6 +32,10 @@ export function normalizeOrder(order = {}) {
     totalAmount: Number.isFinite(Number(order.totalAmount))
       ? Number(order.totalAmount)
       : items.reduce((sum, item) => sum + Number(item.priceSnapshot || 0), 0),
+    lockExpiresAt: order.lockExpiresAt || order.expiresAt || null,
+    expiresAt: order.expiresAt || order.lockExpiresAt || null,
+    serverNow,
+    serverNowReceivedAt: serverNow ? Date.now() : null,
     createdAt: order.createdAt,
     updatedAt: order.updatedAt,
   };

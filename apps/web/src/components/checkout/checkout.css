@@ -168,6 +168,21 @@
   gap: var(--space-4);
 }
 
+.reservation-timer-panel {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.reservation-timer-panel h3 {
+  margin-top: 0;
+}
+
+.reservation-timer-panel p {
+  margin-bottom: 0;
+}
+
 .checkout-result {
   display: grid;
   gap: var(--space-5);
@@ -206,7 +221,8 @@
 
   .checkout-header,
   .checkout-seat-row,
-  .order-status-panel {
+  .order-status-panel,
+  .reservation-timer-panel {
     display: grid;
   }
 }

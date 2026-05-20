@@ -44,6 +44,9 @@ export function mapOrderToDto(order, items = []) {
     status: value.status,
     items: items.map((item) => mapOrderItemToDto(item)).filter(Boolean),
     totalAmount: value.totalAmount,
+    lockExpiresAt: value.lockExpiresAt || null,
+    expiresAt: value.lockExpiresAt || null,
+    serverNow: value.serverNow || new Date().toISOString(),
     createdAt: value.createdAt,
     updatedAt: value.updatedAt
   };

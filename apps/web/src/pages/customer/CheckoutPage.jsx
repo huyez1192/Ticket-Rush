@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { getEventById } from "../../api/eventApi";
 import { cancelOrder, checkoutOrder, getOrderById } from "../../api/orderApi";
 import Button from "../../components/common/Button";
@@ -10,27 +10,35 @@ import CheckoutSummary from "../../components/checkout/CheckoutSummary";
 import OrderStatusPanel from "../../components/checkout/OrderStatusPanel";
 import PaymentMockPanel from "../../components/checkout/PaymentMockPanel";
 import SelectedSeatsList from "../../components/checkout/SelectedSeatsList";
-import { checkoutFailure, checkoutSuccess, eventDetail } from "../../constants/routes";
+import SeatLockTimer from "../../components/seat/SeatLockTimer";
+import { checkoutFailure, checkoutSuccess, eventDetail, eventSeats } from "../../constants/routes";
 import { formatDateRange } from "../../utils/formatDate";
 import { normalizeEvent } from "../../utils/eventMappers";
 import { mapApiError } from "../../utils/mapApiError";
 import { normalizeOrder } from "../../utils/orderMappers";
 
+const RESERVATION_EXPIRED_MESSAGE = "Your seat reservation has expired. Please select seats again.";
+
 export default function CheckoutPage() {
   const { orderId } = useParams();
   const navigate = useNavigate();
-  const [order, setOrder] = useState(null);
+  const location = useLocation();
+  const initialOrder = location.state?.order ? normalizeOrder(location.state.order) : null;
+  const [order, setOrder] = useState(initialOrder);
   const [event, setEvent] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(!initialOrder);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [isCanceling, setIsCanceling] = useState(false);
   const [error, setError] = useState(null);
   const [actionError, setActionError] = useState(null);
+  const [reservationExpired, setReservationExpired] = useState(false);
 
-  const loadOrder = useCallback(async () => {
-    setIsLoading(true);
+  const loadOrder = useCallback(async ({ silent = false } = {}) => {
+    if (!silent) {
+      setIsLoading(true);
+      setActionError(null);
+    }
     setError(null);
-    setActionError(null);
 
     try {
       const orderPayload = await getOrderById(orderId);
@@ -50,15 +58,37 @@ export default function CheckoutPage() {
       setOrder(null);
       setEvent(null);
     } finally {
-      setIsLoading(false);
+      if (!silent) {
+        setIsLoading(false);
+      }
     }
   }, [orderId]);
 
   useEffect(() => {
-    loadOrder();
+    loadOrder({ silent: Boolean(initialOrder) });
+  }, [loadOrder]);
+
+  const lockExpiresAt = order?.lockExpiresAt || order?.expiresAt || null;
+  const reservationElapsed = useMemo(() => isReservationElapsed(order), [order]);
+
+  useEffect(() => {
+    setReservationExpired(order?.status === "Expired" || reservationElapsed);
+  }, [order?.status, reservationElapsed]);
+
+  const handleReservationExpired = useCallback(() => {
+    setReservationExpired(true);
+    setActionError(RESERVATION_EXPIRED_MESSAGE);
+    loadOrder({ silent: true });
   }, [loadOrder]);
 
   async function handleCheckout() {
+    if (reservationExpired || isReservationElapsed(order)) {
+      setReservationExpired(true);
+      setActionError(RESERVATION_EXPIRED_MESSAGE);
+      await loadOrder({ silent: true });
+      return;
+    }
+
     setIsCheckingOut(true);
     setActionError(null);
 
@@ -67,7 +97,13 @@ export default function CheckoutPage() {
       navigate(checkoutSuccess(paidOrder.id || orderId), { state: { orderId: paidOrder.id || orderId } });
     } catch (apiError) {
       const mappedError = mapApiError(apiError);
-      navigate(checkoutFailure(orderId), { state: { orderId, message: mappedError.message } });
+      if (isReservationExpiredError(mappedError)) {
+        setReservationExpired(true);
+        setActionError(RESERVATION_EXPIRED_MESSAGE);
+        await loadOrder({ silent: true });
+      } else {
+        navigate(checkoutFailure(orderId), { state: { orderId, message: mappedError.message } });
+      }
     } finally {
       setIsCheckingOut(false);
     }
@@ -124,7 +160,7 @@ export default function CheckoutPage() {
   }
 
   const isPaid = order.status === "Paid";
-  const isPayable = order.status === "Pending";
+  const isPayable = order.status === "Pending" && !reservationExpired && !reservationElapsed;
 
   return (
     <main className="checkout-page">
@@ -141,6 +177,9 @@ export default function CheckoutPage() {
         </header>
 
         {actionError ? <div className="seat-alert seat-alert--error">{actionError}</div> : null}
+        {!actionError && reservationExpired ? (
+          <div className="seat-alert seat-alert--error">{RESERVATION_EXPIRED_MESSAGE}</div>
+        ) : null}
 
         <div className="checkout-layout">
           <div className="checkout-layout__main">
@@ -154,6 +193,12 @@ export default function CheckoutPage() {
           </div>
 
           <aside className="checkout-layout__side">
+            <ReservationTimerPanel
+              order={order}
+              expiresAt={lockExpiresAt}
+              expired={reservationExpired || reservationElapsed}
+              onExpired={handleReservationExpired}
+            />
             <CheckoutSummary order={order} event={event} />
             <OrderStatusPanel order={order} canceling={isCanceling} onCancel={handleCancel} />
             {isPaid ? (
@@ -161,9 +206,60 @@ export default function CheckoutPage() {
                 <Button>View my tickets</Button>
               </Link>
             ) : null}
+            {reservationExpired && event?.id ? (
+              <Link to={eventSeats(event.id)}>
+                <Button variant="outline">Select seats again</Button>
+              </Link>
+            ) : null}
           </aside>
         </div>
       </div>
     </main>
   );
+}
+
+function ReservationTimerPanel({ order, expiresAt, expired, onExpired }) {
+  if (order.status !== "Pending" || !expiresAt) {
+    return null;
+  }
+
+  return (
+    <Card className="checkout-panel">
+      <div className="reservation-timer-panel">
+        <div>
+          <p className="page-kicker">Seat reservation</p>
+          <h3>{expired ? "Expired" : "Locked for checkout"}</h3>
+          <p>{expired ? RESERVATION_EXPIRED_MESSAGE : "Your selected seats remain locked while this countdown is active."}</p>
+        </div>
+        <SeatLockTimer
+          expiresAt={expiresAt}
+          serverNow={order.serverNow}
+          serverNowReceivedAt={order.serverNowReceivedAt}
+          onExpired={onExpired}
+        />
+      </div>
+    </Card>
+  );
+}
+
+function isReservationElapsed(order) {
+  const expiresAt = order?.lockExpiresAt || order?.expiresAt;
+  const expiresAtTime = expiresAt ? new Date(expiresAt).getTime() : null;
+
+  if (!Number.isFinite(expiresAtTime)) {
+    return false;
+  }
+
+  const serverNowTime = order?.serverNow ? new Date(order.serverNow).getTime() : null;
+  const receivedAtTime = Number(order?.serverNowReceivedAt);
+
+  if (Number.isFinite(serverNowTime) && Number.isFinite(receivedAtTime)) {
+    return expiresAtTime <= serverNowTime + Date.now() - receivedAtTime;
+  }
+
+  return expiresAtTime <= Date.now();
+}
+
+function isReservationExpiredError(error) {
+  return String(error?.message || "").toLowerCase().includes("seat reservation has expired");
 }

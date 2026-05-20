@@ -19,6 +19,10 @@ export function updateOrderById(orderId, update, session) {
   return Order.findByIdAndUpdate(orderId, update, { new: true }).session(session || null);
 }
 
+export function updateOrdersByIds(orderIds, update, session) {
+  return Order.updateMany({ _id: { $in: orderIds } }, update, { session });
+}
+
 export function deleteOrderById(orderId, session) {
   return Order.deleteOne({ _id: orderId }, { session });
 }
@@ -33,6 +37,10 @@ export function deleteOrderItemsByOrderId(orderId, session) {
 
 export function updateOrderItemsByOrderId(orderId, update, session) {
   return OrderItem.updateMany({ orderId }, update, { session });
+}
+
+export function updateOrderItemsByOrderIds(orderIds, update, session) {
+  return OrderItem.updateMany({ orderId: { $in: orderIds } }, update, { session });
 }
 
 export function findOrderById(orderId, session) {
@@ -94,6 +102,10 @@ export function findOrderItemsByOrderId(orderId, session) {
   return OrderItem.find({ orderId }).populate(ITEM_POPULATE).sort({ createdAt: 1, _id: 1 }).session(session || null);
 }
 
+export function findOrderItemsByOrderIds(orderIds, session) {
+  return OrderItem.find({ orderId: { $in: orderIds } }).select("_id orderId seatId status").session(session || null).lean();
+}
+
 export function countOrdersByEventId(eventId) {
   return Order.countDocuments({ eventId });
 }
@@ -119,4 +131,52 @@ export async function findBlockingOrderItemsForSeats(seatIds, session) {
   })
     .select("_id orderId seatId")
     .session(session || null);
+}
+
+export async function findOrderItemsForSeatsByOrderStatuses(seatIds, statuses, session) {
+  if (!seatIds.length || !statuses.length) {
+    return [];
+  }
+
+  const candidateItems = await OrderItem.find({ seatId: { $in: seatIds } })
+    .select("_id orderId seatId status")
+    .session(session || null)
+    .lean();
+
+  if (candidateItems.length === 0) {
+    return [];
+  }
+
+  const orders = await Order.find({
+    _id: { $in: candidateItems.map((item) => item.orderId) },
+    status: { $in: statuses }
+  })
+    .select("_id status userId eventId lockExpiresAt")
+    .session(session || null)
+    .lean();
+  const ordersById = new Map(orders.map((order) => [order._id.toString(), order]));
+
+  return candidateItems
+    .filter((item) => ordersById.has(item.orderId.toString()))
+    .map((item) => ({
+      ...item,
+      order: ordersById.get(item.orderId.toString())
+    }));
+}
+
+export async function findPendingOrdersForCleanup({ eventId = null, userId = null } = {}, session) {
+  const query = { status: ORDER_STATUSES.PENDING };
+
+  if (eventId) {
+    query.eventId = eventId;
+  }
+
+  if (userId) {
+    query.userId = userId;
+  }
+
+  return Order.find(query)
+    .select("_id userId eventId status lockExpiresAt")
+    .session(session || null)
+    .lean();
 }

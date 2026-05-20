@@ -303,7 +303,7 @@ export default function SeatSelectionPage() {
         throw new Error("The API did not return an order id.");
       }
 
-      navigate(checkout(order.id || order._id));
+      navigate(checkout(order.id || order._id), { state: { order } });
     } catch (apiError) {
       setActionError(mapApiError(apiError).message);
       await refreshSeatData({ silent: true });

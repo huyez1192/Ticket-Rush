@@ -19,6 +19,9 @@ const orderSchema = new mongoose.Schema(
       min: 0,
       default: 0
     },
+    lockExpiresAt: {
+      type: Date
+    },
     status: {
       type: String,
       enum: ORDER_STATUS_VALUES,
@@ -36,6 +39,7 @@ orderSchema.index({ userId: 1 }, { name: "idx_orders_user_id" });
 orderSchema.index({ eventId: 1 }, { name: "idx_orders_event_id" });
 orderSchema.index({ status: 1 }, { name: "idx_orders_status" });
 orderSchema.index({ eventId: 1, status: 1 }, { name: "idx_orders_event_status" });
+orderSchema.index({ status: 1, lockExpiresAt: 1 }, { name: "idx_orders_status_lock_expires_at" });
 
 const orderItemSchema = new mongoose.Schema(
   {

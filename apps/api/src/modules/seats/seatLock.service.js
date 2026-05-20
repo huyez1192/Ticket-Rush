@@ -1,14 +1,21 @@
 import mongoose from "mongoose";
-import { EVENT_STATUSES, SEAT_LOCK_STATUSES, SEAT_STATUSES } from "../../common/constants/index.js";
+import { EVENT_STATUSES, ORDER_STATUSES, SEAT_LOCK_STATUSES, SEAT_STATUSES } from "../../common/constants/index.js";
 import { AppError } from "../../common/errors/AppError.js";
 import { runWithOptionalTransaction } from "../../common/utils/runWithOptionalTransaction.js";
-import { findBlockingOrderItemsForSeats } from "../bookings/order.repository.js";
+import {
+  findOrderItemsByOrderIds,
+  findOrderItemsForSeatsByOrderStatuses,
+  findPendingOrdersForCleanup,
+  updateOrderItemsByOrderIds,
+  updateOrdersByIds
+} from "../bookings/order.repository.js";
 import { findEventById } from "../events/event.repository.js";
 import { validateQueueAccessForSeatLock } from "../waiting-queue/waitingQueue.service.js";
 import { findAllSeatsForEvent } from "./seat.repository.js";
 import { mapPagination, mapSeatLockToDto } from "./seatLock.mapper.js";
 import {
   createSeatLock,
+  findActiveSeatLocksBySeatIds,
   findActiveSeatLockBySeatId,
   findActiveSeatLocksForUserEvent,
   findExpiredActiveLocks,
@@ -49,6 +56,47 @@ async function assertSellingEvent(eventId) {
   }
 
   return event;
+}
+
+function toIdString(value) {
+  return (value?._id || value)?.toString?.() || String(value);
+}
+
+function toObjectIdValue(value) {
+  return value?._id || value;
+}
+
+function uniqueObjectIds(values) {
+  const idsByString = new Map();
+
+  for (const value of values) {
+    if (!value) {
+      continue;
+    }
+
+    const id = toObjectIdValue(value);
+    idsByString.set(toIdString(id), id);
+  }
+
+  return Array.from(idsByString.values());
+}
+
+function groupItemsByOrderId(items) {
+  return items.reduce((result, item) => {
+    const orderId = toIdString(item.orderId);
+
+    if (!result.has(orderId)) {
+      result.set(orderId, []);
+    }
+
+    result.get(orderId).push(item);
+    return result;
+  }, new Map());
+}
+
+function isExpiredAt(expiresAt, now) {
+  const expiresAtTime = expiresAt ? new Date(expiresAt).getTime() : null;
+  return Number.isFinite(expiresAtTime) && expiresAtTime <= now.getTime();
 }
 
 export async function lockSeatsForUser(eventId, userId, payload) {
@@ -190,9 +238,10 @@ export async function releaseMySeatLock(eventId, seatId, userId) {
   });
 }
 
-export async function releaseExpiredSeatLocks(eventId = null) {
+export async function releaseExpiredSeatLocks(eventId = null, userId = null) {
   const now = new Date();
   let expiredLockIds = [];
+  let expiredOrderIds = [];
   let releasedSeatIds = [];
 
   await runWithOptionalTransaction(async (session) => {
@@ -204,31 +253,95 @@ export async function releaseExpiredSeatLocks(eventId = null) {
       return;
     }
 
-    const locks = await findExpiredActiveLocks(now, session, eventSeatIds);
+    const locks = await findExpiredActiveLocks(now, session, eventSeatIds, userId);
     expiredLockIds = locks.map((lock) => lock._id);
+    const expiredLockSeatIds = locks.map((lock) => toObjectIdValue(lock.seatId));
 
-    if (locks.length === 0) {
+    if (expiredLockIds.length) {
+      await updateActiveLocksByIds(
+        expiredLockIds,
+        { status: SEAT_LOCK_STATUSES.EXPIRED },
+        session
+      );
+    }
+
+    const pendingOrders = await findPendingOrdersForCleanup({ eventId, userId }, session);
+    const pendingOrderIds = pendingOrders.map((order) => order._id);
+    const pendingOrderItems = pendingOrderIds.length ? await findOrderItemsByOrderIds(pendingOrderIds, session) : [];
+    const pendingItemsByOrderId = groupItemsByOrderId(pendingOrderItems);
+    const pendingSeatIds = uniqueObjectIds(pendingOrderItems.map((item) => item.seatId));
+    const activePendingLocks = pendingSeatIds.length ? await findActiveSeatLocksBySeatIds(pendingSeatIds, session, now) : [];
+    const activeLockKeys = new Set(
+      activePendingLocks.map((lock) => `${toIdString(lock.seatId)}:${toIdString(lock.userId)}`)
+    );
+    const expiredLockSeatIdSet = new Set(expiredLockSeatIds.map((seatId) => toIdString(seatId)));
+    const expiredOrderSeatIds = [];
+    const expiredOrderLockKeys = new Set();
+
+    expiredOrderIds = pendingOrders
+      .filter((order) => {
+        const items = pendingItemsByOrderId.get(toIdString(order._id)) || [];
+        const seatIds = items.map((item) => item.seatId);
+        const ownerId = toIdString(order.userId);
+        const lockExpiresAtElapsed = isExpiredAt(order.lockExpiresAt, now);
+        const hasExpiredSeatLock = seatIds.some((seatId) => expiredLockSeatIdSet.has(toIdString(seatId)));
+        const hasMissingActiveLock = seatIds.some((seatId) => !activeLockKeys.has(`${toIdString(seatId)}:${ownerId}`));
+
+        if (seatIds.length === 0 || lockExpiresAtElapsed || hasExpiredSeatLock || hasMissingActiveLock) {
+          expiredOrderSeatIds.push(...seatIds);
+          seatIds.forEach((seatId) => expiredOrderLockKeys.add(`${toIdString(seatId)}:${ownerId}`));
+          return true;
+        }
+
+        return false;
+      })
+      .map((order) => order._id);
+
+    const orderLockIdsToExpire = activePendingLocks
+      .filter((lock) => expiredOrderLockKeys.has(`${toIdString(lock.seatId)}:${toIdString(lock.userId)}`))
+      .map((lock) => lock._id);
+
+    if (orderLockIdsToExpire.length) {
+      await updateActiveLocksByIds(orderLockIdsToExpire, { status: SEAT_LOCK_STATUSES.EXPIRED }, session);
+      expiredLockIds = uniqueObjectIds([...expiredLockIds, ...orderLockIdsToExpire]);
+    }
+
+    if (expiredOrderIds.length) {
+      await updateOrdersByIds(expiredOrderIds, { status: ORDER_STATUSES.EXPIRED }, session);
+      await updateOrderItemsByOrderIds(expiredOrderIds, { status: ORDER_STATUSES.EXPIRED }, session);
+    }
+
+    const candidateSeatIds = uniqueObjectIds([...expiredLockSeatIds, ...expiredOrderSeatIds]);
+
+    if (candidateSeatIds.length === 0) {
       return;
     }
 
-    const lockedSeatIds = locks.map((lock) => lock.seatId);
+    const paidOrderItems = await findOrderItemsForSeatsByOrderStatuses(candidateSeatIds, [ORDER_STATUSES.PAID], session);
+    const activeLocks = await findActiveSeatLocksBySeatIds(candidateSeatIds, session, now);
+    const blockedSeatIds = new Set([
+      ...paidOrderItems.map((item) => toIdString(item.seatId)),
+      ...activeLocks.map((lock) => toIdString(lock.seatId))
+    ]);
+    const releasableSeatIds = candidateSeatIds.filter((seatId) => !blockedSeatIds.has(toIdString(seatId)));
 
-    await updateActiveLocksByIds(
-      expiredLockIds,
-      { status: SEAT_LOCK_STATUSES.EXPIRED },
-      session
-    );
+    if (releasableSeatIds.length === 0) {
+      return;
+    }
 
-    const blockingOrderItems = await findBlockingOrderItemsForSeats(lockedSeatIds, session);
-    const blockedSeatIds = new Set(blockingOrderItems.map((item) => item.seatId.toString()));
-    const releasableSeatIds = lockedSeatIds.filter((seatId) => !blockedSeatIds.has(seatId.toString()));
-    releasedSeatIds = releasableSeatIds.map((seatId) => seatId.toString());
+    const currentlyLockedSeats = await mongoose
+      .model("Seat")
+      .find({ _id: { $in: releasableSeatIds }, status: SEAT_STATUSES.LOCKED })
+      .select("_id")
+      .session(session || null);
+    const lockedSeatIds = currentlyLockedSeats.map((seat) => seat._id);
+    releasedSeatIds = lockedSeatIds.map((seatId) => seatId.toString());
 
-    if (releasableSeatIds.length) {
+    if (lockedSeatIds.length) {
       await mongoose
         .model("Seat")
         .updateMany(
-          { _id: { $in: releasableSeatIds }, status: SEAT_STATUSES.LOCKED },
+          { _id: { $in: lockedSeatIds }, status: SEAT_STATUSES.LOCKED },
           { status: SEAT_STATUSES.AVAILABLE },
           { session }
         );
@@ -236,9 +349,13 @@ export async function releaseExpiredSeatLocks(eventId = null) {
   });
 
   return {
+    expiredLocksCount: expiredLockIds.length,
+    releasedSeatsCount: releasedSeatIds.length,
+    expiredOrdersCount: expiredOrderIds.length,
     expiredCount: expiredLockIds.length,
     releasedCount: releasedSeatIds.length,
     releasedSeatIds,
+    expiredOrderIds: expiredOrderIds.map((orderId) => orderId.toString()),
     ranAt: now
   };
 }
