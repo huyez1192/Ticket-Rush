@@ -1,10 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { getFieldError } from "../../utils/formErrors";
 import Button from "../common/Button";
 import Input from "../common/Input";
 import Select from "../common/Select";
 import ProfileAvatar from "./ProfileAvatar";
 import "./profile.css";
+
+const acceptedAvatarTypes = ["image/jpeg", "image/png", "image/webp"];
+const maxAvatarBytes = 2 * 1024 * 1024;
 
 const genderOptions = [
   { value: "", label: "Not set" },
@@ -18,18 +21,41 @@ function buildInitialForm(user) {
     fullName: user?.fullName || "",
     gender: user?.gender || "",
     dateOfBirth: user?.dateOfBirth || "",
-    avatarUrl: user?.avatarUrl || "",
   };
 }
 
-export default function ProfileForm({ user, errors, loading, onSubmit }) {
+export default function ProfileForm({
+  user,
+  errors,
+  loading,
+  onSubmit,
+  onAvatarUpload,
+  avatarLoading = false,
+  avatarError = "",
+}) {
   const [form, setForm] = useState(() => buildInitialForm(user));
+  const [avatarFile, setAvatarFile] = useState(null);
+  const [avatarPreviewUrl, setAvatarPreviewUrl] = useState("");
+  const [avatarLocalError, setAvatarLocalError] = useState("");
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     setForm(buildInitialForm(user));
   }, [user]);
 
-  const previewUser = { ...user, ...form };
+  useEffect(() => {
+    if (!avatarFile) {
+      setAvatarPreviewUrl("");
+      return undefined;
+    }
+
+    const objectUrl = URL.createObjectURL(avatarFile);
+    setAvatarPreviewUrl(objectUrl);
+
+    return () => URL.revokeObjectURL(objectUrl);
+  }, [avatarFile]);
+
+  const previewUser = { ...user, ...form, avatarUrl: avatarPreviewUrl || user?.avatarUrl };
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -42,8 +68,51 @@ export default function ProfileForm({ user, errors, loading, onSubmit }) {
       fullName: form.fullName.trim() || null,
       gender: form.gender || undefined,
       dateOfBirth: form.dateOfBirth || null,
-      avatarUrl: form.avatarUrl.trim() || null,
     });
+  }
+
+  function handleAvatarChange(event) {
+    const selectedFile = event.target.files?.[0] || null;
+    setAvatarLocalError("");
+
+    if (!selectedFile) {
+      setAvatarFile(null);
+      return;
+    }
+
+    if (!acceptedAvatarTypes.includes(selectedFile.type)) {
+      setAvatarFile(null);
+      setAvatarLocalError("Upload a JPG, PNG, or WebP image.");
+      event.target.value = "";
+      return;
+    }
+
+    if (selectedFile.size > maxAvatarBytes) {
+      setAvatarFile(null);
+      setAvatarLocalError("Avatar image must be 2MB or smaller.");
+      event.target.value = "";
+      return;
+    }
+
+    setAvatarFile(selectedFile);
+  }
+
+  async function handleAvatarUpload() {
+    setAvatarLocalError("");
+
+    if (!avatarFile) {
+      setAvatarLocalError("Choose an avatar image first.");
+      return;
+    }
+
+    const uploadedUser = await onAvatarUpload?.(avatarFile);
+
+    if (uploadedUser) {
+      setAvatarFile(null);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    }
   }
 
   return (
@@ -70,6 +139,29 @@ export default function ProfileForm({ user, errors, loading, onSubmit }) {
           disabled
           helper="Email changes are not enabled in this profile form."
         />
+        <div className="profile-upload profile-form__full">
+          <div className="profile-upload__body">
+            <span className="profile-upload__label">Profile avatar</span>
+            <p>Upload a JPG, PNG, or WebP image up to 2MB.</p>
+            <input
+              ref={fileInputRef}
+              className="profile-upload__input"
+              type="file"
+              accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+              onChange={handleAvatarChange}
+              disabled={avatarLoading}
+            />
+            <span className="profile-upload__filename">
+              {avatarFile ? avatarFile.name : "No file selected"}
+            </span>
+            {avatarLocalError || avatarError ? (
+              <span className="field__error">{avatarLocalError || avatarError}</span>
+            ) : null}
+          </div>
+          <Button type="button" variant="outline" loading={avatarLoading} disabled={!avatarFile || avatarLoading} onClick={handleAvatarUpload}>
+            Upload avatar
+          </Button>
+        </div>
         <Input
           name="fullName"
           label="Full name"
@@ -92,16 +184,6 @@ export default function ProfileForm({ user, errors, loading, onSubmit }) {
           value={form.dateOfBirth}
           onChange={handleChange}
           error={getFieldError(errors, "dateOfBirth")}
-        />
-        <Input
-          name="avatarUrl"
-          type="url"
-          label="Avatar URL"
-          value={form.avatarUrl}
-          onChange={handleChange}
-          placeholder="https://example.com/avatar.jpg"
-          error={getFieldError(errors, "avatarUrl")}
-          helper="Paste an image URL. Upload storage is not part of this phase."
         />
       </div>
 

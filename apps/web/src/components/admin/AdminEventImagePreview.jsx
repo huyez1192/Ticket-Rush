@@ -5,7 +5,6 @@ import "./admin.css";
 export default function AdminEventImagePreview({ image, alt = "Event image", showUrl = true, variant = "compact" }) {
   const [failed, setFailed] = useState(false);
   const imageUrl = getImageUrl(image);
-  const isCard = variant === "card";
   const hasImage = Boolean(imageUrl && !failed);
 
   return (
@@ -19,11 +18,9 @@ export default function AdminEventImagePreview({ image, alt = "Event image", sho
       </div>
       {imageUrl ? (
         <div className="admin-image-preview__details">
-          {isCard ? (
-            <a className="btn btn--outline btn--sm admin-image-preview__action" href={imageUrl} target="_blank" rel="noreferrer">
-              Open image
-            </a>
-          ) : null}
+          <a className="btn btn--outline btn--sm admin-image-preview__action" href={imageUrl} target="_blank" rel="noreferrer">
+            Open image
+          </a>
           {showUrl ? (
             <a className="admin-image-preview__url" href={imageUrl} target="_blank" rel="noreferrer" title={imageUrl}>
               {imageUrl}

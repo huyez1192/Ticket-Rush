@@ -2,6 +2,7 @@ import { Router } from "express";
 import { ROLES } from "../../common/constants/index.js";
 import { authenticate, optionalAuthenticate } from "../../middlewares/auth.middleware.js";
 import { requireRole } from "../../middlewares/role.middleware.js";
+import { uploadEventImage as uploadEventImageFile } from "../../middlewares/upload.middleware.js";
 import { validate } from "../../middlewares/validate.middleware.js";
 import {
   addEventImage,
@@ -15,7 +16,8 @@ import {
   listEvents,
   openSellingEvent,
   publishEvent,
-  updateEvent
+  updateEvent,
+  uploadEventImage
 } from "./event.controller.js";
 import {
   createEventImageSchema,
@@ -27,6 +29,7 @@ import {
 } from "./event.validation.js";
 
 const router = Router();
+export const adminEventRouter = Router();
 const adminOnly = [authenticate, requireRole(ROLES.ADMIN)];
 
 router.get("/", optionalAuthenticate, validate(listEventsSchema), listEvents);
@@ -41,5 +44,13 @@ router.post("/:eventId/cancel", ...adminOnly, validate(eventIdParamsSchema), can
 router.get("/:eventId/images", optionalAuthenticate, validate(eventIdParamsSchema), listEventImages);
 router.post("/:eventId/images", ...adminOnly, validate(createEventImageSchema), addEventImage);
 router.delete("/:eventId/images/:id", ...adminOnly, validate(eventImageParamsSchema), deleteEventImage);
+
+adminEventRouter.post(
+  "/:eventId/images/upload",
+  ...adminOnly,
+  validate(eventIdParamsSchema),
+  uploadEventImageFile,
+  uploadEventImage
+);
 
 export default router;

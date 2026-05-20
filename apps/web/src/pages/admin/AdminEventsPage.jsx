@@ -4,13 +4,13 @@ import {
   cancelEvent,
   closeEvent,
   createEvent,
-  createEventImage,
   deleteEventImage,
   deleteEvent,
   getAdminEvents,
   getEventImages,
   openSellingEvent,
   publishEvent,
+  uploadEventImage,
   updateEvent,
 } from "../../api/adminApi";
 import AdminConfirmDialog from "../../components/admin/AdminConfirmDialog";
@@ -184,21 +184,23 @@ export default function AdminEventsPage() {
     }
   }
 
-  async function handleAddFormImage(payload) {
+  async function handleUploadFormImage(file) {
     if (!formModal.event?.id) {
-      return;
+      return false;
     }
 
     setFormImageLoading(true);
     setFormImageError("");
 
     try {
-      await createEventImage(formModal.event.id, payload);
+      await uploadEventImage(formModal.event.id, file);
       const imagePayload = await getEventImages(formModal.event.id);
       setFormImages(normalizeEventImagesPayload(imagePayload));
-      setNotice("Image added.");
+      setNotice("Image uploaded.");
+      return true;
     } catch (apiError) {
       setFormImageError(apiError.message);
+      return false;
     } finally {
       setFormImageLoading(false);
     }
@@ -327,7 +329,7 @@ export default function AdminEventsPage() {
             formModal.mode === "edit" ? (
               <AdminEventImageManager
                 images={formImages}
-                onAdd={handleAddFormImage}
+                onUpload={handleUploadFormImage}
                 onDelete={handleDeleteFormImage}
                 loading={formImageLoading}
                 error={formImageError}

@@ -4,13 +4,13 @@ import {
   cancelEvent,
   admitQueueBatch,
   closeEvent,
-  createEventImage,
   deleteEventImage,
   getAdminEventQueue,
   getAdminEventById,
   getEventImages,
   openSellingEvent,
   publishEvent,
+  uploadEventImage,
   updateEvent,
   updateEventQueueConfig,
 } from "../../api/adminApi";
@@ -225,17 +225,19 @@ export default function AdminEventDetailPage() {
     }
   }
 
-  async function handleAddImage(payload) {
+  async function handleUploadImage(file) {
     setImageLoading(true);
     setImageError("");
 
     try {
-      await createEventImage(event.id, payload);
+      await uploadEventImage(event.id, file);
       const imagePayload = await getEventImages(event.id);
       setImages(normalizeEventImagesPayload(imagePayload));
-      setNotice("Image added.");
+      setNotice("Image uploaded.");
+      return true;
     } catch (apiError) {
       setImageError(apiError.message);
+      return false;
     } finally {
       setImageLoading(false);
     }
@@ -335,6 +337,7 @@ export default function AdminEventDetailPage() {
                     key={image.id || image.imageUrl}
                     image={image}
                     alt={`${event.name} preview`}
+                    showUrl={false}
                     variant="card"
                   />
                 ))}
@@ -512,7 +515,7 @@ export default function AdminEventDetailPage() {
           imageManager={
             <AdminEventImageManager
               images={images}
-              onAdd={handleAddImage}
+              onUpload={handleUploadImage}
               onDelete={handleDeleteImage}
               loading={imageLoading}
               error={imageError}

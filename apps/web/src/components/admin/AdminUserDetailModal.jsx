@@ -35,7 +35,7 @@ function UserDetail({ user }) {
         <div className="admin-detail-row"><dt>Roles</dt><dd>{(user.roles || []).map((role) => role.name || role).join(", ") || "None"}</dd></div>
         <div className="admin-detail-row"><dt>Created</dt><dd>{formatDate(user.createdAt, { dateStyle: "medium", timeStyle: "short" }) || "Unknown"}</dd></div>
         <div className="admin-detail-row"><dt>Updated</dt><dd>{formatDate(user.updatedAt, { dateStyle: "medium", timeStyle: "short" }) || "Unknown"}</dd></div>
-        <div className="admin-detail-row admin-detail-row--full"><dt>Avatar URL</dt><dd>{user.avatarUrl || "Not set"}</dd></div>
+        <div className="admin-detail-row admin-detail-row--full"><dt>Avatar</dt><dd>{user.avatarUrl ? "Set" : "Not set"}</dd></div>
       </dl>
     </div>
   );

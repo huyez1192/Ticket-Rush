@@ -78,21 +78,16 @@ export default function AdminEventForm({
           error={errors.description}
         />
         {isCreate ? (
-          <Textarea
-            className="admin-form__full"
-            label="Image URLs"
-            name="imageUrls"
-            value={values.imageUrls}
-            onChange={handleChange}
-            helper="Optional. Separate URLs with commas or new lines."
-          />
+          <p className="admin-form__note admin-form__full">
+            Create the event first, then upload images from the event detail page.
+          </p>
         ) : null}
       </div>
       {!isCreate && imageManager ? (
         <section className="admin-form__section admin-form__full">
           <div>
             <h3>Event images</h3>
-            <p>Manage image URLs used by event pages.</p>
+            <p>Upload images used by event pages.</p>
           </div>
           {imageManager}
         </section>

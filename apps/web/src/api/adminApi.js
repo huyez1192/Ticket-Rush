@@ -75,6 +75,14 @@ export async function createEventImage(eventId, payload) {
   return unwrapData(response);
 }
 
+export async function uploadEventImage(eventId, file) {
+  const formData = new FormData();
+  formData.append("image", file);
+
+  const response = await axiosClient.post(`/admin/events/${eventId}/images/upload`, formData);
+  return unwrapData(response);
+}
+
 export async function deleteEventImage(eventId, imageId) {
   const response = await axiosClient.delete(`/events/${eventId}/images/${imageId}`);
   return unwrapData(response);

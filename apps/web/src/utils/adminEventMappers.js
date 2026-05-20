@@ -69,7 +69,6 @@ export function getEventFormInitialValues(event) {
     startTime: toDateTimeInputValue(normalized.startTime),
     endTime: toDateTimeInputValue(normalized.endTime),
     status: normalized.status || "Draft",
-    imageUrls: "",
   };
 }
 
@@ -84,13 +83,6 @@ export function buildEventPayload(values, { includeStatus = false } = {}) {
 
   if (includeStatus) {
     payload.status = values.status || "Draft";
-  }
-
-  if (includeStatus && values.imageUrls?.trim()) {
-    payload.imageUrls = values.imageUrls
-      .split(/\r?\n|,/)
-      .map((url) => url.trim())
-      .filter(Boolean);
   }
 
   return Object.fromEntries(Object.entries(payload).filter(([, value]) => value !== undefined));

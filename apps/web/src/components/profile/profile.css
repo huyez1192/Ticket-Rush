@@ -60,6 +60,10 @@
   align-items: start;
 }
 
+.profile-form__full {
+  grid-column: 1 / -1;
+}
+
 .profile-form__grid .field {
   align-self: start;
   align-content: start;
@@ -125,6 +129,56 @@
   font-size: 2rem;
 }
 
+.profile-upload {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--space-3);
+  align-items: end;
+  border: 1px solid rgba(183, 121, 31, 0.24);
+  border-radius: var(--radius-input);
+  background:
+    linear-gradient(135deg, rgba(243, 210, 139, 0.12), rgba(247, 244, 238, 0.92));
+  padding: var(--space-4);
+}
+
+.profile-upload__body {
+  min-width: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+
+.profile-upload__label {
+  color: var(--color-text-primary);
+  font-size: var(--font-size-small);
+  font-weight: 900;
+}
+
+.profile-upload p {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-small);
+  font-weight: 700;
+}
+
+.profile-upload__input {
+  width: 100%;
+  border: 1px dashed rgba(183, 121, 31, 0.44);
+  border-radius: var(--radius-input);
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--color-text-primary);
+  padding: var(--space-3);
+}
+
+.profile-upload__filename {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-caption);
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .profile-message {
   border: 1px solid var(--color-success);
   border-radius: var(--radius-card-premium);
@@ -186,12 +240,18 @@
 @media (max-width: 640px) {
   .profile-page__header,
   .profile-form__identity,
-  .profile-form__actions {
+  .profile-form__actions,
+  .profile-upload {
     align-items: stretch;
     flex-direction: column;
   }
 
-  .profile-form__actions .btn {
+  .profile-form__actions .btn,
+  .profile-upload .btn {
     width: 100%;
+  }
+
+  .profile-upload {
+    display: flex;
   }
 }

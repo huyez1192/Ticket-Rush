@@ -1,5 +1,12 @@
 import { AppError } from "../../common/errors/AppError.js";
 import { ROLES } from "../../common/constants/index.js";
+import {
+  buildPublicUploadUrl,
+  deleteLocalUploadFromUrl,
+  deleteUploadFile,
+  saveImageUpload,
+  UPLOAD_SUBDIRECTORIES
+} from "../../common/utils/localUpload.js";
 import { mapEventImageToDto, mapEventToDto, mapPagination } from "./event.mapper.js";
 import {
   countOrderItemsBySeatIds,
@@ -266,6 +273,32 @@ export async function createAdminEventImage(eventId, payload) {
   return mapEventImageToDto(image);
 }
 
+export async function uploadAdminEventImage(eventId, file, baseUrl) {
+  const event = await findEventById(eventId);
+
+  if (!event) {
+    throw new AppError("Event not found.", 404);
+  }
+
+  const savedUpload = await saveImageUpload(file, {
+    subdirectory: UPLOAD_SUBDIRECTORIES.EVENT_IMAGES,
+    filenamePrefix: "event-image"
+  });
+  const imageUrl = buildPublicUploadUrl(baseUrl, savedUpload.publicPath);
+
+  try {
+    const image = await createEventImage({
+      eventId,
+      imageUrl
+    });
+
+    return mapEventImageToDto(image);
+  } catch (error) {
+    await deleteUploadFile(savedUpload.filePath);
+    throw error;
+  }
+}
+
 export async function deleteAdminEventImage(eventId, imageId) {
   const event = await findEventById(eventId);
 
@@ -280,4 +313,10 @@ export async function deleteAdminEventImage(eventId, imageId) {
   }
 
   await deleteEventImageByIdForEvent(eventId, imageId);
+
+  try {
+    await deleteLocalUploadFromUrl(image.imageUrl, UPLOAD_SUBDIRECTORIES.EVENT_IMAGES);
+  } catch {
+    // Image DB deletion should not fail if best-effort local cleanup is unavailable.
+  }
 }

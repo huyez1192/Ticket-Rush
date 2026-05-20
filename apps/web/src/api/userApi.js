@@ -10,6 +10,14 @@ export async function updateMyProfile(payload) {
   return unwrapData(response);
 }
 
+export async function uploadMyAvatar(file) {
+  const formData = new FormData();
+  formData.append("avatar", file);
+
+  const response = await axiosClient.post("/users/me/avatar", formData);
+  return unwrapData(response);
+}
+
 export async function changeMyPassword(payload) {
   const response = await axiosClient.put("/users/me/password", payload);
   return unwrapData(response);

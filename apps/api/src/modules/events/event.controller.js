@@ -1,5 +1,7 @@
 import { EVENT_STATUSES } from "../../common/constants/index.js";
+import { AppError } from "../../common/errors/AppError.js";
 import { sendNoContent, sendSuccess } from "../../common/responses/apiResponse.js";
+import { getRequestBaseUrl } from "../../common/utils/localUpload.js";
 import {
   changeAdminEventStatus,
   createAdminEvent,
@@ -9,7 +11,8 @@ import {
   getEventDetail as getEventDetailForViewer,
   getEventImages,
   getEvents,
-  updateAdminEvent
+  updateAdminEvent,
+  uploadAdminEventImage
 } from "./event.service.js";
 
 export async function listEvents(req, res, next) {
@@ -106,6 +109,19 @@ export async function addEventImage(req, res, next) {
   try {
     const data = await createAdminEventImage(req.params.eventId, req.body);
     sendSuccess(res, 200, "Event image created successfully.", data);
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function uploadEventImage(req, res, next) {
+  try {
+    if (!req.file) {
+      throw new AppError("Event image file is required.", 400);
+    }
+
+    const data = await uploadAdminEventImage(req.params.eventId, req.file, getRequestBaseUrl(req));
+    sendSuccess(res, 200, "Event image uploaded successfully.", data);
   } catch (error) {
     next(error);
   }

@@ -9,8 +9,10 @@ export default function ProfilePage({ admin = false }) {
   const { user, updateCurrentUser } = useAuth();
   const [profile, setProfile] = useState(user);
   const [profileLoading, setProfileLoading] = useState(false);
+  const [avatarLoading, setAvatarLoading] = useState(false);
   const [passwordLoading, setPasswordLoading] = useState(false);
   const [profileErrors, setProfileErrors] = useState(null);
+  const [avatarError, setAvatarError] = useState("");
   const [passwordErrors, setPasswordErrors] = useState(null);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -58,6 +60,27 @@ export default function ProfilePage({ admin = false }) {
     }
   }
 
+  async function handleAvatarUpload(file) {
+    setAvatarLoading(true);
+    setAvatarError("");
+    setError("");
+    setMessage("");
+
+    try {
+      const updated = await userApi.uploadMyAvatar(file);
+      setProfile(updated);
+      updateCurrentUser?.(updated);
+      setMessage("Avatar uploaded successfully.");
+      return updated;
+    } catch (apiError) {
+      setAvatarError(apiError.message);
+      setError(apiError.message);
+      return null;
+    } finally {
+      setAvatarLoading(false);
+    }
+  }
+
   async function handlePasswordSubmit(payload) {
     setPasswordLoading(true);
     setPasswordErrors(null);
@@ -89,7 +112,15 @@ export default function ProfilePage({ admin = false }) {
       {error ? <div className="profile-message profile-message--error">{error}</div> : null}
 
       <div className="profile-page__content">
-        <ProfileForm user={profile} errors={profileErrors} loading={profileLoading} onSubmit={handleProfileSubmit} />
+        <ProfileForm
+          user={profile}
+          errors={profileErrors}
+          loading={profileLoading}
+          onSubmit={handleProfileSubmit}
+          onAvatarUpload={handleAvatarUpload}
+          avatarLoading={avatarLoading}
+          avatarError={avatarError}
+        />
         <ChangePasswordForm errors={passwordErrors} loading={passwordLoading} onSubmit={handlePasswordSubmit} />
       </div>
     </div>

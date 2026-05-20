@@ -1,7 +1,7 @@
 import { Router } from "express";
 import authRoutes from "../modules/auth/auth.routes.js";
 import userRoutes from "../modules/users/user.routes.js";
-import eventRoutes from "../modules/events/event.routes.js";
+import eventRoutes, { adminEventRouter } from "../modules/events/event.routes.js";
 import orderRoutes from "../modules/bookings/order.routes.js";
 import adminAuditLogRoutes from "../modules/admin/auditLog.routes.js";
 import adminRoleRoutes from "../modules/admin/adminRole.routes.js";
@@ -33,6 +33,7 @@ router.use(orderRoutes);
 router.use(ticketRoutes);
 router.use(waitingQueueRoutes);
 router.use("/events", seatRoutes);
+router.use("/admin/events", adminEventRouter);
 router.use("/events", eventRoutes);
 
 export default router;
