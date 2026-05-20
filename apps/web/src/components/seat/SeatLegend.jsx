@@ -6,7 +6,6 @@ const items = [
   { label: "Locked by you", className: "seat-legend__swatch--mine" },
   { label: "Locked", className: "seat-legend__swatch--locked" },
   { label: "Sold", className: "seat-legend__swatch--sold" },
-  { label: "Released", className: "seat-legend__swatch--released" },
 ];
 
 export default function SeatLegend() {

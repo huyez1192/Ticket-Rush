@@ -8,7 +8,6 @@ const legendItems = [
   { label: "Locked", className: "customer-freeform-legend__swatch--locked" },
   { label: "Locked by you", className: "customer-freeform-legend__swatch--mine" },
   { label: "Sold", className: "customer-freeform-legend__swatch--sold" },
-  { label: "Released", className: "customer-freeform-legend__swatch--released" },
 ];
 
 export default function CustomerSeatMapLegend({ sections = [] }) {

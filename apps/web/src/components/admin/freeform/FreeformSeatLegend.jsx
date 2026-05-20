@@ -6,7 +6,6 @@ const ITEMS = [
   ["Available", "available"],
   ["Locked", "locked"],
   ["Sold", "sold"],
-  ["Released", "released"],
   ["Selected for edit", "selected-edit"],
 ];
 
