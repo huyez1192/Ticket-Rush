@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { getSeatDisplayLabel, getSeatDisplayRowLabel } from "../../utils/seatDisplayLabels";
 import Button from "../common/Button";
 import Select from "../common/Select";
 import StatusBadge from "../common/StatusBadge";
@@ -41,12 +42,14 @@ export default function AdminSeatStatusControls({ seat, onSubmit, loading, error
     onSubmit?.(seat, { status });
   }
 
+  const displayLabel = getSeatDisplayLabel(seat);
+
   return (
     <section className="admin-seating-panel">
       <header className="admin-seating-panel__header">
         <div>
           <h2>Seat status</h2>
-          <p>{seat.code || seat.label}</p>
+          <p>{displayLabel}</p>
         </div>
         <StatusBadge status={seat.status} />
       </header>
@@ -59,11 +62,11 @@ export default function AdminSeatStatusControls({ seat, onSubmit, loading, error
           </div>
           <div>
             <dt>Row</dt>
-            <dd>{seat.rowLabel}</dd>
+            <dd>{getSeatDisplayRowLabel(seat) || seat.rowLabel}</dd>
           </div>
           <div>
             <dt>Seat</dt>
-            <dd>{seat.seatNumber}</dd>
+            <dd>{displayLabel}</dd>
           </div>
         </dl>
         <Select

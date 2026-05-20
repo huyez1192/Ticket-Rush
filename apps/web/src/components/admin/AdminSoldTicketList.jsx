@@ -1,3 +1,4 @@
+import { getSeatDisplayLabel } from "../../utils/seatDisplayLabels";
 import EmptyState from "../common/EmptyState";
 import StatusBadge from "../common/StatusBadge";
 import "./admin-orders.css";
@@ -27,7 +28,7 @@ export default function AdminSoldTicketList({ tickets = [] }) {
             </div>
             <div>
               <dt>Seat</dt>
-              <dd>{ticket.seat?.code || ticket.seat?.id || "Unavailable"}</dd>
+              <dd>{ticket.seat ? getSeatDisplayLabel(ticket.seat) : ticket.seat?.id || "Unavailable"}</dd>
             </div>
             <div>
               <dt>Issued</dt>

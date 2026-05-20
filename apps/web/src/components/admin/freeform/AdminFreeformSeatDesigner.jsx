@@ -11,12 +11,14 @@ import {
   getCanvasWarnings,
   getDirtySeatIds,
   getEffectiveLayoutConfig,
+  getSeatLayout,
   getPlacedSeats,
   getUnplacedSeats,
   moveDraftSeatLayouts,
   reflowSeatLayoutsAfterResize,
   updateDraftSeatLayout,
 } from "../../../utils/freeformSeatLayout";
+import { applyGlobalSeatDisplayLabelsToSeats } from "../../../utils/seatDisplayLabels";
 import { mapApiError } from "../../../utils/mapApiError";
 import Button from "../../common/Button";
 import EmptyState from "../../common/EmptyState";
@@ -64,14 +66,18 @@ export default function AdminFreeformSeatDesigner({
     () => getDirtySeatIds(allSeats, savedLayouts, draftLayouts),
     [allSeats, draftLayouts, savedLayouts],
   );
-  const placedSeats = useMemo(() => getPlacedSeats(allSeats, draftLayouts), [allSeats, draftLayouts]);
-  const unplacedSeats = useMemo(() => getUnplacedSeats(allSeats, draftLayouts), [allSeats, draftLayouts]);
+  const labeledSeats = useMemo(
+    () => applyGlobalSeatDisplayLabelsToSeats(allSeats, { getLayout: (seat) => getSeatLayout(seat, draftLayouts) }),
+    [allSeats, draftLayouts],
+  );
+  const placedSeats = useMemo(() => getPlacedSeats(labeledSeats, draftLayouts), [draftLayouts, labeledSeats]);
+  const unplacedSeats = useMemo(() => getUnplacedSeats(labeledSeats, draftLayouts), [draftLayouts, labeledSeats]);
   const warnings = useMemo(() => getCanvasWarnings(allSeats, layoutConfig, draftLayouts), [allSeats, draftLayouts, layoutConfig]);
   const primarySelectedSeatId = selectedSeatIds[0] || selectedSeatId;
-  const selectedSeat = useMemo(() => allSeats.find((seat) => seat.id === primarySelectedSeatId) || null, [allSeats, primarySelectedSeatId]);
+  const selectedSeat = useMemo(() => labeledSeats.find((seat) => seat.id === primarySelectedSeatId) || null, [labeledSeats, primarySelectedSeatId]);
   const selectedSeats = useMemo(
-    () => selectedSeatIds.map((seatId) => allSeats.find((seat) => seat.id === seatId)).filter(Boolean),
-    [allSeats, selectedSeatIds],
+    () => selectedSeatIds.map((seatId) => labeledSeats.find((seat) => seat.id === seatId)).filter(Boolean),
+    [labeledSeats, selectedSeatIds],
   );
   const hasMatrixWithoutLayout = allSeats.length > 0 && placedSeats.length === 0;
 

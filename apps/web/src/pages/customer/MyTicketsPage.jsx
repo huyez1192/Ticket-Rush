@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
+import { getEventSeatMap } from "../../api/seatApi";
 import { getMyTickets } from "../../api/ticketApi";
 import Button from "../../components/common/Button";
 import EmptyState from "../../components/common/EmptyState";
@@ -8,6 +9,8 @@ import LoadingState from "../../components/common/LoadingState";
 import Pagination from "../../components/common/Pagination";
 import TicketCard from "../../components/ticket/TicketCard";
 import { mapApiError } from "../../utils/mapApiError";
+import { applySeatDisplayLabelToSeat, buildSeatDisplayLabelLookup } from "../../utils/seatDisplayLabels";
+import { normalizeSeatMap } from "../../utils/seatMappers";
 import { normalizeTicketsPayload } from "../../utils/ticketMappers";
 
 export default function MyTicketsPage() {
@@ -27,7 +30,7 @@ export default function MyTicketsPage() {
     try {
       const payload = await getMyTickets(params);
       const normalized = normalizeTicketsPayload(payload);
-      setTickets(normalized.items);
+      setTickets(await applySeatMapDisplayLabelsToTickets(normalized.items));
       setPagination(normalized.pagination);
     } catch (apiError) {
       setError(mapApiError(apiError));
@@ -93,4 +96,28 @@ export default function MyTicketsPage() {
       </div>
     </main>
   );
+}
+
+async function applySeatMapDisplayLabelsToTickets(tickets) {
+  const eventIds = Array.from(new Set(tickets.map((ticket) => ticket.event?.id).filter(Boolean)));
+
+  if (!eventIds.length) {
+    return tickets;
+  }
+
+  const results = await Promise.allSettled(eventIds.map((eventId) => getEventSeatMap(eventId)));
+  const lookupByEventId = results.reduce((lookup, result, index) => {
+    if (result.status !== "fulfilled") {
+      return lookup;
+    }
+
+    const normalizedMap = normalizeSeatMap(result.value);
+    lookup.set(eventIds[index], buildSeatDisplayLabelLookup(normalizedMap.sections));
+    return lookup;
+  }, new Map());
+
+  return tickets.map((ticket) => ({
+    ...ticket,
+    seat: applySeatDisplayLabelToSeat(ticket.seat, lookupByEventId.get(ticket.event?.id)),
+  }));
 }

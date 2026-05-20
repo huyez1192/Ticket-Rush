@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { getAdminOrderById, getAdminOrders } from "../../api/adminApi";
+import { getAdminOrderById, getAdminOrders, getEventSeatMap } from "../../api/adminApi";
 import AdminOrderDetailModal from "../../components/admin/AdminOrderDetailModal";
 import AdminOrderFilters from "../../components/admin/AdminOrderFilters";
 import AdminOrderTable from "../../components/admin/AdminOrderTable";
@@ -10,6 +10,8 @@ import ErrorState from "../../components/common/ErrorState";
 import LoadingState from "../../components/common/LoadingState";
 import Pagination from "../../components/common/Pagination";
 import { buildAdminOrderQuery, normalizeAdminOrder, normalizeAdminOrdersPayload } from "../../utils/adminOrderMappers";
+import { applySeatDisplayLabelToSeat, buildSeatDisplayLabelLookup } from "../../utils/seatDisplayLabels";
+import { getSeatDisplayLabel, normalizeSeatMap } from "../../utils/seatMappers";
 
 function getFiltersFromParams(searchParams) {
   return {
@@ -95,7 +97,22 @@ export default function AdminOrdersPage() {
 
     try {
       const payload = await getAdminOrderById(order.id);
-      setDetailModal({ open: true, order: normalizeAdminOrder(payload) });
+      let normalizedOrder = normalizeAdminOrder(payload);
+
+      if (normalizedOrder.eventId) {
+        try {
+          const seatMapPayload = await getEventSeatMap(normalizedOrder.eventId);
+          const normalizedMap = normalizeSeatMap(seatMapPayload);
+          normalizedOrder = applySeatMapDisplayLabelsToAdminOrder(
+            normalizedOrder,
+            buildSeatDisplayLabelLookup(normalizedMap.sections),
+          );
+        } catch {
+          // Order detail can still render with local seat labels if the map is unavailable.
+        }
+      }
+
+      setDetailModal({ open: true, order: normalizedOrder });
     } catch (apiError) {
       setDetailError(apiError.message);
     } finally {
@@ -147,4 +164,36 @@ export default function AdminOrdersPage() {
       />
     </div>
   );
+}
+
+function applySeatMapDisplayLabelsToAdminOrder(order, lookup) {
+  if (!lookup?.size) {
+    return order;
+  }
+
+  const items = order.items.map((item) => {
+    const seat = applySeatDisplayLabelToSeat(item.seat, lookup);
+    const ticket = item.ticket
+      ? {
+          ...item.ticket,
+          seat: applySeatDisplayLabelToSeat(item.ticket.seat, lookup),
+        }
+      : item.ticket;
+
+    return {
+      ...item,
+      seat,
+      ticket,
+      seatLabel: seat ? getSeatDisplayLabel(seat) : item.seatLabel,
+    };
+  });
+
+  return {
+    ...order,
+    items,
+    tickets: order.tickets.map((ticket) => ({
+      ...ticket,
+      seat: applySeatDisplayLabelToSeat(ticket.seat, lookup),
+    })),
+  };
 }

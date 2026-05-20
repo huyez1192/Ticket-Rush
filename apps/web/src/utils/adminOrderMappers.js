@@ -2,7 +2,7 @@ import { ORDER_STATUSES } from "../constants/statuses";
 import { getCollectionItems, getEntityId, getPagination, normalizeEvent } from "./eventMappers";
 import { formatCurrency } from "./formatCurrency";
 import { formatDate } from "./formatDate";
-import { normalizeSeat } from "./seatMappers";
+import { getSeatDisplayLabel, normalizeSeat } from "./seatMappers";
 import { normalizeAdminTicket } from "./adminTicketMappers";
 
 function firstDefined(...values) {
@@ -63,7 +63,7 @@ export function normalizeAdminOrderItem(item = {}) {
     seat,
     ticket,
     sectionName,
-    seatLabel: firstDefined(seat?.code, item.seatCode, item.seatLabel, item.seatId, "Seat unavailable"),
+    seatLabel: firstDefined(seat ? getSeatDisplayLabel(seat) : "", item.seatLabel, item.seatId, "Seat unavailable"),
     rowNumber: firstDefined(seat?.rowNumber, item.rowNumber, ""),
     seatNumber: firstDefined(seat?.seatNumber, item.seatNumber, ""),
     priceSnapshot: Number.isFinite(Number(item.priceSnapshot)) ? Number(item.priceSnapshot) : Number(seat?.price || 0),

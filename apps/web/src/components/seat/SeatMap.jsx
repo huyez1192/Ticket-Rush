@@ -86,7 +86,7 @@ function SeatMatrixSection({
       <div className="seat-map" style={{ "--seat-columns": maxColumns }}>
         {rows.map((row) => (
           <div className="seat-row" key={row.rowNumber}>
-            <span className="seat-row__label">R{row.rowNumber}</span>
+            <span className="seat-row__label">{row.rowLabel || `R${row.rowNumber}`}</span>
             <div className="seat-row__grid" style={{ "--seat-columns": maxColumns }}>
               {row.seats.map((seat) => (
                 <Seat

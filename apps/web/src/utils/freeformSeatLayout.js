@@ -45,10 +45,11 @@ export function getEffectiveLayoutConfig(layout, seats = []) {
 }
 
 export function flattenSeatMapSections(sections = []) {
-  return sections.flatMap((entry) =>
+  return sections.flatMap((entry, sectionIndex) =>
     (entry.seats || []).map((seat) => ({
       ...seat,
       section: entry.section,
+      sectionIndex,
       sectionName: seat.sectionName || entry.section?.name || "Section",
       seatShape: seat.seatShape || entry.section?.seatShape,
     })),

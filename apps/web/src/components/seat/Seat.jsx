@@ -1,4 +1,4 @@
-import { getSeatDisplayName } from "../../utils/seatMappers";
+import { getSeatDisplayLabel, getSeatDisplayName } from "../../utils/seatMappers";
 import { getSeatStatusMeta, isSeatSelectable } from "../../utils/seatStatus";
 import "./seat.css";
 
@@ -21,7 +21,7 @@ export default function Seat({ seat, selected = false, lockedByMe = false, disab
       title={label}
       onClick={() => onToggle?.(seat)}
     >
-      <span>{seat.seatNumber}</span>
+      <span>{getSeatDisplayLabel(seat)}</span>
     </button>
   );
 }

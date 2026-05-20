@@ -303,7 +303,7 @@ export default function SeatSelectionPage() {
         throw new Error("The API did not return an order id.");
       }
 
-      navigate(checkout(order.id || order._id), { state: { order } });
+      navigate(checkout(order.id || order._id), { state: { order: attachCurrentSeatLabelsToOrder(order, allSeatsById) } });
     } catch (apiError) {
       setActionError(mapApiError(apiError).message);
       await refreshSeatData({ silent: true });
@@ -447,6 +447,33 @@ export default function SeatSelectionPage() {
       </div>
     </main>
   );
+}
+
+function attachCurrentSeatLabelsToOrder(order, seatsById) {
+  if (!Array.isArray(order?.items) || !seatsById?.size) {
+    return order;
+  }
+
+  return {
+    ...order,
+    items: order.items.map((item) => {
+      const displaySeat = seatsById.get(item.seatId || item.seat?.id || item.seat?._id);
+
+      if (!displaySeat || !item.seat) {
+        return item;
+      }
+
+      return {
+        ...item,
+        seat: {
+          ...item.seat,
+          displayLabel: displaySeat.displayLabel,
+          displayRowLabel: displaySeat.displayRowLabel,
+          displaySeatNumber: displaySeat.displaySeatNumber,
+        },
+      };
+    }),
+  };
 }
 
 function buildSectionSeatCounts(sectionEntries) {

@@ -1,9 +1,11 @@
+import { getSeatDisplayLabel } from "../../utils/seatDisplayLabels";
 import { getSeatStatusMeta } from "../../utils/seatStatus";
 import "./admin-seating.css";
 
 export default function AdminSeatCell({ seat, selected, onSelect }) {
   const statusMeta = getSeatStatusMeta(seat.status);
-  const label = `${seat.sectionName}, row ${seat.rowLabel}, seat ${seat.seatNumber}, ${statusMeta.label}`;
+  const displayLabel = getSeatDisplayLabel(seat);
+  const label = `${seat.sectionName}, ${displayLabel}, ${statusMeta.label}`;
 
   return (
     <button
@@ -14,7 +16,7 @@ export default function AdminSeatCell({ seat, selected, onSelect }) {
       aria-pressed={selected}
       onClick={() => onSelect?.(seat)}
     >
-      {seat.seatNumber}
+      {displayLabel}
     </button>
   );
 }

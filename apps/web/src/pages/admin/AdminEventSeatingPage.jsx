@@ -26,6 +26,7 @@ import {
   normalizeAdminSeatMap,
   normalizeAdminSectionsPayload,
 } from "../../utils/adminSeatMappers";
+import { getSeatDisplayLabel } from "../../utils/seatDisplayLabels";
 import { mapApiError } from "../../utils/mapApiError";
 
 export default function AdminEventSeatingPage() {
@@ -204,7 +205,7 @@ export default function AdminEventSeatingPage() {
 
     try {
       await updateSeatStatus(eventId, seat.id, payload);
-      setNotice(`${seat.code || seat.label} updated to ${payload.status}.`);
+      setNotice(`${getSeatDisplayLabel(seat)} updated to ${payload.status}.`);
       await refreshSeating();
     } catch (apiError) {
       setSeatPatchError(mapApiError(apiError).message);

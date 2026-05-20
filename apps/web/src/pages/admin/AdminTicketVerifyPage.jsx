@@ -1,11 +1,13 @@
 import { useState } from "react";
-import { verifyTicket } from "../../api/adminApi";
+import { getEventSeatMap, verifyTicket } from "../../api/adminApi";
 import AdminPageHeader from "../../components/admin/AdminPageHeader";
 import AdminTicketVerifyForm from "../../components/admin/AdminTicketVerifyForm";
 import AdminTicketVerifyResult from "../../components/admin/AdminTicketVerifyResult";
 import LoadingState from "../../components/common/LoadingState";
 import { normalizeTicketVerificationResponse } from "../../utils/adminTicketMappers";
 import { mapApiError } from "../../utils/mapApiError";
+import { applySeatDisplayLabelToSeat, buildSeatDisplayLabelLookup } from "../../utils/seatDisplayLabels";
+import { normalizeSeatMap } from "../../utils/seatMappers";
 
 export default function AdminTicketVerifyPage() {
   const [loading, setLoading] = useState(false);
@@ -24,7 +26,28 @@ export default function AdminTicketVerifyPage() {
 
     try {
       const response = await verifyTicket({ qrCode: payload.qrCode });
-      setResult(normalizeTicketVerificationResponse(response));
+      let normalized = normalizeTicketVerificationResponse(response);
+
+      if (normalized.ticket?.event?.id) {
+        try {
+          const seatMapPayload = await getEventSeatMap(normalized.ticket.event.id);
+          const normalizedMap = normalizeSeatMap(seatMapPayload);
+          normalized = {
+            ...normalized,
+            ticket: {
+              ...normalized.ticket,
+              seat: applySeatDisplayLabelToSeat(
+                normalized.ticket.seat,
+                buildSeatDisplayLabelLookup(normalizedMap.sections),
+              ),
+            },
+          };
+        } catch {
+          // Verification result remains valid if display-only seat labels cannot be enriched.
+        }
+      }
+
+      setResult(normalized);
     } catch (error) {
       const normalized = mapApiError(error);
       setResult(

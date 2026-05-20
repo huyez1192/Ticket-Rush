@@ -4,6 +4,7 @@ import {
   normalizeSeatLayout,
   normalizeSeatMapLayout,
 } from "./seatMappers";
+import { applyGlobalSeatDisplayLabelsToSeats, getSeatDisplayLabel } from "./seatDisplayLabels";
 
 export const CUSTOMER_DEFAULT_LAYOUT = {
   canvasWidth: 1200,
@@ -74,10 +75,11 @@ export function normalizeCustomerSeatMapLayout(layout = null, seats = []) {
 }
 
 export function flattenCustomerSeatMap(sections = []) {
-  return sections.flatMap((entry) =>
+  return sections.flatMap((entry, sectionIndex) =>
     (entry.seats || []).map((seat) => ({
       ...seat,
       section: entry.section,
+      sectionIndex,
       sectionName: seat.sectionName || entry.section?.name || "Section",
       seatShape: seat.seatShape || entry.section?.seatShape,
     })),
@@ -130,7 +132,7 @@ export function groupCustomerSeatsBySection(seats = [], sections = []) {
 
 export function getCoordinateSeatLayout(seat) {
   return normalizeSeatLayout(seat.layout, {
-    label: seat.layout?.label || seat.label || seat.code,
+    label: seat.layout?.label || getSeatDisplayLabel(seat),
     rowLabel: seat.rowLabel,
     width: seat.section?.defaultSeatWidth,
     height: seat.section?.defaultSeatHeight,
@@ -149,9 +151,9 @@ export function buildCustomerCoordinateSeatMap(layout, sections = []) {
 
   const baseLayout = normalizeCustomerSeatMapLayout(layout, flatSeats);
   const fallbackLayouts = buildCustomerCoordinateFallbackFromMatrix(sections, baseLayout, flatSeats);
-  const seats = flatSeats.map((seat) => {
+  const seatsWithLayouts = flatSeats.map((seat) => {
     const savedLayout = normalizeSeatLayout(seat.layout, {
-      label: getCompactSeatLabel(seat),
+      label: getSeatDisplayLabel(seat),
       rowLabel: seat.rowLabel || getRowLabel(seat.rowNumber),
       width: seat.section?.defaultSeatWidth,
       height: seat.section?.defaultSeatHeight,
@@ -165,6 +167,7 @@ export function buildCustomerCoordinateSeatMap(layout, sections = []) {
       isPlaced: true,
     };
   });
+  const seats = applyGlobalSeatDisplayLabelsToSeats(seatsWithLayouts);
 
   return {
     layout: normalizeCustomerSeatMapLayout(layout, seats),
@@ -283,6 +286,5 @@ function groupSeatsByMatrixRow(seats = []) {
 }
 
 function getCompactSeatLabel(seat) {
-  const rowLabel = seat.rowLabel || getRowLabel(seat.rowNumber);
-  return rowLabel && seat.seatNumber ? `${rowLabel}${seat.seatNumber}` : seat.label || seat.code || "";
+  return getSeatDisplayLabel(seat);
 }

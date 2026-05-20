@@ -1,5 +1,6 @@
 import { useRef } from "react";
 import { getSeatShapeClassName } from "../../../constants/seatShapes";
+import { getSeatDisplayLabel } from "../../../utils/seatDisplayLabels";
 import { getSeatStatusMeta } from "../../../utils/seatStatus";
 import "../../seat/seat-shapes.css";
 import "./freeform-seating.css";
@@ -21,8 +22,8 @@ export default function DraggableSeat({
   const dragRef = useRef(null);
   const suppressClickRef = useRef(false);
   const statusMeta = getSeatStatusMeta(seat.status);
-  const label = `${seat.sectionName}, ${seat.code || layout.label || seat.label}, ${statusMeta.label}`;
-  const displayLabel = getDisplayLabel(seat, layout);
+  const displayLabel = getSeatDisplayLabel(seat);
+  const label = `${seat.sectionName}, ${displayLabel}, ${statusMeta.label}`;
 
   function handlePointerDown(event) {
     if (disabled) {
@@ -131,28 +132,6 @@ export default function DraggableSeat({
       {dirty ? <span className="seat-dirty-marker" aria-hidden="true" /> : null}
     </button>
   );
-}
-
-function getDisplayLabel(seat, layout) {
-  const rowLabel = String(layout.rowLabel || seat.rowLabel || "").trim();
-  const seatNumber = seat.seatNumber ? String(seat.seatNumber) : "";
-  const rowNumber = seat.rowNumber ? String(seat.rowNumber) : "";
-
-  if (rowLabel && rowLabel !== "-" && seatNumber) {
-    return `${rowLabel}${seatNumber}`;
-  }
-
-  if (rowNumber && seatNumber) {
-    return `R${rowNumber}-${seatNumber}`;
-  }
-
-  const value = String(layout.label || seat.label || seat.code || seat.id || "");
-
-  if (["Diamond", "Hexagon", "Circle"].includes(seat.seatShape) && value.length > 3) {
-    return String(seat.seatNumber || value.slice(-3));
-  }
-
-  return value;
 }
 
 function clamp(value, min, max) {

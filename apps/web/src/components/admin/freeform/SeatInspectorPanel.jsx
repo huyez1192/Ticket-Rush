@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { getSeatLayout, roundLayoutNumber } from "../../../utils/freeformSeatLayout";
+import { getSeatDisplayLabel, getSeatDisplayRowLabel } from "../../../utils/seatDisplayLabels";
 import Button from "../../common/Button";
 import Input from "../../common/Input";
 import StatusBadge from "../../common/StatusBadge";
@@ -46,13 +47,14 @@ export default function SeatInspectorPanel({ seat, draftLayouts, layoutConfig, o
   }
 
   const soldWarning = seat.status === "Sold" ? "This seat is sold. Moving it changes the visual map only; tickets still reference this seat." : "";
+  const displayLabel = getSeatDisplayLabel(seat);
 
   return (
     <section className="freeform-side-panel">
       <header className="freeform-side-panel__header">
         <div>
           <h3>Seat inspector</h3>
-          <p>{seat.code || seat.label}</p>
+          <p>{displayLabel}</p>
         </div>
         <StatusBadge status={seat.status} />
       </header>
@@ -64,11 +66,11 @@ export default function SeatInspectorPanel({ seat, draftLayouts, layoutConfig, o
         </div>
         <div>
           <dt>Row</dt>
-          <dd>{seat.rowLabel}</dd>
+          <dd>{getSeatDisplayRowLabel(seat) || seat.rowLabel}</dd>
         </div>
         <div>
           <dt>Seat</dt>
-          <dd>{seat.seatNumber}</dd>
+          <dd>{displayLabel}</dd>
         </div>
       </dl>
 

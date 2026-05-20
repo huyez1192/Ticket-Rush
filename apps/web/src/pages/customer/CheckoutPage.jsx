@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { getEventById } from "../../api/eventApi";
 import { cancelOrder, checkoutOrder, getOrderById } from "../../api/orderApi";
+import { getEventSeatMap } from "../../api/seatApi";
 import Button from "../../components/common/Button";
 import Card from "../../components/common/Card";
 import ErrorState from "../../components/common/ErrorState";
@@ -16,6 +17,8 @@ import { formatDateRange } from "../../utils/formatDate";
 import { normalizeEvent } from "../../utils/eventMappers";
 import { mapApiError } from "../../utils/mapApiError";
 import { normalizeOrder } from "../../utils/orderMappers";
+import { applySeatDisplayLabelToSeat, buildSeatDisplayLabelLookup } from "../../utils/seatDisplayLabels";
+import { normalizeSeatMap } from "../../utils/seatMappers";
 
 const RESERVATION_EXPIRED_MESSAGE = "Your seat reservation has expired. Please select seats again.";
 
@@ -42,17 +45,27 @@ export default function CheckoutPage() {
 
     try {
       const orderPayload = await getOrderById(orderId);
-      const normalizedOrder = normalizeOrder(orderPayload);
-      setOrder(normalizedOrder);
+      let normalizedOrder = normalizeOrder(orderPayload);
 
       if (normalizedOrder.eventId) {
-        try {
-          const eventPayload = await getEventById(normalizedOrder.eventId);
-          setEvent(normalizeEvent(eventPayload));
-        } catch {
+        const [eventResult, seatMapResult] = await Promise.allSettled([
+          getEventById(normalizedOrder.eventId),
+          getEventSeatMap(normalizedOrder.eventId),
+        ]);
+
+        if (eventResult.status === "fulfilled") {
+          setEvent(normalizeEvent(eventResult.value));
+        } else {
           setEvent(null);
         }
+
+        if (seatMapResult.status === "fulfilled") {
+          const normalizedMap = normalizeSeatMap(seatMapResult.value);
+          normalizedOrder = applySeatMapDisplayLabelsToOrder(normalizedOrder, buildSeatDisplayLabelLookup(normalizedMap.sections));
+        }
       }
+
+      setOrder(normalizedOrder);
     } catch (apiError) {
       setError(mapApiError(apiError));
       setOrder(null);
@@ -216,6 +229,20 @@ export default function CheckoutPage() {
       </div>
     </main>
   );
+}
+
+function applySeatMapDisplayLabelsToOrder(order, lookup) {
+  if (!lookup?.size) {
+    return order;
+  }
+
+  return {
+    ...order,
+    items: order.items.map((item) => ({
+      ...item,
+      seat: applySeatDisplayLabelToSeat(item.seat, lookup),
+    })),
+  };
 }
 
 function ReservationTimerPanel({ order, expiresAt, expired, onExpired }) {

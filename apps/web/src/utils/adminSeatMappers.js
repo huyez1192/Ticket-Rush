@@ -1,4 +1,5 @@
 import { getCollectionItems, getEntityId } from "./eventMappers";
+import { applyGlobalSeatDisplayLabelsToSections } from "./seatDisplayLabels";
 import { normalizeSeatStatus } from "./seatStatus";
 import { SEAT_SHAPES, normalizeSeatShape } from "../constants/seatShapes";
 
@@ -89,11 +90,14 @@ export function normalizeAdminSeatMap(payload = {}, fallbackSections = []) {
       sections.push({ section, seats: [] });
     }
   });
+  const resolvedSections = applyGlobalSeatDisplayLabelsToSections(
+    sections.sort((a, b) => compareSections(a.section, b.section)),
+  );
 
   return {
     event: payload.event || null,
     layout: normalizeSeatMapLayout(payload.layout),
-    sections: sections.sort((a, b) => compareSections(a.section, b.section)),
+    sections: resolvedSections,
   };
 }
 

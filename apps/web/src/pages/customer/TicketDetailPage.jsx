@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import { getEventSeatMap } from "../../api/seatApi";
 import { getTicketById, getTicketQr } from "../../api/ticketApi";
 import Button from "../../components/common/Button";
 import ErrorState from "../../components/common/ErrorState";
@@ -8,6 +9,8 @@ import TicketDetailPanel from "../../components/ticket/TicketDetailPanel";
 import TicketQrCard from "../../components/ticket/TicketQrCard";
 import { eventDetail } from "../../constants/routes";
 import { mapApiError } from "../../utils/mapApiError";
+import { applySeatDisplayLabelToSeat, buildSeatDisplayLabelLookup } from "../../utils/seatDisplayLabels";
+import { normalizeSeatMap } from "../../utils/seatMappers";
 import { normalizeTicket, normalizeTicketQr } from "../../utils/ticketMappers";
 
 export default function TicketDetailPage() {
@@ -23,7 +26,23 @@ export default function TicketDetailPage() {
 
     try {
       const [ticketPayload, qrPayload] = await Promise.all([getTicketById(ticketId), getTicketQr(ticketId)]);
-      setTicket(normalizeTicket(ticketPayload));
+      let normalizedTicket = normalizeTicket(ticketPayload);
+
+      if (normalizedTicket.event?.id) {
+        try {
+          const seatMapPayload = await getEventSeatMap(normalizedTicket.event.id);
+          const normalizedMap = normalizeSeatMap(seatMapPayload);
+          const lookup = buildSeatDisplayLabelLookup(normalizedMap.sections);
+          normalizedTicket = {
+            ...normalizedTicket,
+            seat: applySeatDisplayLabelToSeat(normalizedTicket.seat, lookup),
+          };
+        } catch {
+          // Ticket detail remains usable if the seat map cannot be loaded for display labels.
+        }
+      }
+
+      setTicket(normalizedTicket);
       setQr(normalizeTicketQr(qrPayload));
     } catch (apiError) {
       setError(mapApiError(apiError));

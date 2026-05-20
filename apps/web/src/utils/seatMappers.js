@@ -1,6 +1,13 @@
 import { getCollectionItems, getEntityId, normalizeEvent } from "./eventMappers";
+import {
+  applyGlobalSeatDisplayLabelsToSections,
+  compareSeatsByDisplayLabel,
+  getSeatDisplayLabel as getComputedSeatDisplayLabel,
+} from "./seatDisplayLabels";
 import { normalizeSeatStatus } from "./seatStatus";
 import { normalizeSeatShape } from "../constants/seatShapes";
+
+export { getComputedSeatDisplayLabel as getSeatDisplayLabel };
 
 export function normalizeSection(section = {}) {
   const displayOrder = Number(section.displayOrder);
@@ -82,16 +89,17 @@ export function normalizeSeatMap(payload = {}, fallbackEvent = null, fallbackSec
       seats: getCollectionItems(entry.seats).map((seat) => normalizeSeat(seat, section)),
     };
   });
+  const resolvedSections = sections.length
+    ? applyGlobalSeatDisplayLabelsToSections(sections)
+    : fallbackSections.map((section) => ({
+        section: normalizeSection(section),
+        seats: [],
+      }));
 
   return {
     event: normalizeEvent(payload.event || fallbackEvent || {}),
     layout: normalizeSeatMapLayout(payload.layout),
-    sections: sections.length
-      ? sections
-      : fallbackSections.map((section) => ({
-          section: normalizeSection(section),
-          seats: [],
-        })),
+    sections: resolvedSections,
     sectionsById,
   };
 }
@@ -116,12 +124,19 @@ export function groupSeatsByRow(seats = []) {
     .sort(([rowA], [rowB]) => Number(rowA) - Number(rowB))
     .map(([rowNumber, rowSeats]) => ({
       rowNumber,
+      rowLabel: rowSeats[0]?.displayRowLabel || rowSeats[0]?.rowLabel || getRowLabel(Number(rowNumber)),
       seats: rowSeats.sort((seatA, seatB) => Number(seatA.seatNumber) - Number(seatB.seatNumber)),
     }));
 }
 
 export function sortSeats(seats = []) {
   return [...seats].sort((seatA, seatB) => {
+    const displayCompare = compareSeatsByDisplayLabel(seatA, seatB);
+
+    if (displayCompare !== 0) {
+      return displayCompare;
+    }
+
     const sectionCompare = String(seatA.sectionName || "").localeCompare(String(seatB.sectionName || ""), undefined, {
       numeric: true,
       sensitivity: "base",
@@ -152,7 +167,7 @@ export function getSeatDisplayName(seat) {
     return "Seat";
   }
 
-  return `Row ${seat.rowNumber || "-"}, Seat ${seat.seatNumber || "-"}`;
+  return getComputedSeatDisplayLabel(seat);
 }
 
 export function normalizeSeatMapLayout(layout = null) {
