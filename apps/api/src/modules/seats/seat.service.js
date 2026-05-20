@@ -1,5 +1,5 @@
 import { AppError } from "../../common/errors/AppError.js";
-import { SEAT_STATUSES } from "../../common/constants/index.js";
+import { ROLES, SEAT_STATUSES } from "../../common/constants/index.js";
 import { runWithOptionalTransaction } from "../../common/utils/runWithOptionalTransaction.js";
 import { findEventById, findPublicEventById } from "../events/event.repository.js";
 import { mapEventToDto } from "../events/event.mapper.js";
@@ -41,6 +41,14 @@ async function assertPublicEvent(eventId) {
   return event;
 }
 
+async function assertReadableSeatEvent(eventId, user) {
+  if (isAdminUser(user)) {
+    return assertEvent(eventId);
+  }
+
+  return assertPublicEvent(eventId);
+}
+
 async function assertEvent(eventId) {
   const event = await findEventById(eventId);
 
@@ -51,8 +59,12 @@ async function assertEvent(eventId) {
   return event;
 }
 
-export async function getPublicSeatSections(eventId) {
-  await assertPublicEvent(eventId);
+function isAdminUser(user) {
+  return Array.isArray(user?.roles) && user.roles.includes(ROLES.ADMIN);
+}
+
+export async function getPublicSeatSections(eventId, user) {
+  await assertReadableSeatEvent(eventId, user);
 
   const sections = await findSeatSectionsByEventId(eventId);
 
@@ -62,8 +74,8 @@ export async function getPublicSeatSections(eventId) {
   };
 }
 
-export async function getPublicSeatSectionDetail(eventId, sectionId) {
-  await assertPublicEvent(eventId);
+export async function getPublicSeatSectionDetail(eventId, sectionId, user) {
+  await assertReadableSeatEvent(eventId, user);
 
   const section = await findSeatSectionByIdForEvent(eventId, sectionId);
 
@@ -74,8 +86,8 @@ export async function getPublicSeatSectionDetail(eventId, sectionId) {
   return mapSeatSectionToDto(section);
 }
 
-export async function getPublicSeats(eventId, query) {
-  await assertPublicEvent(eventId);
+export async function getPublicSeats(eventId, query, user) {
+  await assertReadableSeatEvent(eventId, user);
   await releaseExpiredSeatLocks(eventId);
 
   if (query.sectionId) {
@@ -98,8 +110,8 @@ export async function getPublicSeats(eventId, query) {
   };
 }
 
-export async function getPublicSeatDetail(eventId, seatId) {
-  await assertPublicEvent(eventId);
+export async function getPublicSeatDetail(eventId, seatId, user) {
+  await assertReadableSeatEvent(eventId, user);
   await releaseExpiredSeatLocks(eventId);
 
   const seat = await findSeatByIdForEvent(eventId, seatId);
@@ -111,8 +123,8 @@ export async function getPublicSeatDetail(eventId, seatId) {
   return mapSeatToDto(seat);
 }
 
-export async function getPublicSeatMap(eventId) {
-  const event = await assertPublicEvent(eventId);
+export async function getPublicSeatMap(eventId, user) {
+  const event = await assertReadableSeatEvent(eventId, user);
   await releaseExpiredSeatLocks(eventId);
 
   const [sections, seats, layout] = await Promise.all([
@@ -135,8 +147,8 @@ export async function getPublicSeatMap(eventId) {
   };
 }
 
-export async function getPublicSeatMapChanges(eventId, query) {
-  await assertPublicEvent(eventId);
+export async function getPublicSeatMapChanges(eventId, query, user) {
+  await assertReadableSeatEvent(eventId, user);
   await releaseExpiredSeatLocks(eventId);
 
   const changes = await findSeatChanges(eventId, query.since);
