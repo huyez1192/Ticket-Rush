@@ -64,7 +64,7 @@ export default function AdminEventDetailPage() {
   const [queueLoading, setQueueLoading] = useState(false);
   const [queueSaving, setQueueSaving] = useState(false);
   const [queueAdmitting, setQueueAdmitting] = useState(false);
-  const [queueSocketStatus, setQueueSocketStatus] = useState("connecting");
+  const [, setQueueSocketStatus] = useState("connecting");
   const queueEnabled = Boolean(event?.virtualQueueEnabled);
 
   const loadDetail = useCallback(async () => {
@@ -428,21 +428,6 @@ export default function AdminEventDetailPage() {
           </form>
 
           <div className="admin-queue-summary">
-            <div className="admin-queue-summary__item">
-              <span>Mode</span>
-              <strong className="admin-queue-stat-value" title={queueConfig.queueAdmissionMode}>
-                {queueConfig.queueAdmissionMode}
-              </strong>
-            </div>
-            <div className="admin-queue-summary__item">
-              <span>Socket</span>
-              <strong
-                className="admin-queue-stat-value"
-                title={queueSocketStatus === "connected" ? "Live" : "Reconnecting"}
-              >
-                {queueSocketStatus === "connected" ? "Live" : "Reconnecting"}
-              </strong>
-            </div>
             {Object.entries(queueSummary).map(([status, count]) => (
               <div key={status} className="admin-queue-summary__item">
                 <span>{status}</span>
