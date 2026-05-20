@@ -10,6 +10,7 @@ export default function EventCard({ event, sections = [] }) {
   const normalized = normalizeEvent(event);
   const imageUrl = getImageUrl(normalized.images?.[0]);
   const minimumPrice = getMinimumEventPrice(normalized, sections);
+  const hasConfiguredPrice = Number.isFinite(minimumPrice) && minimumPrice > 0;
 
   return (
     <Card className="event-card">
@@ -28,7 +29,9 @@ export default function EventCard({ event, sections = [] }) {
           </div>
         </div>
         <div className="event-card__footer">
-          <span className="event-price">{minimumPrice !== null ? `From ${formatCurrency(minimumPrice)}` : "Pricing soon"}</span>
+          <span className={`event-price ${hasConfiguredPrice ? "" : "event-price--pending"}`.trim()}>
+            {hasConfiguredPrice ? `From ${formatCurrency(minimumPrice)}` : "Pricing soon"}
+          </span>
           <Link className="btn btn--primary btn--sm" to={`/events/${normalized.id}`}>
             View
           </Link>

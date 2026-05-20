@@ -350,6 +350,10 @@
   font-weight: 900;
 }
 
+.event-price--pending {
+  color: var(--color-text-secondary);
+}
+
 .event-detail {
   width: min(100%, var(--layout-customer-max));
   margin: 0 auto;

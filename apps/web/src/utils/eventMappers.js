@@ -90,7 +90,7 @@ export function normalizeEventsPayload(payload) {
 export function getMinimumSectionPrice(sections = []) {
   const prices = sections
     .map((section) => Number(section?.price))
-    .filter((price) => Number.isFinite(price) && price >= 0);
+    .filter((price) => Number.isFinite(price) && price > 0);
 
   if (!prices.length) {
     return null;
@@ -111,7 +111,7 @@ export function getMinimumEventPrice(event, sections = []) {
 
 function normalizePrice(value) {
   const numeric = Number(value);
-  return Number.isFinite(numeric) && numeric >= 0 ? numeric : null;
+  return Number.isFinite(numeric) && numeric > 0 ? numeric : null;
 }
 
 function firstNumericPrice(...values) {
